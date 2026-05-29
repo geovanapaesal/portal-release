@@ -1,0 +1,1318 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Amigo Flow – Portal</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+<style>
+:root {
+  --bg:       #ffffff;
+  --bg2:      #f8f9fc;
+  --bg3:      #f0f2f7;
+  --border:   #e4e7ef;
+  --border2:  #d0d5e8;
+  --blue:     #2563eb;
+  --blue-lt:  #eff4ff;
+  --blue-md:  #dbeafe;
+  --blue-dk:  #1d4ed8;
+  --green:    #16a34a;
+  --green-lt: #f0fdf4;
+  --amber:    #d97706;
+  --amber-lt: #fffbeb;
+  --red:      #dc2626;
+  --red-lt:   #fef2f2;
+  --purple:   #7c3aed;
+  --purple-lt:#f5f3ff;
+  --text:     #0f172a;
+  --text2:    #475569;
+  --text3:    #94a3b8;
+  --sidebar:  260px;
+  --topbar:   52px;
+  --radius:   10px;
+  --radius-sm:6px;
+  --shadow:   0 1px 3px rgba(0,0,0,.08), 0 1px 2px rgba(0,0,0,.04);
+  --shadow-md:0 4px 16px rgba(0,0,0,.08), 0 2px 6px rgba(0,0,0,.04);
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;display:flex;flex-direction:column;font-size:14px;line-height:1.6}
+
+/* ── TOPBAR ── */
+.topbar{
+  height:var(--topbar);background:#fff;border-bottom:1px solid var(--border);
+  display:flex;align-items:center;padding:0 20px;gap:12px;
+  position:sticky;top:0;z-index:200;
+}
+.topbar-logo{font-size:15px;font-weight:800;color:var(--text);text-decoration:none;letter-spacing:-.3px}
+.topbar-logo em{color:var(--blue);font-style:normal}
+.topbar-sep{width:1px;height:18px;background:var(--border)}
+.topbar-product{
+  font-size:11px;font-weight:700;letter-spacing:.6px;text-transform:uppercase;
+  color:var(--blue);background:var(--blue-lt);border:1px solid var(--blue-md);
+  padding:2px 8px;border-radius:4px
+}
+.topbar-tabs{display:flex;gap:2px;margin-left:auto}
+.tab-btn{
+  padding:6px 14px;border-radius:var(--radius-sm);border:none;cursor:pointer;
+  font-family:inherit;font-size:13px;font-weight:600;
+  background:none;color:var(--text2);transition:all .15s
+}
+.tab-btn:hover{background:var(--bg3);color:var(--text)}
+.tab-btn.active{background:var(--blue);color:#fff}
+.topbar-home{font-size:12px;color:var(--text3);text-decoration:none;display:flex;align-items:center;gap:4px;padding:5px 8px;border-radius:var(--radius-sm);transition:background .15s;margin-right:4px}
+.topbar-home:hover{background:var(--bg3);color:var(--text2)}
+
+/* ── LAYOUT ── */
+.layout{display:flex;flex:1;height:calc(100vh - var(--topbar));overflow:hidden}
+
+/* ── SIDEBAR ── */
+.sidebar{
+  width:var(--sidebar);min-width:var(--sidebar);
+  background:var(--bg2);border-right:1px solid var(--border);
+  display:flex;flex-direction:column;overflow:hidden;transition:transform .2s
+}
+.sidebar-header{padding:16px 14px 10px;border-bottom:1px solid var(--border)}
+.sidebar-label{font-size:10px;font-weight:700;letter-spacing:1px;color:var(--text3);text-transform:uppercase}
+.sidebar-search{
+  display:flex;align-items:center;gap:6px;
+  background:var(--bg);border:1px solid var(--border);border-radius:var(--radius-sm);
+  padding:6px 10px;margin-top:10px
+}
+.sidebar-search input{border:none;outline:none;background:none;font-family:inherit;font-size:12px;color:var(--text);width:100%}
+.sidebar-search input::placeholder{color:var(--text3)}
+.search-icon{color:var(--text3);font-size:12px;flex-shrink:0}
+.sidebar-list{flex:1;overflow-y:auto;padding:6px}
+.sidebar-list::-webkit-scrollbar{width:3px}
+.sidebar-list::-webkit-scrollbar-thumb{background:var(--border2);border-radius:3px}
+
+/* releases sidebar */
+.year-group{margin-bottom:4px}
+.year-label{font-size:10px;font-weight:700;letter-spacing:1px;color:var(--text3);text-transform:uppercase;padding:10px 10px 4px}
+.release-btn{
+  width:100%;background:none;border:none;cursor:pointer;
+  padding:8px 10px;border-radius:var(--radius-sm);text-align:left;
+  transition:background .12s;display:flex;flex-direction:column;gap:2px;margin-bottom:1px
+}
+.release-btn:hover{background:var(--bg3)}
+.release-btn.active{background:var(--blue-lt);border-left:2px solid var(--blue);padding-left:8px}
+.rb-name{font-size:13px;font-weight:700;color:var(--text)}
+.release-btn.active .rb-name{color:var(--blue)}
+.rb-date{font-size:11px;color:var(--text3)}
+.rb-pill{
+  display:inline-flex;align-items:center;gap:3px;font-size:10px;font-weight:600;
+  padding:1px 6px;border-radius:20px;margin-top:2px
+}
+.rb-pill.released{background:var(--green-lt);color:var(--green)}
+.rb-pill.upcoming{background:var(--amber-lt);color:var(--amber)}
+.rb-pill::before{content:'';width:5px;height:5px;border-radius:50%;background:currentColor}
+
+/* docs sidebar */
+.doc-section{margin-bottom:2px}
+.doc-section-title{
+  font-size:11px;font-weight:700;letter-spacing:.5px;color:var(--text2);text-transform:uppercase;
+  padding:10px 10px 4px;display:flex;align-items:center;gap:6px
+}
+.doc-section-title .si{font-size:12px}
+.doc-item{
+  width:100%;background:none;border:none;cursor:pointer;
+  padding:7px 10px 7px 22px;border-radius:var(--radius-sm);text-align:left;
+  font-family:inherit;font-size:12.5px;color:var(--text2);
+  transition:background .12s;display:block;margin-bottom:1px;font-weight:500
+}
+.doc-item:hover{background:var(--bg3);color:var(--text)}
+.doc-item.active{background:var(--blue-lt);color:var(--blue);font-weight:600}
+.doc-sub-item{
+  width:100%;background:none;border:none;cursor:pointer;
+  padding:5px 10px 5px 32px;border-radius:var(--radius-sm);text-align:left;
+  font-family:inherit;font-size:12px;color:var(--text3);
+  transition:background .12s;display:block;margin-bottom:1px
+}
+.doc-sub-item:hover{background:var(--bg3);color:var(--text2)}
+.doc-sub-item.active{background:var(--blue-lt);color:var(--blue);font-weight:600}
+
+/* ── MAIN ── */
+.main{flex:1;overflow-y:auto;background:var(--bg)}
+.main::-webkit-scrollbar{width:5px}
+.main::-webkit-scrollbar-thumb{background:var(--border2);border-radius:5px}
+
+/* ── EMPTY STATE ── */
+.empty-state{
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  height:100%;gap:10px;color:var(--text3);padding:40px;text-align:center
+}
+.empty-icon{font-size:40px;opacity:.4}
+.empty-state h3{font-size:15px;color:var(--text2);font-weight:600}
+.empty-state p{font-size:13px;max-width:240px;line-height:1.6}
+
+/* ── RELEASE DETAIL ── */
+.release-detail{padding:36px 44px 80px;max-width:860px}
+.rd-header{margin-bottom:28px;padding-bottom:24px;border-bottom:1px solid var(--border)}
+.rd-top{display:flex;align-items:center;gap:10px;margin-bottom:8px;flex-wrap:wrap}
+.rd-version{font-size:26px;font-weight:800;color:var(--text);letter-spacing:-.4px}
+.rd-pill{
+  display:inline-flex;align-items:center;gap:5px;font-size:11px;font-weight:600;
+  padding:3px 10px;border-radius:20px
+}
+.rd-pill.released{background:var(--green-lt);color:var(--green);border:1px solid #bbf7d0}
+.rd-pill.upcoming{background:var(--amber-lt);color:var(--amber);border:1px solid #fde68a}
+.rd-pill::before{content:'';width:6px;height:6px;border-radius:50%;background:currentColor}
+.rd-date{font-size:12px;color:var(--text3);margin-bottom:8px}
+.rd-desc{font-size:14px;color:var(--text2);line-height:1.7;max-width:640px}
+
+.features-count{
+  font-size:10px;font-weight:700;letter-spacing:1px;color:var(--text3);
+  text-transform:uppercase;margin-bottom:14px
+}
+
+/* ── FEATURE CARD ── */
+.feature-card{
+  background:var(--bg);border:1px solid var(--border);border-radius:var(--radius);
+  padding:20px;margin-bottom:12px;transition:box-shadow .15s,border-color .15s
+}
+.feature-card:hover{box-shadow:var(--shadow-md);border-color:var(--border2)}
+.fc-head{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:14px}
+.fc-title{font-size:15px;font-weight:700;color:var(--text);line-height:1.3}
+.fc-jira{
+  flex-shrink:0;font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:500;
+  color:var(--blue);background:var(--blue-lt);border:1px solid var(--blue-md);
+  padding:3px 8px;border-radius:4px;text-decoration:none;transition:background .12s;white-space:nowrap
+}
+.fc-jira:hover{background:var(--blue-md)}
+.fc-rows{display:flex;flex-direction:column;gap:10px}
+.fc-row{display:flex;gap:10px;align-items:flex-start}
+.fc-icon{
+  width:22px;height:22px;border-radius:6px;display:flex;align-items:center;
+  justify-content:center;font-size:11px;flex-shrink:0;margin-top:1px
+}
+.fc-icon.ctx{background:var(--purple-lt);color:var(--purple)}
+.fc-icon.done{background:var(--green-lt);color:var(--green)}
+.fc-icon.imp{background:var(--blue-lt);color:var(--blue)}
+.fc-body{}
+.fc-label{font-size:10px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;color:var(--text3);margin-bottom:2px}
+.fc-text{font-size:13px;color:var(--text2);line-height:1.65}
+
+/* ── DOC PAGE ── */
+.doc-page{padding:36px 44px 80px;max-width:860px}
+.doc-breadcrumb{font-size:12px;color:var(--text3);margin-bottom:18px;display:flex;align-items:center;gap:6px}
+.doc-breadcrumb a{color:var(--blue);text-decoration:none}
+.doc-breadcrumb span{color:var(--text3)}
+.doc-h1{font-size:26px;font-weight:800;color:var(--text);letter-spacing:-.4px;margin-bottom:6px;display:flex;align-items:center;gap:10px}
+.doc-h1 .dicon{font-size:22px}
+.doc-subtitle{font-size:14px;color:var(--text2);line-height:1.7;margin-bottom:24px;padding-bottom:20px;border-bottom:1px solid var(--border);max-width:640px}
+.doc-h2{font-size:18px;font-weight:700;color:var(--text);margin:28px 0 12px;letter-spacing:-.2px}
+.doc-h3{font-size:15px;font-weight:700;color:var(--text);margin:20px 0 8px}
+.doc-p{font-size:13.5px;color:var(--text2);line-height:1.75;margin-bottom:12px}
+.doc-p strong{color:var(--text);font-weight:600}
+.doc-ul{padding-left:20px;margin-bottom:12px;display:flex;flex-direction:column;gap:4px}
+.doc-ul li{font-size:13.5px;color:var(--text2);line-height:1.65}
+.doc-ul li strong{color:var(--text)}
+.doc-ol{padding-left:20px;margin-bottom:12px;display:flex;flex-direction:column;gap:4px}
+.doc-ol li{font-size:13.5px;color:var(--text2);line-height:1.65}
+
+/* hint boxes */
+.hint{border-radius:var(--radius-sm);padding:12px 16px;margin-bottom:14px;display:flex;gap:10px;align-items:flex-start}
+.hint-icon{font-size:14px;flex-shrink:0;margin-top:1px}
+.hint-body{font-size:13px;line-height:1.65}
+.hint-body strong{font-weight:600}
+.hint.info{background:var(--blue-lt);border:1px solid var(--blue-md);color:#1e40af}
+.hint.warning{background:var(--amber-lt);border:1px solid #fde68a;color:#92400e}
+.hint.success{background:var(--green-lt);border:1px solid #bbf7d0;color:#14532d}
+.hint.danger{background:var(--red-lt);border:1px solid #fecaca;color:#991b1b}
+
+/* table */
+.doc-table-wrap{overflow-x:auto;margin-bottom:16px;border-radius:var(--radius-sm);border:1px solid var(--border)}
+.doc-table{width:100%;border-collapse:collapse;font-size:13px}
+.doc-table th{background:var(--bg2);padding:10px 14px;text-align:left;font-weight:600;color:var(--text);border-bottom:1px solid var(--border);white-space:nowrap}
+.doc-table td{padding:9px 14px;border-bottom:1px solid var(--border);color:var(--text2);line-height:1.5}
+.doc-table tr:last-child td{border-bottom:none}
+.doc-table tr:hover td{background:var(--bg2)}
+
+/* code */
+.doc-code{font-family:'JetBrains Mono',monospace;font-size:12px;background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:12px 16px;margin-bottom:12px;overflow-x:auto;color:#1e293b;line-height:1.6}
+.ic{font-family:'JetBrains Mono',monospace;font-size:12px;background:var(--bg3);padding:1px 5px;border-radius:3px;color:var(--blue)}
+
+/* section divider */
+.doc-divider{height:1px;background:var(--border);margin:24px 0}
+
+/* cards grid (funcionalidades overview) */
+.doc-cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px;margin-bottom:20px}
+.doc-card{
+  background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);
+  padding:16px;text-decoration:none;color:inherit;transition:all .15s;display:flex;flex-direction:column;gap:6px;cursor:pointer
+}
+.doc-card:hover{border-color:var(--blue);background:var(--blue-lt);box-shadow:var(--shadow)}
+.doc-card-icon{font-size:20px}
+.doc-card-title{font-size:13px;font-weight:700;color:var(--text)}
+.doc-card-desc{font-size:12px;color:var(--text3);line-height:1.5}
+
+/* lightbox */
+.lightbox{display:none;position:fixed;inset:0;z-index:999;background:rgba(0,0,0,.75);backdrop-filter:blur(6px);align-items:center;justify-content:center;flex-direction:column;gap:10px}
+.lightbox.open{display:flex}
+.lightbox img{max-width:90vw;max-height:82vh;border-radius:var(--radius);box-shadow:0 24px 48px rgba(0,0,0,.4);object-fit:contain}
+.lb-label{font-size:12px;color:rgba(255,255,255,.5)}
+.lb-close{position:fixed;top:16px;right:20px;width:34px;height:34px;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.2);border-radius:50%;color:#fff;font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background .15s}
+.lb-close:hover{background:rgba(255,255,255,.2)}
+.img-frame{display:inline-flex;flex-direction:column;gap:5px;cursor:zoom-in;transition:transform .15s}
+.img-frame:hover{transform:translateY(-2px)}
+.img-frame img{border-radius:var(--radius-sm);border:1px solid var(--border);max-height:160px;max-width:100%;object-fit:contain;background:var(--bg2)}
+.img-label{font-size:11px;color:var(--text3);text-align:center}
+.fc-images{display:flex;gap:10px;margin-top:14px;flex-wrap:wrap}
+</style>
+</head>
+<body>
+
+<!-- TOPBAR -->
+<header class="topbar">
+  <a href="index.html" class="topbar-home">← Portal</a>
+  <div class="topbar-sep"></div>
+  <a class="topbar-logo" href="#">Amigo <em>Flow</em></a>
+  <span class="topbar-product">Docs & Releases</span>
+  <div class="topbar-tabs">
+    <button class="tab-btn active" onclick="switchTab('releases')" id="tab-releases">📦 Releases</button>
+    <button class="tab-btn" onclick="switchTab('docs')" id="tab-docs">📚 Documentação</button>
+  </div>
+</header>
+
+<!-- LAYOUT -->
+<div class="layout">
+  <aside class="sidebar" id="sidebar">
+    <div id="sidebar-releases-header" class="sidebar-header">
+      <div class="sidebar-label">Versões</div>
+    </div>
+    <div id="sidebar-docs-header" class="sidebar-header" style="display:none">
+      <div class="sidebar-label">Navegação</div>
+      <div class="sidebar-search">
+        <span class="search-icon">🔍</span>
+        <input type="text" placeholder="Buscar..." id="doc-search" oninput="filterDocs(this.value)"/>
+      </div>
+    </div>
+    <div class="sidebar-list" id="sidebar-list"></div>
+  </aside>
+
+  <main class="main" id="main-content">
+    <div class="empty-state">
+      <div class="empty-icon">👈</div>
+      <h3>Selecione uma release</h3>
+      <p>Escolha uma versão na barra lateral para ver as novidades.</p>
+    </div>
+  </main>
+</div>
+
+<!-- LIGHTBOX -->
+<div class="lightbox" id="lightbox" onclick="lbClickOutside(event)">
+  <button class="lb-close" onclick="closeLb()">✕</button>
+  <img id="lb-img" src="" alt=""/>
+  <div class="lb-label" id="lb-label"></div>
+</div>
+
+<script>
+// ─────────────────────────────────────────────
+// RELEASES DATA
+// ─────────────────────────────────────────────
+const releases = [
+  {
+    year:2026, id:'d21', name:'Delivery 21', releaseDate:'2026-06-19', released:false,
+    desc:'Automação de conversas inativas.',
+    features:[{
+      title:'Finalização automática para conversas "Em aguardo"', jiraKey:'GREEN-3015',
+      contexto:'Conversas marcadas como "Em aguardo" ficavam abertas indefinidamente, acumulando chats parados e poluindo a fila de atendimento.',
+      feito:'Implementada regra de finalização automática: conversas que permaneçam em "Em aguardo" por um período configurável são encerradas automaticamente.',
+      impacto:'Reduz o acúmulo de conversas abandonadas, mantém a fila limpa e permite à equipe focar nos atendimentos realmente ativos.'
+    }]
+  },
+  {
+    year:2026, id:'d20', name:'Delivery 20', releaseDate:'2026-06-05', released:false,
+    desc:'IA no atendimento, envios automáticos completos, notas internas, orientações para o agente e melhorias na criação de contatos.',
+    features:[
+      {title:'Sugestão de Resposta com IA no Chat',jiraKey:'GREEN-3180',contexto:'Atendentes elaboravam cada resposta manualmente, tornando o atendimento mais lento e inconsistente.',feito:'IA analisa o contexto da conversa e propõe respostas que o atendente pode usar ou adaptar diretamente no chat.',impacto:'Acelera o tempo médio de resposta e padroniza a qualidade das mensagens enviadas.'},
+      {title:'Notas internas de atendimento',jiraKey:'GREEN-3023',contexto:'Não havia forma de registrar informações internas sobre um atendimento sem que o paciente visse.',feito:'Notas visíveis somente para a equipe interna, criadas durante e após o atendimento.',impacto:'Melhora o contexto para transferências e elimina uso de ferramentas paralelas para comunicação interna.'},
+      {title:'Menções em notas internas',jiraKey:'GREEN-3025',contexto:'Notas internas não permitiam notificar um colega específico.',feito:'Suporte a menções (@) em notas internas para chamar um colega diretamente.',impacto:'Comunicação interna dentro do próprio Flow, sem necessidade de abrir Slack ou WhatsApp.'},
+      {title:'Agente cria notas com motivo da transferência',jiraKey:'GREEN-3013',contexto:'Quando o agente transferia, o destinatário não tinha contexto sobre o motivo.',feito:'O agente registra automaticamente uma nota interna com o motivo da transferência.',impacto:'Reduz o tempo de onboarding de quem recebe o chat e melhora a qualidade do handoff.'},
+      {title:'Criar contato sem vinculá-lo como Lead',jiraKey:'GREEN-3017',contexto:'Ao iniciar conversa com número desconhecido, o sistema obrigava criação de lead.',feito:'Opção para criar contato sem vinculá-lo automaticamente como lead.',impacto:'Base de leads limpa e representativa, sem misturar contatos operacionais.'},
+      {title:'Orientações para o Agente – Importação',jiraKey:'GREEN-2757',contexto:'Orientações precisavam ser inseridas manualmente, sem importação em massa.',feito:'Importação de orientações para o agente via arquivo estruturado.',impacto:'Acelera configuração inicial e atualização da base de conhecimento da IA.'},
+      {title:'Base de orientações para o Agente',jiraKey:'GREEN-1968',contexto:'O agente não tinha onde buscar respostas específicas da clínica, respondendo de forma genérica.',feito:'Área onde a clínica cadastra perguntas/respostas e instruções que o agente consulta durante atendimentos.',impacto:'O agente responde com precisão as políticas e procedimentos de cada clínica.'},
+      {title:'Envio automático de Aniversário',jiraKey:'GREEN-2503',contexto:'Clínicas não tinham forma automatizada de enviar mensagens de aniversário.',feito:'Template disparado automaticamente no dia do aniversário do paciente.',impacto:'Fidelização automatizada sem esforço operacional.'},
+      {title:'Envio automático de Pós-Atendimento',jiraKey:'GREEN-2501',contexto:'Após a consulta, clínicas precisavam manualmente fazer o seguimento.',feito:'Disparado automaticamente após finalização do atendimento com intervalo configurável.',impacto:'Garante continuidade no cuidado e aumenta coleta de feedbacks.'},
+      {title:'Envio automático de Pré-Atendimento',jiraKey:'GREEN-2447',contexto:'Lembretes pré-consulta eram manuais ou inexistentes, aumentando no-show.',feito:'Mensagem disparada dias ou horas antes da consulta agendada.',impacto:'Reduz no-show e prepara o paciente para a consulta.'},
+      {title:'Envio automático de Orçamento em aberto',jiraKey:'GREEN-2449',contexto:'Orçamentos não respondidos ficavam sem acompanhamento.',feito:'Sistema identifica orçamentos sem resposta e dispara follow-up automaticamente.',impacto:'Aumenta taxa de conversão de orçamentos.'},
+      {title:'Parametrizar inatividade em Envios em massa',jiraKey:'GREEN-2853',contexto:'Regra de inatividade era global e não podia ser personalizada por campanha.',feito:'Parâmetro de inatividade configurável por envio em massa.',impacto:'Estratégias de disparo mais precisas por tipo de campanha.'},
+      {title:'Agente acessa informações profissionais',jiraKey:'GREEN-2783',contexto:'O agente não acessava especialidade, CRM etc. dos profissionais cadastrados.',feito:'Agente pode acessar "Informações Profissionais" do cadastro durante atendimentos.',impacto:'Respostas mais completas sobre profissionais disponíveis na clínica.'},
+    ]
+  },
+  {
+    year:2026, id:'d19', name:'Delivery 19', releaseDate:'2026-05-22', released:true,
+    desc:'Dashboard interno, envios automáticos de Falta e listagem, melhorias no bot, estimativa de custo em campanhas e novos estados de contato.',
+    features:[
+      {title:'Dashboard interno Amigo Flow',jiraKey:'GREEN-2532',contexto:'Sem visibilidade centralizada sobre adoção das funcionalidades pelas clínicas.',feito:'Dashboard com métricas: % de clínicas com agente ativo, uso de canais, envios configurados por período.',impacto:'Times de produto e CS passam a tomar decisões baseadas em dados reais de uso.'},
+      {title:'Listagem de Envios Automáticos',jiraKey:'GREEN-2464',contexto:'Sem tela dedicada para visualizar todos os envios automáticos de uma clínica.',feito:'Tela com tipo, nome, descrição, status, canal associado e tags de cada envio.',impacto:'Visão completa de todas as automações ativas para gestão e auditoria.'},
+      {title:'Envio automático de Falta',jiraKey:'GREEN-2484',contexto:'Pacientes faltosos não recebiam comunicação automática.',feito:'Sistema detecta consultas não realizadas e dispara mensagem automática, recalculando em caso de reagendamento.',impacto:'Aumenta taxa de reagendamento de faltas.'},
+      {title:'Assinatura de termo de execução',jiraKey:'GREEN-2588',contexto:'Clínicas precisavam de comprovação digital de procedimentos realizados.',feito:'Fluxo de assinatura de termo no final do atendimento, com envio do documento via link.',impacto:'Segurança jurídica e formalização do encerramento com documentação digital.'},
+      {title:'Classificar número como contato',jiraKey:'GREEN-2755',contexto:'Todo número era paciente ou lead, sem outros estados possíveis. Base suja.',feito:'Novo estado "contato" para números que não são pacientes nem leads.',impacto:'Base mais limpa e funil de conversão mais preciso.'},
+      {title:'Estimativa de custo em campanhas',jiraKey:'GREEN-2849',contexto:'Usuário não sabia o custo antes de disparar a campanha.',feito:'Estimativa dinâmica calculada com base no tipo de template e tamanho do público.',impacto:'Decisões conscientes antes do envio, sem surpresas no faturamento.'},
+      {title:'Melhorias no Amigo-Bot',jiraKey:'GREEN-3112',contexto:'Bot apresentava gaps de tracking e segurança em fluxos específicos.',feito:'Melhorias pontuais em múltiplos fluxos: rastreamento preciso, validações adicionais.',impacto:'Redução de chamados e maior confiabilidade do agendamento automatizado.'},
+    ]
+  },
+  {
+    year:2026, id:'d18', name:'Delivery 18', releaseDate:'2026-05-08', released:true,
+    desc:'Bloqueio de contatos, busca por etiqueta no histórico, API de integrações externas e reenvio de campanhas.',
+    features:[
+      {title:'Bloquear número a partir do contact info',jiraKey:'GREEN-2774',contexto:'Sem ação direta para bloquear números inválidos ou problemáticos.',feito:'Opção de bloqueio pelo menu do contact-info com bottom sheet de confirmação.',impacto:'Ação rápida e segura sem sair da tela de atendimento.'},
+      {title:'Estado visual de número bloqueado',jiraKey:'GREEN-2776',contexto:'Após bloqueio, a interface não refletia o novo estado.',feito:'Chat e contact-info exibem estado de bloqueio visualmente com opção de desfazer.',impacto:'Clareza imediata sobre o status do contato.'},
+      {title:'Pesquisar contato por Etiqueta no Histórico',jiraKey:'GREEN-2900',contexto:'Filtro de etiquetas funcionava só nos chats ativos, não no histórico.',feito:'Filtro de etiquetas estendido para o Histórico de conversas.',impacto:'Recuperação ágil de conversas antigas por segmentação.'},
+      {title:'API de integrações externas (SEMAVY)',jiraKey:'GREEN-2856',contexto:'Sem API padronizada para sistemas externos se integrarem ao Flow.',feito:'API de integrações externas com endpoints documentados para parceiros.',impacto:'Abre o ecossistema para integrações estratégicas.'},
+      {title:'Habilitar reenvio de campanhas',jiraKey:'GREEN-2851',contexto:'Campanhas não podiam ser reenviadas, exigindo recriação completa.',feito:'Opção de reenvio de campanhas já executadas para o mesmo público ou com ajustes.',impacto:'Reduz esforço operacional para campanhas recorrentes.'},
+    ]
+  },
+  {
+    year:2026, id:'d17', name:'Delivery 17', releaseDate:'2026-04-24', released:true,
+    desc:'Integração com Amigo One (SEMAVY), leads vinculados à clínica, desassociação de número e acesso facilitado do suporte.',
+    features:[
+      {title:'Integração Amigo One com o Flow (SEMAVY)',jiraKey:'GREEN-2858',contexto:'Amigo One e Flow operavam de forma isolada.',feito:'Funcionalidades core do Flow no One: iniciar/finalizar atendimento, listar chats, transferir.',impacto:'Usuários do One têm acesso unificado ao atendimento via Flow.'},
+      {title:'Vincular leads à clínica (não ao canal)',jiraKey:'GREEN-2492',contexto:'Leads vinculados ao canal impediam visão unificada.',feito:'Migração do vínculo de leads do canal para a clínica.',impacto:'Visão unificada de leads independente do canal de entrada.'},
+      {title:'Desassociar número do canal via Meta API',jiraKey:'GREEN-2511',contexto:'Sem como remover associação entre número e canal dentro do Flow.',feito:'Fluxo de desassociação via endpoint deregister da Meta com permissões adequadas.',impacto:'Limpeza e reorganização da infraestrutura de canais.'},
+      {title:'Filtro no log de ações especiais',jiraKey:'GREEN-2872',contexto:'Log sem filtros dificultava auditorias específicas.',feito:'Filtros de período, usuário e tipo de ação no log de ações especiais.',impacto:'Rastreabilidade e auditoria de ações críticas facilitadas.'},
+      {title:'Acesso facilitado do Suporte ao Flow',jiraKey:'GREEN-2416',contexto:'Analistas de suporte tinham múltiplos passos para acessar o Flow de clientes.',feito:'Link de convite que coloca o analista no setor Suporte com permissões pré-configuradas.',impacto:'Reduz tempo de resposta em incidentes e padroniza o processo.'},
+    ]
+  },
+  {
+    year:2026, id:'d16', name:'Delivery 16', releaseDate:'2026-04-10', released:true,
+    desc:'Correção no funil: leads só se tornam pacientes após atendimento efetivo.',
+    features:[{title:'Lead vira paciente só após atendimento',jiraKey:'GREEN-2698',contexto:'Leads eram convertidos em pacientes antes de serem atendidos.',feito:'Conversão ocorre somente após ao menos um atendimento concluído registrado.',impacto:'Funil mais preciso e dados clínicos mais confiáveis.'}]
+  },
+  {
+    year:2026, id:'d15', name:'Delivery 15', releaseDate:'2026-03-27', released:true,
+    desc:'Onboarding por coexistência do WhatsApp Business: integra ao Flow sem desativar o app.',
+    features:[{title:'Onboarding por Coexistência do WhatsApp Business',jiraKey:'GREEN-2286',contexto:'Migração completa para Cloud API interrompia o uso normal do número.',feito:'Embedded Signup da Meta com coexistência: o app continua funcionando durante e após a integração.',impacto:'Remove a principal barreira de adoção para clínicas em operação ativa.'}]
+  },
+  {
+    year:2026, id:'d14', name:'Delivery 14', releaseDate:'2026-03-13', released:true,
+    desc:'Redesign completo do módulo de Receituário.',
+    features:[{title:'Redesign do Receituário',jiraKey:'GREEN-1974',contexto:'Interface desatualizada não seguia o padrão atual do produto.',feito:'Redesign completo alinhado ao design system atual com melhorias de usabilidade.',impacto:'Emissão de receitas mais fluida e moderna.'}]
+  },
+  {
+    year:2026, id:'d13', name:'Delivery 13', releaseDate:'2026-02-27', released:true,
+    desc:'Sincronização de etiquetas entre Flow e Página do Paciente, emails de consumo de franquia e opt-in LGPD para leads.',
+    features:[
+      {title:'Replicação de etiquetas entre Flow e Prontuário',jiraKey:'GREEN-2310',contexto:'Etiquetas do Flow não apareciam na Página do Paciente.',feito:'Sincronização bidirecional de etiquetas entre os módulos.',impacto:'Elimina retrabalho e garante consistência de segmentação.'},
+      {title:'Emails de consumo de franquia',jiraKey:'GREEN-1913',contexto:'Clínicas não eram notificadas ao se aproximar do limite da franquia.',feito:'Email automático ao atingir 80% (alerta) e 100% (cobrança unitária), uma vez por ciclo.',impacto:'Reduz surpresas no faturamento e aumenta conversões de upgrade.'},
+      {title:'Opt-in LGPD no cadastro de leads',jiraKey:'GREEN-1769',contexto:'Cadastro de leads sem consentimento explícito — risco LGPD.',feito:'Fluxo de opt-in antes do cadastro; recusa encerra o fluxo com log auditável.',impacto:'Adequação à LGPD e transparência com o paciente.'},
+    ]
+  },
+  {
+    year:2026, id:'d12', name:'Delivery 12', releaseDate:'2026-02-13', released:true,
+    desc:'Redesign da habilidade de agendamento, duplicar canal, atendimento de leads, reengajamento automático e ordenação no Kanban.',
+    features:[
+      {title:'Redesign da Habilidade de Agendamento',jiraKey:'GREEN-2182',contexto:'Configuração complexa e pouco intuitiva.',feito:'Interface simplificada e visual atualizado.',impacto:'Reduz tempo de configuração e chamados de suporte.'},
+      {title:'Duplicar canal',jiraKey:'GREEN-2226',contexto:'Canais semelhantes precisavam ser reconfigurados do zero.',feito:'Função de duplicar canal copiando todas as configurações.',impacto:'Setup de novos canais muito mais rápido.'},
+      {title:'Habilidade de atendimento de leads',jiraKey:'GREEN-2228',contexto:'Sem configuração específica para lidar com leads.',feito:'Habilidade configurável: ativa atende; inativa transfere para setor principal.',impacto:'Estratégias diferenciadas por tipo de público.'},
+      {title:'Reengajamento automático do agente',jiraKey:'GREEN-2230',contexto:'Paciente inativo no meio de conversa tinha atendimento finalizado sem tentativa de retomada.',feito:'Mensagem de reengajamento opcional antes de finalizar, com tempo configurável.',impacto:'Recupera conversas que seriam finalizadas sem resolução.'},
+      {title:'Agente agenda leads cadastrados',jiraKey:'GREEN-2233',contexto:'Agente só transferia leads-pacientes em vez de agendar.',feito:'Agente identifica paciente via CPF e realiza agendamento diretamente.',impacto:'Menos transferências desnecessárias para humanos.'},
+      {title:'Ordenação de cards no Kanban',jiraKey:'GREEN-2312',contexto:'Cards sem ordenação dificultavam priorização.',feito:'Ordenação por data ou ordem alfabética dentro das colunas.',impacto:'Localização mais rápida de pacientes na fila.'},
+      {title:'Configurar canais no Amigo Flow',jiraKey:'GREEN-2129',contexto:'Configuração de canais fragmentada em diferentes áreas.',feito:'Área centralizada de configuração de canais com interface reorganizada.',impacto:'Gestão e manutenção de múltiplos canais mais simples.'},
+    ]
+  },
+  {
+    year:2026, id:'d11', name:'Delivery 11', releaseDate:'2026-01-31', released:true,
+    desc:'Propagação das novas configurações de setores e permissões para contas de clientes.',
+    features:[{title:'Aplicar configurações de setores e permissões',jiraKey:'GREEN-2091',contexto:'Novas configurações do D10 precisavam ser propagadas para os clientes.',feito:'Lógica de propagação automática das regras de acesso após setup.',impacto:'Novas regras entram em vigor sem reconfiguração manual.'}]
+  },
+  {
+    year:2026, id:'d10', name:'Delivery 10', releaseDate:'2026-01-16', released:true,
+    desc:'Grande entrega: Setores, Permissões, redesign do Configurador Clinic, edição de leads e horários nos logs.',
+    features:[
+      {title:'Setores',jiraKey:'GREEN-2054',contexto:'Flow sem estrutura de setores para organizar equipes.',feito:'Módulo de Setores: criar, configurar e gerenciar setores associando atendentes.',impacto:'Organização estruturada para clínicas com múltiplas especialidades.'},
+      {title:'Permissões',jiraKey:'GREEN-2026',contexto:'Todos os usuários com acesso igual a todas as funcionalidades.',feito:'Sistema de permissões granular por perfil de usuário.',impacto:'Segurança operacional e controle adequado por função.'},
+      {title:'Redesign do Configurador Clinic',jiraKey:'GREEN-2029',contexto:'Interface desatualizada com fluxo pouco intuitivo.',feito:'Redesign completo com nova estrutura visual e fluxo reorganizado.',impacto:'Configuração mais rápida e com menor índice de erros.'},
+      {title:'Editar e excluir leads',jiraKey:'GREEN-2077',contexto:'Leads com dados incorretos não podiam ser editados.',feito:'Ações de editar e excluir leads diretamente pela interface.',impacto:'Controle total sobre a base de leads.'},
+      {title:'Horários nos logs de Meu Chats',jiraKey:'GREEN-2115',contexto:'Logs exibiam só a data, sem horário exato.',feito:'Adicionado horário nos logs de ações.',impacto:'Maior precisão em auditorias de atendimento.'},
+    ]
+  },
+  {
+    year:2025, id:'d9', name:'Delivery 9', releaseDate:'2025-12-18', released:true,
+    desc:'Avaliação de atendimento completa, opt-in de convênio, variáveis abertas em templates e integração ZEISS.',
+    features:[
+      {title:'Avaliação de Atendimento – Envios',jiraKey:'GREEN-1732',contexto:'Sem mecanismo automatizado para coletar avaliações dos pacientes.',feito:'Envio automático de avaliação após finalização do atendimento.',impacto:'NPS e feedbacks de forma automatizada e escalável.'},
+      {title:'Avaliação de Atendimento – Dashboard',jiraKey:'GREEN-1730',contexto:'Avaliações sem área centralizada de análise.',feito:'Dashboard com métricas por período, canal e atendente.',impacto:'Visibilidade sobre qualidade do atendimento.'},
+      {title:'Avaliação de Atendimento – Filtro histórico',jiraKey:'GREEN-1848',contexto:'Histórico sem filtro por avaliação recebida.',feito:'Filtro de avaliação no histórico de conversas.',impacto:'Gestores localizam facilmente atendimentos com baixa nota.'},
+      {title:'Convênio no cadastro de paciente',jiraKey:'GREEN-1748',contexto:'Dados de convênio coletados separadamente.',feito:'Campos de convênio e carteirinha no fluxo de cadastro.',impacto:'Check-in de consultas por convênio mais ágil.'},
+      {title:'Variáveis abertas em templates Meta',jiraKey:'GREEN-1695',contexto:'Sem suporte a variáveis abertas em templates.',feito:'Suporte a variáveis abertas com personalização dinâmica.',impacto:'Maior flexibilidade em campanhas e mensagens automáticas.'},
+      {title:'Integração ZEISS – Prescrição de óculos',jiraKey:'GREEN-2093',contexto:'Clínicas oftalmológicas precisavam trocar de sistema para prescrever.',feito:'Integração com sistema ZEISS dentro do fluxo de atendimento.',impacto:'Elimina troca de sistemas para parceiros oftalmológicos.'},
+    ]
+  },
+  {
+    year:2025, id:'d8', name:'Delivery 8', releaseDate:'2025-11-28', released:true,
+    desc:'Consumo de franquia, exportação XLS de atendimentos e endpoint de faturamento.',
+    features:[
+      {title:'Consumo de franquia do Flow',jiraKey:'GREEN-1863',contexto:'Sem controle ou visibilidade sobre consumo de mensagens na franquia.',feito:'Módulo de consumo com contagem e exibição do uso vs. limite contratado.',impacto:'Clínicas e time financeiro têm visibilidade para o modelo de cobrança.'},
+      {title:'Exportar XLS de atendimentos',jiraKey:'GREEN-1923',contexto:'Sem exportação dos dados de atendimentos para análise externa.',feito:'Relatório em XLS de atendimentos por período de faturamento.',impacto:'Auditoria financeira e análises operacionais fora da plataforma.'},
+      {title:'Endpoint de dados de faturamento',jiraKey:'GREEN-1925',contexto:'Faturamento dependia de extração manual de dados.',feito:'API dedicada com todas as informações para cálculo do faturamento.',impacto:'Automatiza e padroniza o processo financeiro.'},
+    ]
+  },
+  {
+    year:2025, id:'d7', name:'Delivery 7', releaseDate:'2025-11-14', released:true,
+    desc:'Separação de envios automáticos, listagem de agendáveis para IA e Z-API desativada por padrão.',
+    features:[
+      {title:'Separar envios automáticos das habilidades',jiraKey:'GREEN-1825',contexto:'Envios acoplados às habilidades tornavam a gestão confusa.',feito:'Módulo independente para envios automáticos.',impacto:'Clareza na configuração sem interferir nas habilidades do agente.'},
+      {title:'Listagem de agendáveis configurados para IA',jiraKey:'GREEN-1835',contexto:'Sem visibilidade sobre o escopo do agente de agendamento.',feito:'Listagem de agendáveis configurados para a IA.',impacto:'Auditoria e ajuste do escopo do agente com facilidade.'},
+      {title:'Z-API desativada por padrão para novas clínicas',jiraKey:'GREEN-1800',contexto:'Novas clínicas tinham Z-API habilitada por padrão (legado).',feito:'Z-API desativada por padrão em novos cadastros.',impacto:'Onboardings corretos desde o início com Meta Cloud API.'},
+    ]
+  }
+];
+
+// ─────────────────────────────────────────────
+// DOCS DATA
+// ─────────────────────────────────────────────
+const docsTree = [
+  { id:'welcome', label:'Bem-vindo ao Amigo Flow!', icon:'🚀', section:null },
+  { id:'prereq',  label:'O que preciso para conectar?', icon:'📱', section:null },
+  {
+    section:'Atalhos', icon:'⚡',
+    items:[
+      { id:'novidades', label:'Novidades do Flow', icon:'✨' },
+      { id:'faq', label:'FAQ', icon:'❓', children:[
+        { id:'faq-atendimento', label:'O que conta como 1 Atendimento' },
+        { id:'faq-janela', label:'Como funciona a janela Meta' },
+        { id:'faq-portfolio', label:'Como criar portfólio empresarial' },
+        { id:'faq-verificar', label:'Como verificar empresa na Meta' },
+        { id:'faq-2fa', label:'Desativar 2FA no portfólio' },
+        { id:'faq-associar', label:'Como associar número no Flow' },
+        { id:'faq-portabilidade', label:'Portabilidade de número API' },
+        { id:'faq-banimento', label:'Solicitar revisão de banimento' },
+        { id:'faq-remover', label:'Remover número do portfólio' },
+        { id:'faq-erros', label:'Código de erros de envio' },
+      ]}
+    ]
+  },
+  {
+    section:'Funcionalidades', icon:'⚙️',
+    items:[
+      { id:'func-agente', label:'Guia do Agente Flow', icon:'🤖' },
+      { id:'func-dashboard', label:'Dashboard de Atendimentos', icon:'📊' },
+      { id:'func-chats', label:'Chats', icon:'💬' },
+      { id:'func-paineis', label:'Painéis', icon:'📋' },
+      { id:'func-envios', label:'Envios', icon:'📨', children:[
+        { id:'func-envios-auto', label:'Envios Automáticos' },
+        { id:'func-envios-massa', label:'Envios em Massa' },
+      ]},
+      { id:'func-leads', label:'Leads', icon:'👥' },
+      { id:'func-config', label:'Configurações', icon:'⚙️', children:[
+        { id:'func-canais', label:'Canais' },
+        { id:'func-modelos', label:'Como criar modelos de mensagem' },
+        { id:'func-atalhos', label:'Atalhos de mensagens' },
+        { id:'func-permissoes', label:'Permissões e Setores' },
+        { id:'func-avaliacao', label:'Avaliação de Atendimento' },
+      ]},
+      { id:'func-consumo', label:'Consumo', icon:'📈' },
+    ]
+  }
+];
+
+// ─────────────────────────────────────────────
+// TABS
+// ─────────────────────────────────────────────
+let currentTab = 'releases';
+
+function switchTab(tab) {
+  currentTab = tab;
+  document.getElementById('tab-releases').classList.toggle('active', tab==='releases');
+  document.getElementById('tab-docs').classList.toggle('active', tab==='docs');
+  document.getElementById('sidebar-releases-header').style.display = tab==='releases' ? '' : 'none';
+  document.getElementById('sidebar-docs-header').style.display = tab==='docs' ? '' : 'none';
+  buildSidebar();
+  const main = document.getElementById('main-content');
+  main.innerHTML = `<div class="empty-state">
+    <div class="empty-icon">${tab==='releases'?'👈':'📖'}</div>
+    <h3>Selecione ${tab==='releases'?'uma release':'um tópico'}</h3>
+    <p>${tab==='releases'?'Escolha uma versão na barra lateral para ver as novidades.':'Navegue pela documentação completa do Amigo Flow.'}</p>
+  </div>`;
+}
+
+// ─────────────────────────────────────────────
+// SIDEBAR
+// ─────────────────────────────────────────────
+function buildSidebar() {
+  const list = document.getElementById('sidebar-list');
+  list.innerHTML = '';
+  if (currentTab==='releases') buildReleasesSidebar(list);
+  else buildDocsSidebar(list);
+}
+
+function fmtDate(d) {
+  if (!d) return '';
+  const [y,m,day] = d.split('-').map(Number);
+  const mo=['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
+  return `${day} ${mo[m-1]} ${y}`;
+}
+
+function buildReleasesSidebar(list) {
+  let lastYear = null;
+  releases.forEach(r => {
+    if (r.year !== lastYear) {
+      lastYear = r.year;
+      const yg = document.createElement('div');
+      yg.className = 'year-group';
+      const yl = document.createElement('div');
+      yl.className = 'year-label';
+      yl.textContent = r.year;
+      yg.appendChild(yl);
+      list.appendChild(yg);
+    }
+    const btn = document.createElement('button');
+    btn.className = 'release-btn';
+    btn.dataset.id = r.id;
+    btn.innerHTML = `
+      <div class="rb-name">${r.name}</div>
+      <div class="rb-date">${fmtDate(r.releaseDate)}</div>
+      <div class="rb-pill ${r.released?'released':'upcoming'}">${r.released?'Lançada':'Em breve'}</div>
+    `;
+    btn.onclick = () => showRelease(r.id);
+    list.appendChild(btn);
+  });
+}
+
+function buildDocsSidebar(list, filter='') {
+  const fl = filter.toLowerCase();
+  docsTree.forEach(item => {
+    if (item.section) {
+      const sec = document.createElement('div');
+      sec.className = 'doc-section';
+      const title = document.createElement('div');
+      title.className = 'doc-section-title';
+      title.innerHTML = `<span class="si">${item.icon}</span>${item.section}`;
+      sec.appendChild(title);
+      item.items.forEach(it => {
+        if (fl && !it.label.toLowerCase().includes(fl)) return;
+        const btn = document.createElement('button');
+        btn.className = 'doc-item';
+        btn.dataset.id = it.id;
+        btn.textContent = (it.icon?it.icon+' ':'')+it.label;
+        btn.onclick = () => showDoc(it.id);
+        sec.appendChild(btn);
+        if (it.children) {
+          it.children.forEach(ch => {
+            if (fl && !ch.label.toLowerCase().includes(fl)) return;
+            const cb = document.createElement('button');
+            cb.className = 'doc-sub-item';
+            cb.dataset.id = ch.id;
+            cb.textContent = ch.label;
+            cb.onclick = () => showDoc(ch.id);
+            sec.appendChild(cb);
+          });
+        }
+      });
+      list.appendChild(sec);
+    } else {
+      if (fl && !item.label.toLowerCase().includes(fl)) return;
+      const btn = document.createElement('button');
+      btn.className = 'doc-item';
+      btn.dataset.id = item.id;
+      btn.textContent = (item.icon?item.icon+' ':'')+item.label;
+      btn.onclick = () => showDoc(item.id);
+      list.appendChild(btn);
+    }
+  });
+}
+
+function filterDocs(val) {
+  const list = document.getElementById('sidebar-list');
+  list.innerHTML = '';
+  buildDocsSidebar(list, val);
+}
+
+// ─────────────────────────────────────────────
+// RENDER RELEASES
+// ─────────────────────────────────────────────
+function showRelease(id) {
+  const r = releases.find(x=>x.id===id);
+  if (!r) return;
+  document.querySelectorAll('.release-btn').forEach(b=>b.classList.toggle('active',b.dataset.id===id));
+  const jBase='https://amigotech-team.atlassian.net/browse/';
+  const featHtml = r.features.map(f=>`
+    <div class="feature-card">
+      <div class="fc-head">
+        <div class="fc-title">${f.title}</div>
+        ${f.jiraKey?`<a href="${jBase}${f.jiraKey}" target="_blank" class="fc-jira">${f.jiraKey}</a>`:''}
+      </div>
+      <div class="fc-rows">
+        <div class="fc-row">
+          <div class="fc-icon ctx">📌</div>
+          <div class="fc-body"><div class="fc-label">Contexto</div><div class="fc-text">${f.contexto}</div></div>
+        </div>
+        <div class="fc-row">
+          <div class="fc-icon done">✓</div>
+          <div class="fc-body"><div class="fc-label">O que foi feito</div><div class="fc-text">${f.feito}</div></div>
+        </div>
+        <div class="fc-row">
+          <div class="fc-icon imp">↗</div>
+          <div class="fc-body"><div class="fc-label">Impacto</div><div class="fc-text">${f.impacto}</div></div>
+        </div>
+      </div>
+      ${f.images?`<div class="fc-images">${f.images.map(img=>`<div class="img-frame" onclick="openLb('${img.src}','${img.label}')"><img src="${img.src}" alt="${img.label}" loading="lazy"/><div class="img-label">${img.label}</div></div>`).join('')}</div>`:''}
+    </div>
+  `).join('');
+  document.getElementById('main-content').innerHTML = `
+    <div class="release-detail">
+      <div class="rd-header">
+        <div class="rd-top">
+          <div class="rd-version">${r.name}</div>
+          <div class="rd-pill ${r.released?'released':'upcoming'}">${r.released?'Lançada':'Em breve'}</div>
+        </div>
+        <div class="rd-date">📅 ${fmtDate(r.releaseDate)}</div>
+        <div class="rd-desc">${r.desc}</div>
+      </div>
+      <div class="features-count">${r.features.length} funcionalidade${r.features.length!==1?'s':''}</div>
+      ${featHtml}
+    </div>`;
+  document.getElementById('main-content').scrollTop=0;
+}
+
+// ─────────────────────────────────────────────
+// RENDER DOCS
+// ─────────────────────────────────────────────
+function setActiveDoc(id) {
+  document.querySelectorAll('.doc-item,.doc-sub-item').forEach(b=>b.classList.toggle('active',b.dataset.id===id));
+}
+
+function hint(type, icon, html) {
+  return `<div class="hint ${type}"><div class="hint-icon">${icon}</div><div class="hint-body">${html}</div></div>`;
+}
+function h2(t){return `<h2 class="doc-h2">${t}</h2>`}
+function h3(t){return `<h3 class="doc-h3">${t}</h3>`}
+function p(t){return `<p class="doc-p">${t}</p>`}
+function ul(items){return `<ul class="doc-ul">${items.map(i=>`<li>${i}</li>`).join('')}</ul>`}
+function ol(items){return `<ol class="doc-ol">${items.map(i=>`<li>${i}</li>`).join('')}</ol>`}
+function divider(){return `<div class="doc-divider"></div>`}
+function table(heads,rows){
+  return `<div class="doc-table-wrap"><table class="doc-table"><thead><tr>${heads.map(h=>`<th>${h}</th>`).join('')}</tr></thead><tbody>${rows.map(r=>`<tr>${r.map(c=>`<td>${c}</td>`).join('')}</tr>`).join('')}</tbody></table></div>`;
+}
+function code(t){return `<pre class="doc-code">${t}</pre>`}
+function ic(t){return `<span class="ic">${t}</span>`}
+
+function docPage(id, icon, title, subtitle, body) {
+  return `<div class="doc-page">
+    <div class="doc-breadcrumb">
+      <a href="#" onclick="showDoc('welcome')">Amigo Flow</a>
+      <span>›</span><span>${title}</span>
+    </div>
+    <div class="doc-h1"><span class="dicon">${icon}</span>${title}</div>
+    ${subtitle?`<p class="doc-subtitle">${subtitle}</p>`:''}
+    ${body}
+  </div>`;
+}
+
+const docContent = {
+
+welcome: () => docPage('welcome','🚀','Bem-vindo ao Amigo Flow!',
+  'O Amigo Flow é o coração da comunicação entre pacientes e equipe — onde cada conversa se transforma em relacionamento e cada fluxo em resultado.',
+  `${h2('Comece por aqui')}
+  <div class="doc-cards">
+    <div class="doc-card" onclick="showDoc('prereq')"><div class="doc-card-icon">📱</div><div class="doc-card-title">O que preciso para conectar?</div><div class="doc-card-desc">Pré-requisitos para usar a API Oficial</div></div>
+    <div class="doc-card" onclick="showDoc('func-agente')"><div class="doc-card-icon">🤖</div><div class="doc-card-title">Guia do Agente Flow</div><div class="doc-card-desc">Como funciona a IA e o que ela faz</div></div>
+    <div class="doc-card" onclick="showDoc('func-chats')"><div class="doc-card-icon">💬</div><div class="doc-card-title">Chats</div><div class="doc-card-desc">Central de atendimentos em tempo real</div></div>
+    <div class="doc-card" onclick="showDoc('faq')"><div class="doc-card-icon">❓</div><div class="doc-card-title">FAQ</div><div class="doc-card-desc">Dúvidas mais frequentes</div></div>
+    <div class="doc-card" onclick="showDoc('novidades')"><div class="doc-card-icon">✨</div><div class="doc-card-title">Novidades do Flow</div><div class="doc-card-desc">Últimas funcionalidades lançadas</div></div>
+    <div class="doc-card" onclick="showDoc('func-envios-auto')"><div class="doc-card-icon">📨</div><div class="doc-card-title">Envios Automáticos</div><div class="doc-card-desc">Automatize mensagens na jornada do paciente</div></div>
+  </div>
+  ${hint('info','💙','<strong>Dica:</strong> Use a aba <strong>Releases</strong> para acompanhar o histórico de versões do produto com contexto, o que foi feito e impacto de cada entrega.')}`
+),
+
+prereq: () => docPage('prereq','📱','O que é preciso para conectar ao Amigo Flow?',
+  'Este documento orienta, de forma simples e transparente, o que é necessário para usar a API Oficial do WhatsApp para sua clínica.',
+  `${hint('info','💡','As regras abaixo <strong>não são uma escolha da Amigo</strong>. Fazem parte do modelo oficial do WhatsApp Business Platform, aplicado igualmente para todas as empresas no mundo.')}
+  ${h2('1. Conta no Facebook Business Manager')}
+  ${p('Você precisa de uma Conta Comercial ativa no Facebook (Business Manager), com mais de 30 dias e você sendo administrador.')}
+  ${h2('2. Portfólio Empresarial no Meta')}
+  ${p('Acesse <strong>business.facebook.com</strong> e crie seu portfólio empresarial. Veja o guia completo em <em>FAQ → Como criar portfólio empresarial</em>.')}
+  ${h2('3. Empresa verificada pela Meta')}
+  ${p('A Meta exige empresa real, ativa e identificável. Você precisará de:')}
+  ${ul(['Razão social e CNPJ válidos','Site institucional ativo','Domínio do site verificado no Business Manager','Documento oficial da empresa (ex: contrato social)'])}
+  ${h2('4. Número de telefone elegível')}
+  ${p('O número precisa estar livre para uso em API e conseguir receber SMS ou ligação para verificação. Números fixos também funcionam!')}
+  ${hint('warning','⚠️','Números usados em ferramentas não oficiais têm maior risco de bloqueio após migração.')}
+  ${h2('Resumo')}
+  ${ul(['✔ Conta comercial no Facebook ativa','✔ Portfólio empresarial criado','✔ Empresa verificada','✔ Número de telefone elegível'])}`
+),
+
+novidades: () => docPage('novidades','✨','Novidades do Flow',
+  'Últimas funcionalidades e melhorias lançadas no Amigo Flow.',
+  `<div class="doc-cards">
+    <div class="doc-card" onclick="showDoc('welcome')"><div class="doc-card-icon">🔗</div><div class="doc-card-title">Chat Flutuante no Kanban</div><div class="doc-card-desc">Abertura do chat direto pelo botão WhatsApp no Kanban do Agende+</div></div>
+    <div class="doc-card" onclick="showDoc('welcome')"><div class="doc-card-icon">⭐</div><div class="doc-card-title">Avaliação de Atendimento</div><div class="doc-card-desc">Envio automático de pesquisa e dashboard de performance</div></div>
+    <div class="doc-card" onclick="showDoc('welcome')"><div class="doc-card-icon">📝</div><div class="doc-card-title">Templates com Variáveis</div><div class="doc-card-desc">Variáveis personalizadas nos modelos de mensagem WhatsApp</div></div>
+    <div class="doc-card" onclick="showDoc('welcome')"><div class="doc-card-icon">🤖</div><div class="doc-card-title">Config. do Agente</div><div class="doc-card-desc">Base de conhecimento e habilidades configuráveis</div></div>
+    <div class="doc-card" onclick="showDoc('welcome')"><div class="doc-card-icon">🔗</div><div class="doc-card-title">Agendamento via Link</div><div class="doc-card-desc">Novo modo: agente envia link do Agende.ai</div></div>
+    <div class="doc-card" onclick="showDoc('faq-portabilidade')"><div class="doc-card-icon">📲</div><div class="doc-card-title">Onboarding QR Code</div><div class="doc-card-desc">Conecte WhatsApp Business com coexistência via QR Code</div></div>
+  </div>
+  ${hint('info','📦','Para o histórico completo de versões com contexto e impacto de cada entrega, acesse a aba <strong>Releases</strong> no topo da página.')}`
+),
+
+faq: () => docPage('faq','❓','FAQ',
+  'Respostas para as perguntas mais frequentes sobre o Amigo Flow.',
+  `<div class="doc-cards">
+    <div class="doc-card" onclick="showDoc('faq-atendimento')"><div class="doc-card-icon">💬</div><div class="doc-card-title">O que conta como 1 Atendimento</div></div>
+    <div class="doc-card" onclick="showDoc('faq-janela')"><div class="doc-card-icon">🕐</div><div class="doc-card-title">Janela de conversa da Meta</div></div>
+    <div class="doc-card" onclick="showDoc('faq-portfolio')"><div class="doc-card-icon">🏢</div><div class="doc-card-title">Criar portfólio empresarial</div></div>
+    <div class="doc-card" onclick="showDoc('faq-verificar')"><div class="doc-card-icon">✅</div><div class="doc-card-title">Verificar empresa na Meta</div></div>
+    <div class="doc-card" onclick="showDoc('faq-2fa')"><div class="doc-card-icon">🔐</div><div class="doc-card-title">Desativar 2FA no portfólio</div></div>
+    <div class="doc-card" onclick="showDoc('faq-associar')"><div class="doc-card-icon">📱</div><div class="doc-card-title">Associar número no Flow</div></div>
+    <div class="doc-card" onclick="showDoc('faq-portabilidade')"><div class="doc-card-icon">📲</div><div class="doc-card-title">Portabilidade de número</div></div>
+    <div class="doc-card" onclick="showDoc('faq-banimento')"><div class="doc-card-icon">🔍</div><div class="doc-card-title">Solicitar revisão de banimento</div></div>
+    <div class="doc-card" onclick="showDoc('faq-remover')"><div class="doc-card-icon">🗑️</div><div class="doc-card-title">Remover número do portfólio</div></div>
+    <div class="doc-card" onclick="showDoc('faq-erros')"><div class="doc-card-icon">⚠️</div><div class="doc-card-title">Códigos de erro de envio</div></div>
+  </div>`
+),
+
+'faq-atendimento': () => docPage('faq-atendimento','💬','O que conta como 1 Atendimento no Amigo Flow',
+  'Um atendimento é uma conversa iniciada pela clínica ou pelo paciente. Cada nova conversa aberta é contabilizada como 1 atendimento.',
+  `${h2('Disparos Automáticos')}
+  ${p('Fluxos automáticos como confirmação de consulta ou mensagem de falta:')}
+  ${hint('info','ℹ️','<strong>Cada envio conta como 1 atendimento.</strong> Se o paciente responder, a conversa continua na mesma janela, sem custo adicional.')}
+  ${h2('Envios em Massa')}
+  ${p('Campanhas enviadas para vários pacientes (lembretes, campanhas de vacinação, feriados).')}
+  ${hint('info','ℹ️','<strong>Cada paciente alcançado conta como 1 atendimento.</strong> Ex: envio para 3 pessoas → 3 atendimentos contabilizados, mesmo que algumas não respondam.')}
+  ${h2('Início pela Clínica')}
+  ${hint('info','ℹ️','<strong>Cada conversa iniciada conta como 1 atendimento.</strong>')}
+  ${hint('warning','⚠️','É possível enviar <strong>apenas um modelo de marketing</strong> por atendimento. Para enviar outro, é necessário finalizar e abrir um novo.')}
+  ${h2('Início pelo Paciente')}
+  ${hint('info','ℹ️','<strong>Cada nova conversa iniciada pelo paciente conta como 1 atendimento.</strong>')}
+  ${h2('Como o atendimento é finalizado')}
+  ${ul(['Automaticamente pelo agente (IA)','Manualmente pelo atendente'])}`
+),
+
+'faq-janela': () => docPage('faq-janela','🕐','Como funciona a janela de conversa da Meta?',
+  'Toda conversa pelo WhatsApp Business (API oficial) acontece dentro de janelas de 24 horas que determinam quando a clínica pode enviar mensagens.',
+  `${h2('Quando o paciente envia primeiro (Conversa reativa)')}
+  ${p('Assim que o paciente manda mensagem, abre-se uma janela de 24h. Durante esse período, o agente ou atendente pode responder livremente <strong>sem precisar enviar template</strong>. Após 24h, é necessário um template aprovado pela Meta.')}
+  ${h2('Quando a clínica envia primeiro (Conversa proativa)')}
+  ${p('A clínica inicia com um <strong>modelo de mensagem aprovado</strong> — isso conta como novo atendimento. Se o paciente responder, abre nova janela de 24h.')}
+  ${h2('Categorias de Modelos')}
+  ${ul([
+    '<strong>Mensagens de Utilidade:</strong> informam sobre transações anteriores (status de consulta, confirmações).',
+    '<strong>Mensagens de Marketing:</strong> promoções, ofertas, novidades da marca.'
+  ])}
+  ${h2('Resumo prático')}
+  ${table(
+    ['Situação','O que acontece','Novo atendimento?'],
+    [
+      ['Paciente envia mensagem','Abre janela de 24h','✅ Sim'],
+      ['Clínica responde dentro de 24h','Continua o mesmo atendimento','❌ Não'],
+      ['Clínica responde após 24h','Precisa de template Meta','✅ Sim'],
+      ['Clínica inicia (proativa)','Abre nova janela de 24h','✅ Sim'],
+      ['Novo disparo automático ou em massa','Cada envio = 1 atendimento','✅ Sim'],
+    ]
+  )}`
+),
+
+'faq-portfolio': () => docPage('faq-portfolio','🏢','Como criar um portfólio empresarial (Meta Business Suite)',
+  'O Amigo Flow utiliza a infraestrutura oficial da Meta. Ter um Portfólio Empresarial ativo é essencial para habilitar a integração.',
+  `${h2('Pré-requisitos')}
+  ${ul(['Uma conta pessoal ativa no Facebook','Acesso ao business.facebook.com','E-mail profissional para gerenciar o portfólio'])}
+  ${h2('Passo a passo')}
+  ${h3('1. Acesse o Meta Business Suite')}
+  ${p('Acesse <strong>business.facebook.com</strong> e clique em <strong>"Criar portfólio empresarial"</strong>.')}
+  ${h3('2. Preencha as informações')}
+  ${table(['Campo','O que preencher'],[['Nome da empresa','Nome oficial da clínica ou marca'],['Seu nome','Nome do responsável pela conta'],['E-mail de trabalho','E-mail profissional de administração']])}
+  ${h3('3. Configure seus ativos')}
+  ${p('Após criação, você pode adicionar páginas do Facebook, contas de anúncios e vincular a conta de WhatsApp Business usada no Amigo Flow.')}
+  ${hint('success','✅','Com o portfólio criado, você tem controle total sobre campanhas, gestão unificada das contas de WhatsApp e conformidade com a Meta.')}`
+),
+
+'faq-verificar': () => docPage('faq-verificar','✅','Como verificar sua empresa na Meta',
+  'A verificação confirma que sua empresa é legítima e libera recursos avançados como a API Oficial do WhatsApp.',
+  `${h2('Pré-requisitos')}
+  ${ul(['Conta Comercial do WhatsApp (Business Manager) configurada','Site ativo e público da empresa','Documento legal oficial (contrato social, CNPJ)','Domínio de e-mail corporativo'])}
+  ${h2('Passo a passo')}
+  ${ol(['Acesse <strong>business.facebook.com/settings</strong>','Clique em <strong>Centro de Segurança</strong> → <strong>Verificação da empresa</strong>','Clique em <strong>Iniciar verificação</strong>','Preencha nome legal, endereço, telefone e site','Faça upload de documentos que comprovem existência legal da empresa','Verifique seu domínio (código DNS, arquivo HTML ou e-mail corporativo)','Aguarde análise: geralmente 1 a 5 dias úteis'])}
+  ${h2('Status')}
+  ${ul(['🟢 <strong>Verificada:</strong> tudo certo!','🕓 <strong>Em análise:</strong> Meta ainda está revisando','🔴 <strong>Rejeitada:</strong> revise as informações e reenvie'])}
+  ${hint('warning','⚠️','Use o nome exato do registro legal, sem variações comerciais. Prefira e-mails corporativos — não Gmail ou Hotmail.')}`
+),
+
+'faq-2fa': () => docPage('faq-2fa','🔐','Como desativar a autenticação em dois fatores (2FA)',
+  'Em alguns casos específicos pode ser necessário desativar temporariamente a 2FA, como durante a integração com o Amigo Flow.',
+  `${hint('warning','⚠️','Desativar a 2FA afeta <strong>todas as pessoas</strong> com acesso ao portfólio. Reative assim que o processo for concluído.')}
+  ${h2('Pré-requisitos')}
+  ${ul(['Perfil de administrador do portfólio','Acesso ao Gerenciador de Negócios da Meta','2FA ativa para pelo menos um usuário'])}
+  ${h2('Passo a passo')}
+  ${ol([
+    'Acesse <strong>business.facebook.com</strong> e clique no ícone de engrenagem (⚙️)',
+    'No menu lateral, clique em <strong>"Contas do WhatsApp"</strong> → <strong>"Gerenciador do WhatsApp"</strong>',
+    'Clique em <strong>"Número de telefone"</strong> → ícone de engrenagem (⚙️)',
+    'Localize <strong>"Confirmação em duas etapas"</strong>',
+    'Clique em <strong>"Desativar confirmação em duas etapas"</strong> → confirme com <strong>OK</strong>',
+    'Aguarde o código de confirmação e finalize'
+  ])}
+  ${hint('info','ℹ️','Após concluir o processo no Amigo Flow, <strong>reative a 2FA</strong> para manter a segurança do portfólio.')}`
+),
+
+'faq-associar': () => docPage('faq-associar','📱','Como associar meu número do WhatsApp no Flow?',
+  'O Embedded Signup é o fluxo oficial da Meta para conectar empresas ao WhatsApp Business API via BSP.',
+  `${h2('Fluxo de Associação')}
+  ${ol([
+    'Na configuração do agente, clique em <strong>Associar número</strong> → selecione <strong>WhatsApp Business API</strong>',
+    'Faça login na conta do Facebook com acesso ao Gerenciador de Negócios',
+    'Conceda permissões à Amigo Tech clicando em <strong>Confirmar</strong>',
+    'Crie ou selecione um Portfólio empresarial existente',
+    'Crie ou selecione uma WABA existente',
+    'Adicione o número de telefone a ser conectado',
+    'Realize a verificação do número via SMS/ligação',
+    'A tela é atualizada e o número fica ativo no painel'
+  ])}
+  ${h2('⚠️ Cuidados importantes')}
+  ${ul([
+    'Você precisa ser <strong>administrador</strong> do Gerenciador de Negócios',
+    'O número <strong>não pode estar ativo em outra WABA</strong> — deve ser excluído primeiro',
+    '<strong>Verificação em duas etapas deve estar desativada</strong> no número'
+  ])}
+  ${h2('Acompanhamento da verificação')}
+  ${p('Após a associação, acompanhe os status em 3 fases:')}
+  ${ul(['Verificação da empresa','Verificação da Conta WhatsApp Business (WABA)','Verificação do nome do número'])}
+  ${hint('warning','⚠️','Se o número já estiver com outro parceiro da Meta, veja o módulo de <strong>Portabilidade de número</strong>.')}`
+),
+
+'faq-portabilidade': () => docPage('faq-portabilidade','📲','Como fazer a portabilidade de um número com API Oficial',
+  'Migrar seu número da API Oficial de um provedor atual para a infraestrutura do Amigo Flow, mantendo número, histórico e reputação.',
+  `${hint('warning','⚠️','<strong>Pré-requisitos:</strong> WABA própria, acesso de administrador, moedas de crédito iguais, 2FA desativada, número ativo para receber ligação. Não fazer nos primeiros 4 nem nos últimos 3 dias do mês.')}
+  ${h2('Passo a Passo')}
+  ${h3('Etapa 1 — Cliente cancela compartilhamento com parceiro atual')}
+  ${ol([
+    'Acesse business.facebook.com/settings',
+    'Configurações → Contas → Contas do WhatsApp → Aba "Parceiros"',
+    'Localize o parceiro atual e clique no ícone 🗑️',
+    'Após remoção, o cliente <strong>não poderá enviar mensagens</strong> até nova linha de crédito ser aplicada'
+  ])}
+  ${h3('Etapa 2 — Cadastro incorporado com o Amigo Flow')}
+  ${ol([
+    'Cliente acessa o fluxo de associação de número no Amigo Flow',
+    'Seleciona a WABA existente quando o sistema mostrar "Esta Conta foi compartilhada anteriormente"',
+    'Não precisa escolher o número novamente — apenas confirmar a WABA'
+  ])}
+  ${h2('Exemplo de Cronograma')}
+  ${table(['Data','Ação','Situação do cliente'],[
+    ['20 de abril','Cliente remove parceiro antigo','Envio bloqueado'],
+    ['21 de abril','Cliente faz cadastro + compartilha crédito','Ainda bloqueado'],
+    ['1º de maio','Nova linha de crédito entra em vigor','Envio liberado']
+  ])}
+  ${hint('info','🧠','A migração <strong>não apaga</strong> números nem modelos. O cliente fica sem enviar por alguns dias. Faça com antecedência e evite início/fim do mês.')}`
+),
+
+'faq-banimento': () => docPage('faq-banimento','🔍','Como solicitar revisão de banimento/bloqueio',
+  'Quando uma conta WhatsApp conectada via API é banida, ela perde a capacidade de enviar/receber mensagens pelo Amigo Flow.',
+  `${h2('O que significa um banimento?')}
+  ${p('Pode ocorrer por: quebra de políticas da Meta, volume elevado de bloqueios, linguagem ofensiva, ou campanhas em massa sem opt-in.')}
+  ${h2('Passo a passo para solicitar revisão')}
+  ${ol([
+    'Acesse <strong>business.facebook.com</strong> → <strong>Conta do WhatsApp</strong>',
+    'Selecione a conta afetada → <strong>Gerenciador do WhatsApp</strong>',
+    'Localize a seção <strong>Status da Conta</strong>',
+    'Se bloqueada, acesse <strong>"Página inicial de suporte"</strong>',
+    'Clique no status da conta para ver detalhes do bloqueio',
+    'Clique em <strong>"Pedir Análise"</strong> e siga as instruções',
+    'Aguarde posicionamento da Meta (geralmente até 48h úteis)'
+  ])}
+  ${h2('Dicas importantes')}
+  ${ul([
+    'Nunca use listas de transmissão em massa sem consentimento (opt-in)',
+    'Mantenha linguagem neutra e profissional',
+    'Evite envio repetitivo de mensagens automáticas com conteúdo promocional',
+    'Se o bloqueio for frequente, revise práticas de envio'
+  ])}`
+),
+
+'faq-remover': () => docPage('faq-remover','🗑️','Removendo um número do Portfólio Empresarial',
+  'Em algumas situações é necessário remover um número da WABA dentro do Business Manager da Meta.',
+  `${hint('success','✅','<strong>Pré-requisitos:</strong> acesso de administrador ao portfólio, número com WABA ativa, sem pendências financeiras. Atenção: ao remover, <strong>todas as mensagens, sessões e templates relacionados serão perdidos</strong>.')}
+  ${h2('Passo a passo')}
+  ${ol([
+    'Acesse o Gerenciador de Negócios da Meta → ícone de engrenagem',
+    'Menu lateral → <strong>"Contas do WhatsApp"</strong> → <strong>"Gerenciador de WhatsApp"</strong>',
+    'Clique no ícone de <strong>lixeira</strong> ao lado do número',
+    'Confirme no pop-up clicando em <strong>"Avançar"</strong>',
+    'Para excluir a WABA: menu Contas do WhatsApp → selecione a WABA → três pontinhos → <strong>"Remover do Portfólio Empresarial"</strong>',
+    'Confirme clicando em <strong>"Excluir conta"</strong>'
+  ])}
+  ${hint('info','ℹ️','Após remoção, o número pode ser reconectado respeitando as diretrizes da Meta. Em casos de migração, pode haver período de retenção de até 30 dias.')}`
+),
+
+'faq-erros': () => docPage('faq-erros','⚠️','Códigos de erros de envio',
+  'Referência rápida dos principais códigos de erro retornados pela API do WhatsApp Business.',
+  `${h2('Erros de autorização')}
+  ${table(['Código','Detalhes','Solução'],[
+    ['0 – AuthException','Token expirou ou foi invalidado','Gere um novo token de acesso'],
+    ['190 – Token expirado','O token de acesso expirou','Gere um novo token de acesso'],
+    ['10 – Permissão negada','Permissão não concedida ou removida','Verifique permissões no depurador de token'],
+  ])}
+  ${h2('Erros de integridade')}
+  ${table(['Código','Detalhes','Solução'],[
+    ['368','Conta bloqueada por violação de política','Veja documentação de Monitoramento da Política Meta'],
+    ['131031','Conta bloqueada','Verifique status no Gerenciador + API de Status de Integridade'],
+    ['130497','Bloqueado para enviar para este país','Consulte Política de Mensagens WhatsApp Business'],
+  ])}
+  ${h2('Erros de limitação')}
+  ${table(['Código','Detalhes','Solução'],[
+    ['4','Muitas chamadas de API','Verifique limite de volume no Painel de Apps'],
+    ['130429','Limite de taxa atingido','Reduza frequência de envios e tente mais tarde'],
+    ['131048','Limite de spam atingido','Revise qualidade da conta no Gerenciador do WhatsApp'],
+  ])}
+  ${h2('Erros de template')}
+  ${table(['Código','Detalhes','Solução'],[
+    ['132001','Modelo não existe','Verifique se modelo foi aprovado e o nome/idioma estão corretos'],
+    ['132015','Modelo pausado','Edite o modelo para melhorar qualidade'],
+    ['132016','Modelo desabilitado permanentemente','Crie novo modelo com conteúdo diferente'],
+  ])}
+  ${hint('info','💡','Para a lista completa de códigos, consulte a documentação oficial da Meta em developers.facebook.com')}`
+),
+
+'func-agente': () => docPage('func-agente','🤖','Guia prático do Agente Flow',
+  'Como ele funciona, por que funciona assim e como isso protege sua clínica e seus pacientes.',
+  `${h2('1. O que o Agente Flow faz')}
+  ${ul([
+    '<strong>Agenda consultas com precisão:</strong> baseado em médico, convênio, unidade, tipo de atendimento e datas disponíveis.',
+    '<strong>Responde dúvidas administrativas:</strong> horários, unidades, serviços, médicos, convênios aceitos.',
+    '<strong>Garante segurança em todos os passos:</strong> confirma informações, não expõe dados privados, nunca inventa.',
+    '<strong>Reduz erros de agendamento:</strong> cruza automaticamente médico + convênio + procedimento + unidade + disponibilidade.',
+    '<strong>Evita riscos legais:</strong> segue diretrizes rígidas para não fornecer orientações médicas.'
+  ])}
+  ${h2('2. O que ele NÃO faz (proteção obrigatória)')}
+  ${hint('danger','🚫','O Agente Flow <strong>não pode</strong> explicar procedimentos, passar preparos, falar sobre pós-operatório, interpretar exames, falar sobre doses de remédios ou dar diagnósticos. Isso é proteção da sua clínica, não limitação técnica.')}
+  ${h2('3. Como funciona o agendamento')}
+  ${ol(['Forma de pagamento (convênio ou particular)','Unidade','Tipo de consulta/procedimento','Médico','Datas e horários disponíveis','Confirmação do paciente','Criação do agendamento'])}
+  ${h2('4. Quando o Agente transfere para humano')}
+  ${ul([
+    '<strong>Conteúdo médico restrito:</strong> preparos, remédios, sintomas, pós-operatório',
+    '<strong>Ação fora do escopo:</strong> avaliação de valor, documentação, questões financeiras',
+    '<strong>Usuário quer:</strong> cancelar para terceiros, reagendar para outra pessoa, alterar médico de agendamento existente',
+    '<strong>Em caso de erro na operação:</strong> transfere diretamente sem expor o erro'
+  ])}
+  ${h2('5. LGPD e segurança')}
+  ${ul([
+    'Nunca informa dados sensíveis (CPF, endereço, RG)',
+    'Não revela informações de outros pacientes',
+    'Não "inventa" informações — tudo vem da configuração oficial da clínica',
+    'Sempre confirma antes de executar ações sensíveis'
+  ])}
+  ${hint('info','💡','<strong>Personalização com responsabilidade:</strong> a clínica personaliza informações, tom de voz e serviços — mas não pode alterar o "cérebro crítico" do agente, onde ficam as proteções de segurança e LGPD.')}`
+),
+
+'func-dashboard': () => docPage('func-dashboard','📊','Dashboard de Atendimentos',
+  'Painel de análise do Amigo Flow onde gestores acompanham o desempenho do agente e da equipe humana em tempo real.',
+  `${h2('Estrutura do Dashboard')}
+  ${h3('1. Em Tempo Real')}
+  ${table(['Categoria','Descrição'],[
+    ['Em aguardando','Conversas transbordadas para humano ainda não assumidas'],
+    ['Com o Agente (IA)','Conversas sendo conduzidas pelo Agente Flow'],
+    ['Com atendentes humanos','Conversas em andamento com a equipe'],
+  ])}
+  ${h3('2. Atendimentos Concluídos')}
+  ${table(['Indicador','Descrição'],[
+    ['Total de conversas','Número total de atendimentos no período'],
+    ['Tempo médio de resolução','Tempo médio do início ao encerramento'],
+    ['Taxa de transferência','% de conversas transferidas para outro atendente'],
+    ['Resolvidas pelo Agente','% concluídas pela IA sem intervenção humana'],
+    ['Agendadas pelo Agente','Consultas marcadas automaticamente'],
+  ])}
+  ${h3('3. Avaliação de Atendimento')}
+  ${p('Índice de satisfação com base nas avaliações pós-atendimento. O Agente Flow também é avaliado.')}
+  ${h3('4. Disparos Automáticos')}
+  ${p('Progresso de confirmações e reagendamentos com gráfico de % concluído e lista detalhada por paciente.')}
+  ${h2('Boas práticas')}
+  ${ul([
+    'Verifique o painel <strong>diariamente</strong>, especialmente "Em aguardando"',
+    'Use filtros de <strong>período personalizado</strong> para comparar semanas',
+    'Observe a <strong>taxa de transferência</strong>: índices altos indicam necessidade de requalificação da IA',
+    'Analise <strong>avaliações</strong> para reconhecer bons resultados e ajustar melhorias'
+  ])}`
+),
+
+'func-chats': () => docPage('func-chats','💬','Chats',
+  'Central de Atendimentos — painel onde os atendentes gerenciam todas as conversas com pacientes em tempo real.',
+  `${h2('Navegação Principal')}
+  ${h3('1. Menu Lateral (Atendentes e Filtros)')}
+  ${ul([
+    '<strong>Meus Chats:</strong> atendimentos atribuídos ao usuário logado',
+    '<strong>Em Aguardando:</strong> conversas transbordadas para humano ainda não assumidas',
+    '<strong>Todos:</strong> todos os atendimentos ativos na clínica'
+  ])}
+  ${h3('2. Lista de Conversas')}
+  ${p('Prévia de cada conversa: foto, nome, trecho da última mensagem, horário e indicador azul para mensagens não lidas. Busca por nome ou número em tempo real.')}
+  ${h3('3. Janela de Conversa')}
+  ${p('O atendente pode digitar mensagens, enviar áudio, emojis, anexar arquivos, usar atalhos rápidos e templates Meta (API oficial).')}
+  ${hint('info','ℹ️','O usuário pode editar ou excluir mensagens em até <strong>10 min após o envio</strong>. Só pode excluir mensagens enviadas por ele ou pelo agente.')}
+  ${h2('Funções Principais')}
+  ${h3('Transferir Atendimento')}
+  ${p('Envia a conversa para outro atendente ou setor mantendo o histórico. O paciente não percebe a troca de operador.')}
+  ${h3('Finalizar Atendimento')}
+  ${p('Remove da lista ativa, arquiva o histórico e libera o atendente para novos atendimentos.')}
+  ${h3('Agente Flow (IA)')}
+  ${p('Atendimentos automáticos aparecem sob o atendente "Agente Flow". O número ao lado indica quantas conversas a IA está conduzindo. O atendente pode intervir manualmente assumindo o chat.')}
+  ${h2('Boas Práticas')}
+  ${ul([
+    'Sempre <strong>finalize chats</strong> concluídos para manter a central organizada',
+    'Use <strong>atalhos</strong> para respostas frequentes',
+    'Transfira apenas quando necessário — evite quebrar o fluxo da conversa',
+    'Acompanhe os <strong>indicadores de status</strong> para evitar falhas'
+  ])}`
+),
+
+'func-paineis': () => docPage('func-paineis','📋','Painéis',
+  'Kanban para acompanhar os fluxos de confirmação de consultas e reengajamento pós-falta.',
+  `${h2('Estrutura do Kanban')}
+  ${h3('Fluxo de Confirmações')}
+  ${ul(['<strong>Não confirmados:</strong> não contatados ou sem resposta','<strong>Confirmados:</strong> confirmaram presença','<strong>Reagendados:</strong> solicitaram novo horário','<strong>Cancelados:</strong> desistiram'])}
+  ${h3('Fluxo de Faltas')}
+  ${ul(['<strong>Mensagens enviadas:</strong> sendo contatado para reagendar','<strong>Reagendados:</strong> já remarcaram','<strong>Cancelados:</strong> ainda não optaram por reagendar'])}
+  ${h2('Cada card exibe')}
+  ${ul(['Nome e telefone do paciente','Procedimento, data/horário e unidade','Profissional responsável','Logs da ação e tempo desde o contato','Ícone WhatsApp para abertura rápida'])}
+  ${h2('Ações disponíveis')}
+  ${ul([
+    '<strong>Busca:</strong> filtra por nome ou telefone em todas as colunas',
+    '<strong>Filtros avançados:</strong> por profissional, unidade, data, tipo de atendimento',
+    '<strong>Menu do card (⋮):</strong> abrir conversa, adiantar/reenviar mensagem, reagendar'
+  ])}`
+),
+
+'func-envios-auto': () => docPage('func-envios-auto','📨','Envios Automáticos',
+  'Envie mensagens para pacientes de forma completamente automática — configure uma vez e o sistema cuida do resto.',
+  `${h2('O que você pode automatizar')}
+  ${table(['Tipo','Para que serve','Disponível'],[
+    ['Confirmação','Reduzir faltas pedindo confirmação com antecedência','✅'],
+    ['Pré-atendimento','Enviar orientações antes da consulta','✅'],
+    ['Pós-atendimento','Manter contato após consulta','✅'],
+    ['Falta','Contatar quando o paciente não comparece','✅'],
+    ['Aniversário','Fortalecer relacionamento no aniversário','✅'],
+    ['Orçamento em aberto','Lembrar de orçamento pendente','✅'],
+    ['Cobrança','Lembretes financeiros automáticos','🔜'],
+  ])}
+  ${h2('Como criar um Envio Automático')}
+  ${ol([
+    'Acesse <strong>Envios → Envios Automáticos</strong> → clique em <strong>+ Criar envio automático</strong>',
+    'Escolha o tipo de automação no catálogo',
+    'Configure nas 3 abas: <strong>Mensagem e objetivo</strong>, <strong>Quando enviar</strong> e <strong>Filtros</strong>',
+    'Clique em <strong>"Salvar e ativar"</strong>'
+  ])}
+  ${h2('Aba 1 — Mensagem e objetivo')}
+  ${p('<strong>Canal:</strong> número de WhatsApp pelo qual a mensagem sai. <strong>Modelo:</strong> template aprovado com preview. <strong>Objetivo:</strong> campo opcional para identificar o envio na listagem.')}
+  ${h2('Aba 2 — Quando enviar')}
+  ${p('Define o momento do disparo (horas, dias ou semanas antes/depois do evento). Adicione múltiplos períodos — por ex: 48h antes e 2h antes.')}
+  ${h2('Aba 3 — Filtros')}
+  ${p('Segmente o público por tipo de atendimento, profissional, unidade, procedimento, forma de pagamento, etc. Sem filtros: vale para toda a base.')}
+  ${h2('Como funciona internamente')}
+  ${ul([
+    '<strong>Sem duplicatas:</strong> mesma mensagem nunca enviada duas vezes no mesmo horário',
+    '<strong>Reagendamentos:</strong> disparos recalculados automaticamente no novo horário',
+    '<strong>Desativação:</strong> disparos futuros cancelados imediatamente',
+    '<strong>Log:</strong> cada envio fica registrado no histórico do chat do paciente'
+  ])}`
+),
+
+'func-envios-massa': () => docPage('func-envios-massa','📢','Envios em Massa',
+  'Crie e dispare campanhas para segmentos de pacientes com métricas detalhadas de entrega e resposta.',
+  `${h2('Criando um Envio em Massa')}
+  ${ol([
+    'Acesse <strong>Envios em Massa</strong> → <strong>Criar Envio em Massa</strong>',
+    '<strong>Aba 1 — Informações Gerais:</strong> nome do envio e setor responsável',
+    '<strong>Aba 2 — Conteúdo:</strong> selecione um template aprovado (preview aparece ao lado)',
+    '<strong>Aba 3 — Público-Alvo:</strong> aplique filtros avançados. Total de contatos atualiza em tempo real'
+  ])}
+  ${hint('warning','⚠️','Sem segmentação, o público é toda a base de pacientes da clínica.')}
+  ${h2('Estimativa de custo')}
+  ${table(['Categoria do template','Custo unitário','Quando usar'],[
+    ['Marketing','R$ 0,45 / contato','Promoções, campanhas de relacionamento'],
+    ['Utilidade','R$ 0,10 / contato','Lembretes, confirmações, avisos transacionais'],
+  ])}
+  ${hint('info','💡','Prefira templates de Utilidade para comunicações transacionais: custam 78% menos e têm taxas de entrega mais altas.')}
+  ${h2('Visualizando resultados')}
+  ${p('Clique na campanha enviada para ver: público-alvo, enviadas, entregues, lidas e respondidas. Lista individual com nome, telefone, datas e ícone para abrir chat.')}
+  ${h2('Reagendamento de campanhas')}
+  ${p('Se o envio ficou abaixo de 80%, um alerta visual aparece. Clique em <strong>"Reagendar"</strong>, escolha nova data/turno — somente quem não recebeu é impactado no reenvio.')}`
+),
+
+'func-leads': () => docPage('func-leads','👥','Leads',
+  'A base de Leads centraliza todos os contatos potenciais da clínica em um único lugar.',
+  `${h2('Visualizando os Leads')}
+  ${table(['Campo','Descrição'],[
+    ['Nome do contato','Nome informado no cadastro ou importação'],
+    ['Telefone','Número do lead (DDD + número)'],
+    ['Responsável','Usuário que criou ou importou o lead'],
+    ['Data de criação','Quando o lead foi adicionado'],
+    ['Origem','Instagram, importação, evento, etc.'],
+    ['Etiquetas','Palavras-chave associadas'],
+    ['WhatsApp','Botão para abrir conversa direta'],
+  ])}
+  ${h2('Adicionando Novos Leads')}
+  ${p('Clique em <strong>+ Adicionar Leads</strong>. Campos obrigatórios: Nome, Telefone (com DDD) e Origem. Opcionais: E-mail e Etiquetas.')}
+  ${h2('Etiquetas')}
+  ${p('Marcadores de interesse ou status. Cada lead pode ter uma ou várias etiquetas, exibidas visualmente na listagem.')}
+  ${h2('Canais de origem disponíveis')}
+  ${ul(['Instagram','Facebook','WhatsApp','Google Meu Negócio','Anúncios pagos (Meta Ads / Google Ads)','Site da clínica','Indicação','Formulário do Google Forms'])}
+  ${hint('info','ℹ️','Ao importar uma planilha CSV, o sistema cria automaticamente uma origem do tipo "Importação #" com numeração sequencial, renomeável na hora da importação.')}`
+),
+
+'func-canais': () => docPage('func-canais','📡','Canais',
+  'Os canais representam os diferentes meios de comunicação da clínica (Recepção, Comercial, Unidade A, Unidade B, etc.).',
+  `${h2('O que cada canal concentra')}
+  ${ul(['Número e conta','Regras de atendimento','Envios automáticos','Modelos','Agente (opcional)'])}
+  ${h2('Aba: Número e Conta')}
+  ${p('Associe um número via fluxo oficial da Meta. Após a associação, o canal permite: visualização do perfil, Envios Automáticos e Modelos de Mensagem.')}
+  ${h2('Aba: Agente Flow')}
+  ${p('Componente opcional do canal. Configurações: Base de conhecimento, Habilidades (agendamento, reagendamento, confirmação, atendimento de leads) e Regras de inatividade.')}
+  ${h2('Aba: Regras de Atendimento')}
+  ${ul([
+    '<strong>Setores associados:</strong> defina quais setores acessam o canal e como o agente tria conversas',
+    '<strong>Horário de atendimento:</strong> segunda a domingo com intervalo contínuo por dia (sem suporte a múltiplos períodos)',
+    '<strong>Mensagem de saudação:</strong> enviada sempre que pacientes entrarem em contato',
+    '<strong>Avaliação de atendimento:</strong> ative e configure para o canal'
+  ])}
+  ${hint('warning','⚠️','O sistema aceita <strong>apenas um intervalo contínuo por dia</strong> no horário de atendimento. Conversas fora do horário ficam com status "Em aguardo".')}`
+),
+
+'func-modelos': () => docPage('func-modelos','📝','Como criar modelos de mensagens',
+  'Crie templates aprovados pela Meta para confirmações, lembretes, campanhas e muito mais.',
+  `${h2('Passo 1 — Acessar o criador')}
+  ${p('No menu <strong>Número e conta</strong> → <strong>Modelos da conta</strong> → <strong>Criar Modelo</strong>. Escolha a categoria:')}
+  ${ul(['<strong>Marketing:</strong> promoções, campanhas, divulgação de serviços','<strong>Atendimento (Utilidade):</strong> confirmações, lembretes, notificações operacionais'])}
+  ${h2('Passo 2 — Preencher informações')}
+  ${h3('Cabeçalho (opcional)')}
+  ${p('Pode conter mídia (vídeo, imagem, doc, áudio) ou ser apenas texto.')}
+  ${h3('Corpo da mensagem')}
+  ${p('Use variáveis do Amigo Clinic ou variáveis dinâmicas para personalizar. Exemplo:')}
+  ${code('Olá @@@nome, sua consulta com @@@medico está confirmada para @@data às @@horario.')}
+  ${h3('Botões (opcional)')}
+  ${ul(['<strong>Resposta Rápida:</strong> paciente responde com um clique (Confirmar, Reagendar, Falar com atendente)','<strong>Abrir Página:</strong> direciona para link externo (mapa, documento)'])}
+  ${h2('Passo 3 — Enviar para aprovação')}
+  ${p('Clique em <strong>Validar modelo</strong>. O modelo é enviado automaticamente para análise da Meta.')}
+  ${h2('Status da aprovação')}
+  ${ul(['🟡 Em Análise','🟢 Aprovado (Ativo)','🔴 Reprovado — motivo exibido para ajuste e reenvio'])}
+  ${hint('warning','⚠️','Boas práticas: não use linguagem sensível ou promessas médicas, evite excesso de emojis e caixa alta, seja objetivo. Modelo mal configurado pode gerar bloqueio de número.')}`
+),
+
+'func-atalhos': () => docPage('func-atalhos','⚡','Atalhos de mensagens',
+  'Configure respostas rápidas pré-definidas para agilizar o atendimento manual.',
+  `${hint('info','ℹ️','Esta funcionalidade está em desenvolvimento. Em breve haverá documentação completa.')}
+  ${p('Os atalhos de mensagens permitem que atendentes enviem respostas frequentes com um clique, reduzindo o tempo de digitação e padronizando a comunicação.')}`
+),
+
+'func-permissoes': () => docPage('func-permissoes','🔐','Permissões e Setores',
+  'Configure quem pode acessar o quê no Amigo Flow e organize sua equipe em setores.',
+  `${h2('Parte 1 — Permissões do Amigo Flow')}
+  ${hint('warning','⚠️','Pré-requisito: usuário precisa ser <strong>Administrador da clínica</strong>.')}
+  ${ol([
+    'Vá em <strong>Configurações → Permissões de Acesso</strong>',
+    'Selecione o usuário a configurar',
+    'Localize a seção <strong>"Módulo Amigo Flow"</strong>',
+    'Ative as permissões necessárias e salve'
+  ])}
+  ${h3('Permissões disponíveis')}
+  ${ul([
+    '<strong>Chats:</strong> acesso, nova conversa, histórico, ver todos os setores',
+    '<strong>Dashboard:</strong> acesso a dados analíticos',
+    '<strong>Leads:</strong> acesso + exportação',
+    '<strong>Painéis:</strong> acesso aos painéis de disparos'
+  ])}
+  ${h2('Parte 2 — Criar e gerenciar Setores')}
+  ${ol([
+    'Vá em <strong>Configurações → Amigo Flow → Setores</strong>',
+    'Clique em <strong>+ Criar setor</strong>',
+    'Preencha: Nome (obrigatório) + Atendentes',
+    'Clique em <strong>Criar</strong>'
+  ])}
+  ${hint('warning','⚠️','Um atendente só pode pertencer a <strong>um setor</strong>, mas pode atuar em vários canais.')}
+  ${h2('Parte 3 — Associar Setores ao canal')}
+  ${ol([
+    'Dentro do canal, acesse <strong>Regras de Atendimento</strong>',
+    'Clique em <strong>Associar</strong> na seção de Setores',
+    'Adicione os setores e crie uma descrição para que o agente trie corretamente'
+  ])}
+  ${hint('info','ℹ️','Atualmente, as novas telas servem para organização e preparação. A aplicação prática das regras será feita numa próxima etapa — pode configurar com calma.')}`
+),
+
+'func-avaliacao': () => docPage('func-avaliacao','⭐','Avaliação de Atendimento',
+  'Configure, envie e monitore a satisfação dos pacientes com cada atendimento.',
+  `${h2('1. Configurando')}
+  ${p('Acesse <strong>Habilidades → Avaliação de Atendimento</strong> no painel do agente.')}
+  ${h3('Opções disponíveis')}
+  ${ul([
+    '<strong>Ativar/desativar</strong> a funcionalidade',
+    '<strong>Envio automático:</strong> dispara sempre que uma conversa mudar para "finalizada"',
+    '<strong>Envio manual:</strong> só enviado quando o atendente optar por disparar',
+    '<strong>Mensagem de agradecimento:</strong> personalize o texto enviado após a avaliação'
+  ])}
+  ${hint('warning','⚠️','No envio manual, atendimentos finalizados automaticamente pelo agente <strong>não</strong> recebem o disparo.')}
+  ${h2('2. Monitoramento no Dashboard')}
+  ${h3('Indicadores')}
+  ${ul(['Média geral das avaliações','Quantidade de respostas no período','Média dos 5 primeiros atendentes'])}
+  ${h3('Faixas de classificação')}
+  ${ul(['4,0 a 5,0 — Excelente','3,0 a 3,9 — Bom','2,0 a 2,9 — Regular','1,0 a 1,9 — Ruim','0,0 a 0,9 — Crítico'])}
+  ${h3('Filtros')}
+  ${ul(['Últimos 7 dias','Últimos 15 dias','Período personalizado','Canal específico'])}`
+),
+
+'func-consumo': () => docPage('func-consumo','📈','Consumo',
+  'Acompanhe o consumo da franquia do Amigo Flow e entenda como os atendimentos são contabilizados.',
+  `${h2('Acessando')}
+  ${p('No Amigo Clinic: <strong>Amigo Store → Consumo do Amigo Flow</strong>.')}
+  ${h2('Como o consumo é calculado')}
+  ${h3('🟦 Conta como atendimento da franquia')}
+  ${ul([
+    'Nova conversa iniciada pela clínica (agentes, atendentes ou disparos manuais)',
+    'Nova conversa iniciada pelo paciente <strong>quando a IA está ligada</strong>',
+    'Disparos automáticos e envios em massa (cada envio = 1 atendimento)'
+  ])}
+  ${h3('🟥 Não conta como atendimento')}
+  ${ul(['Conversas iniciadas pelo paciente com <strong>IA desligada</strong> (puramente receptivas)'])}
+  ${h2('Tabela de atendimentos')}
+  ${table(['Coluna','Descrição'],[
+    ['Contato','Nome do paciente ou lead'],
+    ['Iniciado por','Paciente, atendente, disparo automático ou campanha'],
+    ['Canal','Número de WhatsApp + nome da conta'],
+    ['Data','Data de início da conversa'],
+    ['Cobrança','Plano vinculado ao atendimento'],
+  ])}
+  ${h2('Filtros e exportação')}
+  ${ul([
+    'Filtros: período personalizado, iniciado por, canal',
+    'Exportação em <strong>XLSX</strong> respeitando filtros aplicados',
+    'Somente <strong>Administradores</strong> podem visualizar e exportar o consumo completo'
+  ])}`
+),
+
+};
+
+function showDoc(id) {
+  setActiveDoc(id);
+  const render = docContent[id];
+  if (!render) {
+    document.getElementById('main-content').innerHTML = `<div class="empty-state"><div class="empty-icon">🚧</div><h3>Em breve</h3><p>Esta página da documentação está sendo elaborada.</p></div>`;
+    return;
+  }
+  document.getElementById('main-content').innerHTML = render();
+  document.getElementById('main-content').scrollTop = 0;
+}
+
+// ─────────────────────────────────────────────
+// LIGHTBOX
+// ─────────────────────────────────────────────
+function openLb(src,label){
+  document.getElementById('lb-img').src=src;
+  document.getElementById('lb-label').textContent=label;
+  document.getElementById('lightbox').classList.add('open');
+}
+function closeLb(){document.getElementById('lightbox').classList.remove('open')}
+function lbClickOutside(e){if(e.target===document.getElementById('lightbox'))closeLb()}
+document.addEventListener('keydown',e=>{if(e.key==='Escape')closeLb()});
+
+// ─────────────────────────────────────────────
+// INIT
+// ─────────────────────────────────────────────
+buildSidebar();
+if (releases.length) showRelease(releases[0].id);
+
+const params = new URLSearchParams(location.search);
+if (params.get('tab')==='docs') { switchTab('docs'); if (params.get('doc')) showDoc(params.get('doc')); }
+else if (params.get('release')) showRelease(params.get('release'));
+</script>
+</body>
+</html>
