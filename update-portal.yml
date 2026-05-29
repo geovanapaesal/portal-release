@@ -1,0 +1,49 @@
+name: Atualizar Portal de Releases
+
+on:
+  schedule:
+    # Toda sexta às 19:00 UTC = 16:00 Recife (UTC-3)
+    - cron: '0 19 * * 5'
+
+  # Permite rodar manualmente pela aba Actions do GitHub
+  workflow_dispatch:
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout repositório
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Instalar dependências
+        run: pip install requests
+
+      - name: Rodar script de atualização
+        env:
+          JIRA_BASE_URL: https://amigotech-team.atlassian.net
+          JIRA_EMAIL: ${{ secrets.JIRA_EMAIL }}
+          JIRA_API_TOKEN: ${{ secrets.JIRA_API_TOKEN }}
+          JIRA_PROJECT: GREEN
+          HTML_FILE: amigo-flow-release-portal.html
+        run: python scripts/update_releases.py
+
+      - name: Commit e push se houver mudanças
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add amigo-flow-release-portal.html
+          if git diff --cached --quiet; then
+            echo "Nenhuma mudança detectada. Nada a commitar."
+          else
+            DATEBR=$(TZ="America/Recife" date '+%d/%m/%Y %H:%M')
+            git commit -m "🤖 Portal atualizado automaticamente — $DATEBR"
+            git push
+          fi
