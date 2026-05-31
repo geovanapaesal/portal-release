@@ -2,329 +2,262 @@
 """
 update_releases.py
 ------------------
-Busca as issues do projeto GREEN no Jira, agrupa por fixVersion (Delivery X),
-e atualiza o bloco `const releases = [...]` no arquivo HTML do portal.
-
-Variáveis de ambiente necessárias:
-  JIRA_BASE_URL   ex: https://amigotech-team.atlassian.net
-  JIRA_EMAIL      email da conta Atlassian
-  JIRA_API_TOKEN  token de API gerado em id.atlassian.com
-  JIRA_PROJECT    ex: GREEN
-  HTML_FILE       ex: amigo-flow-release-portal.html
+Busca issues do projeto GREEN no Jira agrupadas por fixVersion
+e atualiza o bloco `const releases = [...]` no HTML do portal.
 """
 
-import os
-import re
-import json
-import requests
+import os, re, sys, json, requests
 from requests.auth import HTTPBasicAuth
 from datetime import datetime, timezone
 
-# ──────────────────────────────────────────────
-# Configuração
-# ──────────────────────────────────────────────
-BASE_URL   = os.environ["JIRA_BASE_URL"].rstrip("/")
-EMAIL      = os.environ["JIRA_EMAIL"]
-TOKEN      = os.environ["JIRA_API_TOKEN"]
-PROJECT    = os.environ.get("JIRA_PROJECT", "GREEN")
-HTML_FILE  = os.environ.get("HTML_FILE", "amigo-flow-release-portal.html")
+# ── Config ──────────────────────────────────────────────────────────────────
+BASE_URL  = os.environ["JIRA_BASE_URL"].rstrip("/")
+EMAIL     = os.environ["JIRA_EMAIL"]
+TOKEN     = os.environ["JIRA_API_TOKEN"]
+PROJECT   = os.environ.get("JIRA_PROJECT", "GREEN")
+HTML_FILE = os.environ.get("HTML_FILE", "amigo-flow-release-portal.html")
 
-AUTH   = HTTPBasicAuth(EMAIL, TOKEN)
+AUTH    = HTTPBasicAuth(EMAIL, TOKEN)
 HEADERS = {"Accept": "application/json"}
-JIRA_BROWSE = f"{BASE_URL}/browse"
 
-# Issue types considerados "feature" para o portal
-FEATURE_TYPES = {"história", "historia", "melhoria"}
-
-# Statuses que indicam issue entregue ou em andamento (inclui no portal)
+# Statuses que entram no portal
 ACTIVE_STATUSES = {
     "released", "ready to deploy", "ready to test",
-    "em andamento", "revisar", "done"
+    "em andamento", "revisar", "done", "backlog downstream"
 }
 
-# ──────────────────────────────────────────────
-# Helpers Jira
-# ──────────────────────────────────────────────
+# Tipos ignorados (bugs, subtarefas, etc.)
+IGNORED_TYPES = {
+    "bug", "subtarefa", "sub-task", "testing",
+    "impedibug", "product issue", "atividade"
+}
+
+# ── Jira helpers ─────────────────────────────────────────────────────────────
 def jira_get(path, params=None):
     url = f"{BASE_URL}/rest/api/3{path}"
-    r = requests.get(url, headers=HEADERS, auth=AUTH, params=params)
+    r = requests.get(url, headers=HEADERS, auth=AUTH, params=params, timeout=60)
     r.raise_for_status()
     return r.json()
 
-
-def fetch_all_issues(jql, fields, max_results=500):
-    """Pagina automaticamente até trazer todos os resultados."""
-    issues = []
-    start = 0
-    page = 50
+def fetch_all_issues(jql, fields):
+    issues, start, page = [], 0, 50
     while True:
         data = jira_get("/search", {
-            "jql": jql,
-            "fields": ",".join(fields),
-            "maxResults": page,
-            "startAt": start,
+            "jql": jql, "fields": ",".join(fields),
+            "maxResults": page, "startAt": start,
         })
         batch = data.get("issues", [])
         issues.extend(batch)
-        if start + page >= data.get("total", 0):
+        total = data.get("total", 0)
+        print(f"   Buscando issues: {len(issues)}/{total}...")
+        if start + page >= total:
             break
         start += page
     return issues
 
-
 def fetch_versions():
-    """Retorna todas as versões do projeto com metadados."""
     data = jira_get(f"/project/{PROJECT}/versions")
     return {v["name"]: v for v in data}
 
-
-def extract_text_from_adf(node):
-    """Extrai texto plano de um nó ADF (Atlassian Document Format)."""
-    if node is None:
-        return ""
-    if isinstance(node, str):
-        return node
+# ── Extração de texto ADF ────────────────────────────────────────────────────
+def adf_to_text(node):
+    if node is None: return ""
+    if isinstance(node, str): return node
     if isinstance(node, dict):
         if node.get("type") == "text":
             return node.get("text", "")
-        return " ".join(extract_text_from_adf(c) for c in node.get("content", []))
+        return " ".join(adf_to_text(c) for c in node.get("content", []))
     if isinstance(node, list):
-        return " ".join(extract_text_from_adf(c) for c in node)
+        return " ".join(adf_to_text(c) for c in node)
     return ""
 
-
-def parse_description_sections(desc_raw):
-    """
-    Tenta extrair seções Contexto / Feito / Impacto da descrição da issue.
-    Suporta tanto ADF (dict) quanto markdown puro (str).
-    Retorna (contexto, feito, impacto) como strings.
-    """
+# ── Extrai seções da descrição ────────────────────────────────────────────────
+def parse_desc(desc_raw):
+    """Tenta extrair Contexto / Feito / Impacto da descrição."""
     if isinstance(desc_raw, dict):
-        text = extract_text_from_adf(desc_raw)
+        text = adf_to_text(desc_raw)
     else:
         text = str(desc_raw or "")
-
-    # Limpa espaços excessivos
     text = re.sub(r'\s+', ' ', text).strip()
 
-    # Tenta extrair campos nomeados comuns
-    patterns = {
-        "contexto": r'(?:contexto|context|problema|problem)[^\w]+(.*?)(?=(?:solu[cç][aã]o|feito|o que foi|hist[oó]ria|objetivo|descri[cç][aã]o|crit[eé]rios|$))',
-        "feito":    r'(?:solu[cç][aã]o proposta|o que foi feito|feito|implementa[cç][aã]o)[^\w]+(.*?)(?=(?:impacto|benef[ií]cio|crit[eé]rios|$))',
-        "impacto":  r'(?:impacto|benefício|resultado)[^\w]+(.*?)(?=(?:crit[eé]rios|regras|$))',
+    pats = {
+        "contexto": r'(?:contexto|context|problema|cenário atual)[^\w]+(.*?)(?=(?:solu[cç][aã]o|feito|o que foi|hist[oó]ria|objetivo|descri[cç][aã]o|impacto|$))',
+        "feito":    r'(?:solu[cç][aã]o|o que foi feito|feito|implementa[cç][aã]o|descri[cç][aã]o)[^\w]+(.*?)(?=(?:impacto|benef[ií]cio|resultado|crit[eé]rios|$))',
+        "impacto":  r'(?:impacto|benefício|resultado esperado)[^\w]+(.*?)(?=(?:crit[eé]rios|regras|observa|$))',
     }
 
-    results = {}
-    for key, pat in patterns.items():
-        m = re.search(pat, text, re.IGNORECASE | re.DOTALL)
+    out = {}
+    for k, p in pats.items():
+        m = re.search(p, text, re.IGNORECASE | re.DOTALL)
         if m:
-            val = m.group(1).strip()[:400]
-            results[key] = val
+            out[k] = m.group(1).strip()[:500]
 
-    return (
-        results.get("contexto", ""),
-        results.get("feito", ""),
-        results.get("impacto", ""),
-    )
+    return out.get("contexto",""), out.get("feito",""), out.get("impacto","")
 
-
-# ──────────────────────────────────────────────
-# Numero de versão para ordenação
-# ──────────────────────────────────────────────
-def delivery_sort_key(name: str):
-    """Extrai o número de 'Delivery 21' → 21 para ordenação."""
+# ── Ordenação de deliveries ──────────────────────────────────────────────────
+def delivery_num(name):
     m = re.search(r'\d+', name)
     return int(m.group()) if m else 0
 
+# ── Serialização JS ──────────────────────────────────────────────────────────
+def js(s):
+    s = str(s).replace("\\","\\\\").replace("'","\\'")
+    s = s.replace("\n"," ").replace("\r","")
+    return f"'{s}'"
 
-# ──────────────────────────────────────────────
-# Monta o bloco JS de releases
-# ──────────────────────────────────────────────
-def build_releases_js(versions_meta, issues_by_version):
+# ── Monta bloco JS ───────────────────────────────────────────────────────────
+def build_js(versions_meta, by_version):
     lines = ["const releases = ["]
-
-    # Ordena do mais recente para o mais antigo
-    sorted_versions = sorted(
-        issues_by_version.keys(),
-        key=delivery_sort_key,
-        reverse=True
-    )
-
-    for vname in sorted_versions:
-        vmeta = versions_meta.get(vname, {})
-        released = vmeta.get("released", False)
-        release_date = vmeta.get("releaseDate", "")
-        v_desc = vmeta.get("description", "") or ""
-
-        # Ano a partir da data de release ou do nome
-        year = 2025
-        if release_date:
-            try:
-                year = int(release_date.split("-")[0])
-            except Exception:
-                pass
-
-        # ID seguro para JS
+    for vname in sorted(by_version.keys(), key=delivery_num, reverse=True):
+        vm    = versions_meta.get(vname, {})
+        rel   = vm.get("released", False)
+        rdate = vm.get("releaseDate", "")
+        vdesc = vm.get("description", "") or ""
+        year  = 2025
+        if rdate:
+            try: year = int(rdate.split("-")[0])
+            except: pass
         vid = re.sub(r'[^a-z0-9]', '-', vname.lower())
+        feats = by_version[vname]
+        if not vdesc and feats:
+            vdesc = ", ".join(f["title"] for f in feats[:4])
 
-        # Features desta versão
-        features = issues_by_version[vname]
-
-        # Descrição da release: usa a da versão ou gera a partir das features
-        if not v_desc and features:
-            titles = [f["title"] for f in features[:4]]
-            v_desc = ", ".join(titles) + ("." if not titles[-1].endswith(".") else "")
-
-        # Serializa cada feature
-        features_js = []
-        for f in features:
-            ctx   = js_str(f["contexto"] or "Não informado.")
-            feito = js_str(f["feito"]    or "Não informado.")
-            imp   = js_str(f["impacto"]  or "Não informado.")
-            title = js_str(f["title"])
-            key   = f["jiraKey"]
-            features_js.append(
-                f"      {{title:{title},jiraKey:'{key}',"
-                f"contexto:{ctx},"
-                f"feito:{feito},"
-                f"impacto:{imp}}}"
-            )
-
-        features_block = ",\n".join(features_js)
-
-        lines.append(f"""  {{
-    year:{year}, id:'{vid}', name:{js_str(vname)}, releaseDate:{js_str(release_date)}, released:{'true' if released else 'false'},
-    desc:{js_str(v_desc)},
-    features:[
-{features_block}
-    ]
-  }},""")
-
+        feats_js = ",\n".join(
+            f"      {{title:{js(f['title'])},jiraKey:{js(f['key'])},"
+            f"contexto:{js(f['ctx'] or 'Não informado.')},"
+            f"feito:{js(f['feito'] or 'Não informado.')},"
+            f"impacto:{js(f['imp'] or 'Não informado.')}}}"
+            for f in feats
+        )
+        lines.append(
+            f"  {{\n"
+            f"    year:{year}, id:{js(vid)}, name:{js(vname)}, "
+            f"releaseDate:{js(rdate)}, released:{'true' if rel else 'false'},\n"
+            f"    desc:{js(vdesc)},\n"
+            f"    features:[\n{feats_js}\n    ]\n"
+            f"  }},"
+        )
     lines.append("];")
     return "\n".join(lines)
 
-
-def js_str(s: str) -> str:
-    """Escapa uma string para uso seguro em JS com aspas simples."""
-    s = str(s)
-    s = s.replace("\\", "\\\\")
-    s = s.replace("'", "\\'")
-    s = s.replace("\n", " ").replace("\r", "")
-    return f"'{s}'"
-
-
-# ──────────────────────────────────────────────
-# Atualiza o arquivo HTML
-# ──────────────────────────────────────────────
-def update_html(new_releases_js: str):
+# ── Atualiza HTML ────────────────────────────────────────────────────────────
+def update_html(new_js):
     with open(HTML_FILE, "r", encoding="utf-8") as f:
         content = f.read()
 
-    # Substitui o bloco entre "const releases = [" e "];" (primeira ocorrência)
-    pattern = r'const releases = \[.*?\];'
-    new_content = re.sub(pattern, new_releases_js, content, count=1, flags=re.DOTALL)
-
+    pattern = r'// Atualizado automaticamente.*?\n' if '// Atualizado' in content else ''
+    new_content = re.sub(
+        r'(?:// Atualizado automaticamente[^\n]*\n)?const releases = \[.*?\];',
+        new_js,
+        content, count=1, flags=re.DOTALL
+    )
     if new_content == content:
-        print("⚠️  Nenhuma substituição feita — padrão 'const releases' não encontrado.")
+        print("⚠️  Padrão 'const releases' não encontrado no HTML.")
         return False
 
-    # Atualiza timestamp no HTML (comentário no topo do bloco de dados)
-    now_br = datetime.now(timezone.utc).strftime("%d/%m/%Y %H:%M UTC")
-    timestamp_comment = f"// Atualizado automaticamente em {now_br}\n"
-
-    new_content = re.sub(
-        r'// Atualizado automaticamente em .*?\n',
-        timestamp_comment,
-        new_content
+    # Insere/atualiza timestamp
+    now = datetime.now(timezone.utc).strftime("%d/%m/%Y %H:%M UTC")
+    new_content = new_content.replace(
+        "const releases = [",
+        f"// Atualizado automaticamente em {now}\nconst releases = [",
+        1
     )
-    # Se ainda não existe o comentário, insere antes do const releases
-    if "// Atualizado automaticamente em" not in new_content:
-        new_content = new_content.replace(
-            "const releases = [",
-            timestamp_comment + "const releases = ["
-        )
-
     with open(HTML_FILE, "w", encoding="utf-8") as f:
         f.write(new_content)
-
-    print(f"✅ {HTML_FILE} atualizado com sucesso.")
+    print(f"✅ {HTML_FILE} atualizado.")
     return True
 
-
-# ──────────────────────────────────────────────
-# Main
-# ──────────────────────────────────────────────
+# ── Main ─────────────────────────────────────────────────────────────────────
 def main():
     print(f"🔍 Buscando versões do projeto {PROJECT}...")
     versions_meta = fetch_versions()
-    print(f"   {len(versions_meta)} versões encontradas: {list(versions_meta.keys())}")
+    delivery_versions = {
+        k: v for k, v in versions_meta.items()
+        if re.search(r'delivery', k, re.IGNORECASE)
+    }
+    print(f"   Deliveries encontrados: {sorted(delivery_versions.keys(), key=delivery_num)}")
 
-    print("🔍 Buscando issues com fixVersion definido...")
+    if not delivery_versions:
+        print("⚠️  Nenhuma versão 'Delivery' encontrada. Verifique o projeto no Jira.")
+        sys.exit(1)
+
+    print("🔍 Buscando issues com fixVersion...")
     issues = fetch_all_issues(
-        jql=f'project = {PROJECT} AND fixVersion is not EMPTY ORDER BY fixVersion DESC, created DESC',
+        jql=f'project = {PROJECT} AND fixVersion is not EMPTY ORDER BY fixVersion DESC, updated DESC',
         fields=["summary", "status", "fixVersions", "description", "issuetype"],
     )
-    print(f"   {len(issues)} issues com versão encontradas.")
+    print(f"   {len(issues)} issues encontradas no total.")
 
-    # Agrupa por versão, filtrando apenas features ativas
-    issues_by_version: dict[str, list] = {}
-    skipped = 0
+    by_version: dict = {}
+    skipped = []
 
     for issue in issues:
-        f = issue["fields"]
-        itype  = f.get("issuetype", {}).get("name", "").lower()
-        status = f.get("status", {}).get("name", "").lower()
+        f      = issue["fields"]
+        itype  = f.get("issuetype", {}).get("name", "").lower().strip()
+        status = f.get("status",    {}).get("name", "").lower().strip()
 
-        # Filtra por tipo e status
-        if itype not in FEATURE_TYPES:
-            skipped += 1
+        # Pula tipos ignorados
+        if itype in IGNORED_TYPES:
+            skipped.append(f"{issue['key']} (tipo: {itype})")
             continue
+
+        # Pula statuses inativos
         if status not in ACTIVE_STATUSES:
-            skipped += 1
+            skipped.append(f"{issue['key']} (status: {status})")
             continue
 
-        summary = f.get("summary", "")
-        # Remove prefixos técnicos comuns: [SEMAVY], [Flow], [API Amigo] etc.
-        title = re.sub(r'^\[.*?\]\s*', '', summary).strip()
+        # Limpa título
+        title = re.sub(r'^\[.*?\]\s*', '', f.get("summary", "")).strip()
+        ctx, feito, imp = parse_desc(f.get("description", ""))
 
-        desc_raw = f.get("description", "")
-        contexto, feito, impacto = parse_description_sections(desc_raw)
-
-        for version in f.get("fixVersions", []):
-            vname = version["name"]
-            if vname not in issues_by_version:
-                issues_by_version[vname] = []
-            issues_by_version[vname].append({
-                "title":    title,
-                "jiraKey":  issue["key"],
-                "contexto": contexto,
-                "feito":    feito,
-                "impacto":  impacto,
+        for v in f.get("fixVersions", []):
+            vname = v["name"]
+            # só inclui deliveries
+            if not re.search(r'delivery', vname, re.IGNORECASE):
+                continue
+            if vname not in by_version:
+                by_version[vname] = []
+            by_version[vname].append({
+                "title": title,
+                "key":   issue["key"],
+                "ctx":   ctx,
+                "feito": feito,
+                "imp":   imp,
             })
 
-    print(f"   {skipped} issues ignoradas (tipo/status fora do escopo).")
-    print(f"   Versões com features: {list(issues_by_version.keys())}")
+    print(f"   {len(skipped)} issues ignoradas por tipo/status.")
+    print(f"   Deliveries com features: {sorted(by_version.keys(), key=delivery_num)}")
 
-    if not issues_by_version:
-        print("⚠️  Nenhuma issue encontrada para atualizar. Abortando.")
-        return
+    # Inclui deliveries sem issues (para manter no portal com lista vazia)
+    for vname in delivery_versions:
+        if vname not in by_version:
+            by_version[vname] = []
 
-    print("🔨 Gerando bloco JS de releases...")
-    releases_js = build_releases_js(versions_meta, issues_by_version)
+    if not any(by_version.values()):
+        print("⚠️  Nenhuma feature encontrada para nenhum delivery.")
+        # Não aborta — pode ser que todas estejam em status não mapeado
+        # Lista os statuses encontrados para diagnóstico
+        statuses = set(
+            i["fields"].get("status",{}).get("name","?").lower()
+            for i in issues
+        )
+        print(f"   Statuses encontrados nas issues: {statuses}")
+        print("   Adicione os statuses necessários à lista ACTIVE_STATUSES no script.")
+        sys.exit(1)
+
+    print("🔨 Gerando bloco JS...")
+    releases_js = build_js(versions_meta, by_version)
 
     print(f"💾 Atualizando {HTML_FILE}...")
-    updated = update_html(releases_js)
+    ok = update_html(releases_js)
 
-    if updated:
-        total_features = sum(len(v) for v in issues_by_version.values())
-        print(f"\n📊 Resumo:")
-        print(f"   Deliveries: {len(issues_by_version)}")
-        print(f"   Features:   {total_features}")
-        for vname in sorted(issues_by_version.keys(), key=delivery_sort_key, reverse=True):
-            print(f"   • {vname}: {len(issues_by_version[vname])} features")
-    else:
-        print("⚠️  Arquivo não foi modificado.")
-
+    if ok:
+        total = sum(len(v) for v in by_version.values())
+        print(f"\n📊 Resumo final:")
+        print(f"   Deliveries: {len(by_version)}")
+        print(f"   Features:   {total}")
+        for vname in sorted(by_version.keys(), key=delivery_num, reverse=True):
+            print(f"   • {vname}: {len(by_version[vname])} features")
 
 if __name__ == "__main__":
     main()
