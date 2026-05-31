@@ -1,0 +1,496 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Amigo Flow – Portal</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --brand:     #008CFF;
+    --brand-dk:  #0070CC;
+    --brand-50:  #E6F4FF;
+    --brand-100: #CCE9FF;
+    --bg:        #F8F9FA;
+    --surface:   #FFFFFF;
+    --border:    #E9ECEF;
+    --text:      #0F172A;
+    --text-2:    #334155;
+    --text-3:    #64748B;
+    --success:   #22C55E;
+    --success-bg:#DCFCE7;
+    --sidebar:   #0F172A;
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Inter', -apple-system, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+  }
+
+  /* ── TOPBAR ── */
+  .topbar {
+    background: var(--sidebar);
+    border-bottom: 1px solid rgba(255,255,255,.06);
+    height: 56px;
+    display: flex;
+    align-items: center;
+    padding: 0 40px;
+    gap: 16px;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+  .topbar-logo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    text-decoration: none;
+  }
+  .logo-icon {
+    width: 30px; height: 30px;
+    background: var(--brand);
+    border-radius: 7px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 16px;
+    flex-shrink: 0;
+  }
+  .logo-name {
+    font-size: 14px;
+    font-weight: 700;
+    color: #fff;
+    letter-spacing: -.3px;
+  }
+  .topbar-sep { width: 1px; height: 18px; background: rgba(255,255,255,.1); }
+  .topbar-nav { display: flex; gap: 4px; }
+  .topbar-link {
+    font-size: 13px;
+    font-weight: 500;
+    color: rgba(255,255,255,.45);
+    text-decoration: none;
+    padding: 5px 10px;
+    border-radius: 6px;
+    transition: all .15s;
+  }
+  .topbar-link:hover { color: #fff; background: rgba(255,255,255,.07); }
+  .topbar-link.active { color: #fff; background: rgba(0,140,255,.2); }
+  .topbar-cta {
+    margin-left: auto;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--brand);
+    background: rgba(0,140,255,.15);
+    border: 1px solid rgba(0,140,255,.3);
+    padding: 5px 12px;
+    border-radius: 6px;
+    text-decoration: none;
+    transition: all .15s;
+  }
+  .topbar-cta:hover { background: rgba(0,140,255,.25); }
+
+  /* ── HERO ── */
+  .hero {
+    background: var(--sidebar);
+    padding: 72px 40px 80px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+  .hero::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse 60% 50% at 50% 100%, rgba(0,140,255,.15), transparent);
+    pointer-events: none;
+  }
+  .hero-kicker {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 2.5px;
+    text-transform: uppercase;
+    color: var(--brand);
+    background: rgba(0,140,255,.12);
+    border: 1px solid rgba(0,140,255,.2);
+    padding: 4px 12px;
+    border-radius: 20px;
+    margin-bottom: 20px;
+  }
+  .hero-title {
+    font-size: 48px;
+    font-weight: 800;
+    color: #fff;
+    letter-spacing: -1.5px;
+    line-height: 1.1;
+    margin-bottom: 16px;
+  }
+  .hero-title span { color: var(--brand); }
+  .hero-sub {
+    font-size: 17px;
+    color: rgba(255,255,255,.45);
+    line-height: 1.65;
+    max-width: 480px;
+    margin: 0 auto 36px;
+  }
+  .hero-cta {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--brand);
+    color: #fff;
+    font-size: 14px;
+    font-weight: 600;
+    padding: 11px 22px;
+    border-radius: 8px;
+    text-decoration: none;
+    transition: background .15s, transform .15s;
+  }
+  .hero-cta:hover { background: var(--brand-dk); transform: translateY(-1px); }
+
+  /* ── MAIN CONTENT ── */
+  .main { max-width: 960px; margin: 0 auto; padding: 56px 40px 80px; }
+
+  /* section header */
+  .section-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 20px;
+  }
+  .section-title {
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--text-3);
+  }
+  .section-link {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--brand);
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    transition: opacity .15s;
+  }
+  .section-link:hover { opacity: .7; }
+
+  /* quick access cards */
+  .cards-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-bottom: 56px;
+  }
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 24px;
+    text-decoration: none;
+    color: inherit;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    transition: all .15s;
+    position: relative;
+    overflow: hidden;
+  }
+  .card:hover {
+    border-color: var(--brand);
+    box-shadow: 0 4px 20px rgba(0,140,255,.1);
+    transform: translateY(-2px);
+  }
+  .card-icon {
+    font-size: 24px;
+    margin-bottom: 4px;
+  }
+  .card-title {
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--text);
+  }
+  .card-desc {
+    font-size: 13px;
+    color: var(--text-3);
+    line-height: 1.55;
+  }
+  .card-arrow {
+    margin-top: auto;
+    padding-top: 12px;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--brand);
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+
+  /* recent releases */
+  .releases-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-bottom: 56px;
+  }
+  .release-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 18px 20px;
+    text-decoration: none;
+    color: inherit;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    transition: all .15s;
+  }
+  .release-card:hover {
+    border-color: var(--brand-100);
+    box-shadow: 0 2px 12px rgba(0,140,255,.06);
+  }
+  .rc-dot {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: var(--success);
+    flex-shrink: 0;
+  }
+  .rc-dot.upcoming { background: transparent; border: 2px solid #F59E0B; }
+  .rc-info { flex: 1; min-width: 0; }
+  .rc-name {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: 2px;
+  }
+  .rc-desc {
+    font-size: 12px;
+    color: var(--text-3);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .rc-meta {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 4px;
+    flex-shrink: 0;
+  }
+  .rc-date { font-size: 11px; color: var(--text-3); }
+  .rc-badge {
+    font-size: 9px;
+    font-weight: 700;
+    padding: 2px 7px;
+    border-radius: 4px;
+    letter-spacing: .5px;
+    text-transform: uppercase;
+  }
+  .badge-live { background: var(--success-bg); color: #16a34a; }
+  .badge-soon { background: #FEF3C7; color: #d97706; }
+
+  /* stats strip */
+  .stats {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 24px 32px;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 24px;
+    margin-bottom: 56px;
+    text-align: center;
+  }
+  .stat-num {
+    font-size: 32px;
+    font-weight: 800;
+    color: var(--brand);
+    letter-spacing: -1px;
+    line-height: 1;
+    margin-bottom: 4px;
+  }
+  .stat-label {
+    font-size: 12px;
+    color: var(--text-3);
+    font-weight: 500;
+  }
+  .stat-divider {
+    width: 1px;
+    background: var(--border);
+    align-self: stretch;
+  }
+
+  /* footer */
+  .footer {
+    background: var(--sidebar);
+    border-top: 1px solid rgba(255,255,255,.06);
+    padding: 20px 40px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .footer-left {
+    font-size: 12px;
+    color: rgba(255,255,255,.25);
+  }
+  .footer-left strong { color: rgba(255,255,255,.4); }
+  .footer-badge {
+    font-size: 10px;
+    font-weight: 700;
+    color: var(--brand);
+    background: rgba(0,140,255,.15);
+    border: 1px solid rgba(0,140,255,.2);
+    padding: 3px 9px;
+    border-radius: 4px;
+    letter-spacing: .5px;
+    text-transform: uppercase;
+  }
+</style>
+</head>
+<body>
+
+<!-- TOPBAR -->
+<header class="topbar">
+  <a href="index.html" class="topbar-logo">
+    <div class="logo-icon">🌊</div>
+    <span class="logo-name">Amigo Flow</span>
+  </a>
+  <div class="topbar-sep"></div>
+  <nav class="topbar-nav">
+    <a href="index.html" class="topbar-link active">Home</a>
+    <a href="amigo-flow-release-portal.html" class="topbar-link">Release Notes</a>
+    <a href="amigo-flow-docs.html" class="topbar-link">Documentação</a>
+  </nav>
+  <a href="amigo-flow-release-portal.html" class="topbar-cta">Ver releases →</a>
+</header>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-kicker">🌊 Portal interno do produto</div>
+  <h1 class="hero-title">Bem-vindo ao<br><span>Amigo Flow</span> Portal</h1>
+  <p class="hero-sub">Seu ponto central para acompanhar releases e novidades do Amigo Flow.</p>
+  <a href="amigo-flow-release-portal.html" class="hero-cta">
+    📦 Ver Release Notes
+  </a>
+</section>
+
+<!-- MAIN -->
+<div class="main">
+
+  <!-- STATS -->
+  <div class="stats">
+    <div>
+      <div class="stat-num">15</div>
+      <div class="stat-label">Deliveries documentados</div>
+    </div>
+    <div class="stat-divider"></div>
+    <div>
+      <div class="stat-num">75+</div>
+      <div class="stat-label">Funcionalidades entregues</div>
+    </div>
+    <div class="stat-divider"></div>
+    <div>
+      <div class="stat-num">2</div>
+      <div class="stat-label">Próximas releases</div>
+    </div>
+  </div>
+
+  <!-- QUICK ACCESS -->
+  <div class="section-header">
+    <div class="section-title">Acesso rápido</div>
+  </div>
+  <div class="cards-grid" style="margin-bottom:56px">
+    <a href="amigo-flow-release-portal.html" class="card">
+      <div class="card-icon">📦</div>
+      <div class="card-title">Release Notes</div>
+      <div class="card-desc">Histórico completo de versões do Amigo Flow, com contexto, o que foi feito e impacto de cada entrega.</div>
+      <div class="card-arrow">Acessar releases →</div>
+    </a>
+    <a href="amigo-flow-release-portal.html" class="card">
+      <div class="card-icon">🤖</div>
+      <div class="card-title">Próximas entregas</div>
+      <div class="card-desc">Veja o que está sendo desenvolvido nos Deliveries 20 e 21, com status atualizado de cada funcionalidade.</div>
+      <div class="card-arrow">Ver roadmap →</div>
+    </a>
+  </div>
+
+  <!-- RECENT RELEASES -->
+  <div class="section-header">
+    <div class="section-title">Últimas releases</div>
+    <a href="amigo-flow-release-portal.html" class="section-link">Ver todas →</a>
+  </div>
+  <div class="releases-list">
+    <a href="amigo-flow-release-portal.html" class="release-card">
+      <div class="rc-dot upcoming"></div>
+      <div class="rc-info">
+        <div class="rc-name">Delivery 21</div>
+        <div class="rc-desc">Finalização automática de conversas, importação de planilha em campanhas e melhorias no agente</div>
+      </div>
+      <div class="rc-meta">
+        <div class="rc-date">19 Jun 2026</div>
+        <span class="rc-badge badge-soon">Em breve</span>
+      </div>
+    </a>
+    <a href="amigo-flow-release-portal.html" class="release-card">
+      <div class="rc-dot upcoming"></div>
+      <div class="rc-info">
+        <div class="rc-name">Delivery 20</div>
+        <div class="rc-desc">IA no chat, notas internas, envios automáticos completos e base de orientações do agente</div>
+      </div>
+      <div class="rc-meta">
+        <div class="rc-date">05 Jun 2026</div>
+        <span class="rc-badge badge-soon">Em breve</span>
+      </div>
+    </a>
+    <a href="amigo-flow-release-portal.html" class="release-card">
+      <div class="rc-dot"></div>
+      <div class="rc-info">
+        <div class="rc-name">Delivery 19</div>
+        <div class="rc-desc">Dashboard interno, envio de Falta, listagem de envios automáticos e estimativa de custo em campanhas</div>
+      </div>
+      <div class="rc-meta">
+        <div class="rc-date">22 Mai 2026</div>
+        <span class="rc-badge badge-live">Lançada</span>
+      </div>
+    </a>
+    <a href="amigo-flow-release-portal.html" class="release-card">
+      <div class="rc-dot"></div>
+      <div class="rc-info">
+        <div class="rc-name">Delivery 18</div>
+        <div class="rc-desc">Bloqueio de contatos, busca por etiqueta no histórico, API de integrações e reenvio de campanhas</div>
+      </div>
+      <div class="rc-meta">
+        <div class="rc-date">08 Mai 2026</div>
+        <span class="rc-badge badge-live">Lançada</span>
+      </div>
+    </a>
+    <a href="amigo-flow-release-portal.html" class="release-card">
+      <div class="rc-dot"></div>
+      <div class="rc-info">
+        <div class="rc-name">Delivery 17</div>
+        <div class="rc-desc">Integração com Amigo One, leads vinculados à clínica, desassociação de número e acesso do suporte</div>
+      </div>
+      <div class="rc-meta">
+        <div class="rc-date">24 Abr 2026</div>
+        <span class="rc-badge badge-live">Lançada</span>
+      </div>
+    </a>
+  </div>
+
+</div>
+
+<!-- FOOTER -->
+<footer class="footer">
+  <div class="footer-left">
+    <strong>Amigo Flow Portal</strong> · uso interno · © 2026 Amigo Tech
+  </div>
+  <span class="footer-badge">Flow · GREEN</span>
+</footer>
+
+</body>
+</html>

@@ -1,0 +1,1100 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Amigo Flow – Documentação</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --brand:     #008CFF;
+    --brand-dk:  #0070CC;
+    --brand-50:  #E6F4FF;
+    --brand-100: #CCE9FF;
+    --bg:        #F8F9FA;
+    --surface:   #FFFFFF;
+    --border:    #E9ECEF;
+    --text:      #0F172A;
+    --text-2:    #334155;
+    --text-3:    #64748B;
+    --success:   #22C55E;
+    --success-bg:#DCFCE7;
+    --warning:   #F59E0B;
+    --warning-bg:#FEF3C7;
+    --danger:    #EF4444;
+    --danger-bg: #FEF2F2;
+    --purple:    #8B5CF6;
+    --purple-bg: #EDE9FE;
+    --sidebar-bg:#0F172A;
+    --sidebar-w: 280px;
+  }
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+  html,body{height:100%;overflow:hidden}
+  body{font-family:'Inter',-apple-system,sans-serif;-webkit-font-smoothing:antialiased;background:var(--bg);color:var(--text);display:flex;flex-direction:column}
+
+  /* ── TOPBAR ── */
+  .topbar{height:52px;background:var(--sidebar-bg);border-bottom:1px solid rgba(255,255,255,.06);display:flex;align-items:center;padding:0 24px;gap:12px;flex-shrink:0;z-index:100}
+  .topbar-logo{display:flex;align-items:center;gap:8px;text-decoration:none}
+  .logo-icon{width:28px;height:28px;background:var(--brand);border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0}
+  .logo-name{font-size:14px;font-weight:700;color:#fff;letter-spacing:-.3px}
+  .topbar-sep{width:1px;height:16px;background:rgba(255,255,255,.1)}
+  .topbar-nav{display:flex;gap:2px}
+  .topbar-link{font-size:12px;font-weight:500;color:rgba(255,255,255,.4);text-decoration:none;padding:4px 9px;border-radius:5px;transition:all .15s}
+  .topbar-link:hover{color:#fff;background:rgba(255,255,255,.07)}
+  .topbar-link.active{color:#fff;background:rgba(0,140,255,.2)}
+  .topbar-search{margin-left:auto;display:flex;align-items:center;gap:8px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.08);border-radius:6px;padding:5px 10px;cursor:text}
+  .topbar-search svg{color:rgba(255,255,255,.3);flex-shrink:0}
+  .topbar-search input{background:none;border:none;outline:none;font-family:inherit;font-size:12px;color:#fff;width:180px}
+  .topbar-search input::placeholder{color:rgba(255,255,255,.3)}
+
+  /* ── LAYOUT ── */
+  .layout{display:flex;flex:1;overflow:hidden}
+
+  /* ── SIDEBAR ── */
+  .sidebar{width:var(--sidebar-w);flex-shrink:0;background:var(--sidebar-bg);display:flex;flex-direction:column;overflow:hidden;border-right:1px solid rgba(255,255,255,.04)}
+  .sidebar-list{flex:1;overflow-y:auto;padding:8px 0 20px;scrollbar-width:thin;scrollbar-color:rgba(255,255,255,.08) transparent}
+  .sidebar-list::-webkit-scrollbar{width:3px}
+  .sidebar-list::-webkit-scrollbar-thumb{background:rgba(255,255,255,.08);border-radius:3px}
+
+  .nav-section{margin-bottom:2px}
+  .nav-section-title{font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,.2);padding:14px 20px 5px;display:flex;align-items:center;gap:6px}
+  .nav-item{display:flex;align-items:center;gap:8px;padding:7px 20px;cursor:pointer;color:rgba(255,255,255,.5);font-size:12.5px;font-weight:500;border-left:2px solid transparent;transition:all .12s;text-decoration:none;border:none;background:none;width:100%;text-align:left;font-family:inherit}
+  .nav-item:hover{color:rgba(255,255,255,.85);background:rgba(255,255,255,.04)}
+  .nav-item.active{color:#fff;background:rgba(0,140,255,.12);border-left:2px solid var(--brand)}
+  .nav-item-icon{font-size:13px;flex-shrink:0;width:16px;text-align:center}
+  .nav-sub{padding-left:12px}
+  .nav-sub .nav-item{font-size:12px;padding:6px 20px 6px 16px;color:rgba(255,255,255,.35)}
+  .nav-sub .nav-item:hover{color:rgba(255,255,255,.7)}
+  .nav-sub .nav-item.active{color:#fff}
+
+  /* ── MAIN ── */
+  .main{flex:1;overflow-y:auto;background:var(--bg)}
+  .main::-webkit-scrollbar{width:5px}
+  .main::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
+
+  /* ── DOC CONTENT ── */
+  .doc-wrap{max-width:820px;padding:44px 48px 80px}
+
+  /* breadcrumb */
+  .breadcrumb{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--text-3);margin-bottom:20px}
+  .breadcrumb a{color:var(--brand);text-decoration:none}
+  .breadcrumb a:hover{text-decoration:underline}
+  .breadcrumb-sep{color:var(--border)}
+
+  /* page title */
+  .doc-title{font-size:30px;font-weight:800;color:var(--text);letter-spacing:-.8px;line-height:1.15;margin-bottom:8px;display:flex;align-items:center;gap:12px}
+  .doc-title-icon{font-size:26px}
+  .doc-lead{font-size:15px;color:var(--text-3);line-height:1.7;margin-bottom:28px;padding-bottom:24px;border-bottom:1px solid var(--border);max-width:640px}
+
+  /* typography */
+  .doc-h2{font-size:20px;font-weight:700;color:var(--text);margin:32px 0 12px;letter-spacing:-.3px}
+  .doc-h3{font-size:15px;font-weight:700;color:var(--text);margin:22px 0 8px}
+  .doc-p{font-size:14px;color:var(--text-2);line-height:1.75;margin-bottom:14px}
+  .doc-p strong{color:var(--text);font-weight:600}
+  .doc-ul{padding-left:20px;margin-bottom:14px;display:flex;flex-direction:column;gap:5px}
+  .doc-ul li{font-size:14px;color:var(--text-2);line-height:1.65}
+  .doc-ul li strong{color:var(--text)}
+  .doc-ol{padding-left:20px;margin-bottom:14px;display:flex;flex-direction:column;gap:5px}
+  .doc-ol li{font-size:14px;color:var(--text-2);line-height:1.65}
+  .doc-divider{height:1px;background:var(--border);margin:28px 0}
+  .ic{font-family:monospace;font-size:12px;background:var(--bg);border:1px solid var(--border);padding:1px 5px;border-radius:3px;color:var(--brand)}
+
+  /* hint boxes */
+  .hint{border-radius:8px;padding:13px 16px;margin-bottom:16px;display:flex;gap:10px;align-items:flex-start}
+  .hint-icon{font-size:14px;flex-shrink:0;margin-top:1px}
+  .hint-body{font-size:13px;line-height:1.65}
+  .hint-body strong{font-weight:600}
+  .hint.info{background:var(--brand-50);border:1px solid var(--brand-100);color:#1e40af}
+  .hint.warning{background:var(--warning-bg);border:1px solid #fde68a;color:#92400e}
+  .hint.success{background:var(--success-bg);border:1px solid #bbf7d0;color:#14532d}
+  .hint.danger{background:var(--danger-bg);border:1px solid #fecaca;color:#991b1b}
+
+  /* table */
+  .doc-table-wrap{overflow-x:auto;margin-bottom:18px;border-radius:8px;border:1px solid var(--border)}
+  .doc-table{width:100%;border-collapse:collapse;font-size:13px}
+  .doc-table th{background:var(--bg);padding:10px 14px;text-align:left;font-weight:600;color:var(--text);border-bottom:1px solid var(--border);white-space:nowrap}
+  .doc-table td{padding:9px 14px;border-bottom:1px solid var(--border);color:var(--text-2);line-height:1.5}
+  .doc-table tr:last-child td{border-bottom:none}
+  .doc-table tr:hover td{background:var(--bg)}
+
+  /* code */
+  .doc-code{font-family:monospace;font-size:12px;background:#1e293b;color:#e2e8f0;border-radius:8px;padding:14px 18px;margin-bottom:14px;overflow-x:auto;line-height:1.65}
+
+  /* cards grid (overview) */
+  .doc-cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px;margin-bottom:24px}
+  .doc-card{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:16px;cursor:pointer;transition:all .15s;text-align:left;border:none;font-family:inherit}
+  .doc-card:hover{border:1px solid var(--brand-100);box-shadow:0 4px 16px rgba(0,140,255,.07);transform:translateY(-1px)}
+  .doc-card-icon{font-size:20px;margin-bottom:8px}
+  .doc-card-title{font-size:13px;font-weight:700;color:var(--text);margin-bottom:4px}
+  .doc-card-desc{font-size:12px;color:var(--text-3);line-height:1.5}
+
+  /* search overlay */
+  .search-results{display:none;position:absolute;top:52px;left:0;right:0;background:var(--surface);border-bottom:1px solid var(--border);box-shadow:0 8px 24px rgba(0,0,0,.08);z-index:200;max-height:400px;overflow-y:auto;padding:8px}
+  .search-results.open{display:block}
+  .search-result-item{padding:10px 14px;border-radius:6px;cursor:pointer;display:flex;flex-direction:column;gap:3px;transition:background .1s}
+  .search-result-item:hover{background:var(--bg)}
+  .sri-title{font-size:13px;font-weight:600;color:var(--text)}
+  .sri-section{font-size:11px;color:var(--text-3)}
+  .search-empty{padding:24px;text-align:center;font-size:13px;color:var(--text-3)}
+
+  /* github source link */
+  .gh-link{display:inline-flex;align-items:center;gap:5px;font-size:11px;color:var(--text-3);text-decoration:none;padding:3px 8px;border:1px solid var(--border);border-radius:5px;margin-bottom:20px;transition:all .15s}
+  .gh-link:hover{color:var(--brand);border-color:var(--brand-100);background:var(--brand-50)}
+
+  /* empty */
+  .empty-state{display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;gap:12px;color:var(--text-3);text-align:center;padding:40px}
+  .empty-state .ei{font-size:40px}
+  .empty-state h3{font-size:16px;font-weight:700;color:var(--text-2)}
+</style>
+</head>
+<body>
+
+<!-- TOPBAR -->
+<header class="topbar" style="position:relative">
+  <a href="index.html" class="topbar-logo">
+    <div class="logo-icon">🌊</div>
+    <span class="logo-name">Amigo Flow</span>
+  </a>
+  <div class="topbar-sep"></div>
+  <nav class="topbar-nav">
+    <a href="index.html" class="topbar-link">Home</a>
+    <a href="amigo-flow-release-portal.html" class="topbar-link">Release Notes</a>
+    <a href="amigo-flow-docs.html" class="topbar-link active">Documentação</a>
+  </nav>
+  <div class="topbar-search" onclick="document.getElementById('searchBox').focus()">
+    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+    <input id="searchBox" placeholder="Buscar na documentação…" oninput="doSearch(this.value)" onblur="setTimeout(()=>closeSearch(),200)">
+  </div>
+  <div class="search-results" id="searchResults"></div>
+</header>
+
+<!-- LAYOUT -->
+<div class="layout">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="sidebar-list" id="sidebarList"></div>
+  </aside>
+
+  <!-- MAIN -->
+  <main class="main" id="mainContent">
+    <div class="empty-state">
+      <div class="ei">📖</div>
+      <h3>Selecione um tópico</h3>
+      <p>Navegue pela documentação completa do Amigo Flow.</p>
+    </div>
+  </main>
+
+</div>
+
+<script>
+// ─── NAV TREE ─────────────────────────────────────────────────────────────────
+const GH_RAW = 'https://raw.githubusercontent.com/geovanapaesal/Doc-Amigo-Flow/main/';
+const GH_BLOB = 'https://github.com/geovanapaesal/Doc-Amigo-Flow/blob/main/';
+
+const tree = [
+  { id:'welcome', label:'Bem-vindo ao Amigo Flow', icon:'🚀' },
+  { id:'prereq',  label:'O que preciso para conectar?', icon:'📱' },
+  {
+    section:'Atalhos', icon:'⚡', items:[
+      { id:'novidades', label:'Novidades do Flow', icon:'✨', children:[
+        { id:'novidades-qrcode',    label:'Conectar via QR Code (Coexistência)' },
+        { id:'novidades-banimento', label:'Agente Flow pode ser banido?' },
+        { id:'novidades-lgpd',      label:'Consentimento LGPD (Opt-in)' },
+        { id:'novidades-link',      label:'Novo modo de agendamento via link' },
+        { id:'novidades-agente',    label:'Configuração de conhecimento do Agente' },
+        { id:'novidades-avaliacao', label:'Avaliação de Atendimento' },
+        { id:'novidades-kanban',    label:'Chat do Flow no Kanban do Agende+' },
+        { id:'novidades-templates', label:'Templates com variáveis personalizadas' },
+      ]},
+      { id:'faq', label:'FAQ', icon:'❓', children:[
+        { id:'faq-atendimento',  label:'O que conta como 1 Atendimento' },
+        { id:'faq-janela',       label:'Como funciona a janela da Meta' },
+        { id:'faq-portfolio',    label:'Como criar portfólio empresarial' },
+        { id:'faq-verificar',    label:'Como verificar empresa na Meta' },
+        { id:'faq-2fa',          label:'Desativar autenticação 2FA' },
+        { id:'faq-associar',     label:'Como associar número no Flow' },
+        { id:'faq-erros',        label:'Código de erros de envio' },
+        { id:'faq-suporte',      label:'Acessar página de suporte da Meta' },
+        { id:'faq-portabilidade',label:'Portabilidade de número com API' },
+        { id:'faq-banimento',    label:'Solicitar revisão de banimento' },
+        { id:'faq-remover',      label:'Remover número do portfólio' },
+      ]},
+    ]
+  },
+  {
+    section:'Funcionalidades', icon:'⚙️', items:[
+      { id:'func-agente',    label:'Guia do Agente Flow', icon:'🤖' },
+      { id:'func-dashboard', label:'Dashboard de Atendimentos', icon:'📊' },
+      { id:'func-chats',     label:'Chats', icon:'💬' },
+      { id:'func-paineis',   label:'Painéis', icon:'📋' },
+      { id:'func-envios',    label:'Envios', icon:'📨', children:[
+        { id:'func-envios-auto',  label:'Envios Automáticos' },
+        { id:'func-envios-massa', label:'Envios em Massa' },
+      ]},
+      { id:'func-leads',     label:'Leads', icon:'👥' },
+      { id:'func-config',    label:'Configurações', icon:'⚙️', children:[
+        { id:'func-canais',     label:'Canais' },
+        { id:'func-modelos',    label:'Criar modelos de mensagens' },
+        { id:'func-atalhos',    label:'Atalhos de mensagens' },
+        { id:'func-permissoes', label:'Permissões e Setores' },
+        { id:'func-avaliacao',  label:'Avaliação de Atendimento' },
+      ]},
+      { id:'func-consumo', label:'Consumo', icon:'📈' },
+    ]
+  },
+];
+
+// ─── ALL PAGES (searchable index) ─────────────────────────────────────────────
+const allPages = [];
+function indexTree(nodes, section='') {
+  for (const n of nodes) {
+    if (n.section) { indexTree(n.items, n.section); continue; }
+    allPages.push({ id:n.id, label:n.label, section });
+    if (n.children) indexTree(n.children, section || n.label);
+  }
+}
+indexTree(tree);
+
+// ─── SIDEBAR BUILD ────────────────────────────────────────────────────────────
+let currentId = null;
+
+function buildSidebar() {
+  const el = document.getElementById('sidebarList');
+  el.innerHTML = '';
+  function makeItem(node, isSub) {
+    const btn = document.createElement('button');
+    btn.className = 'nav-item' + (isSub ? '' : '');
+    btn.dataset.id = node.id;
+    btn.innerHTML = `${node.icon ? `<span class="nav-item-icon">${node.icon}</span>` : '<span class="nav-item-icon"></span>'}<span>${node.label}</span>`;
+    btn.addEventListener('click', () => showPage(node.id));
+    return btn;
+  }
+
+  for (const node of tree) {
+    if (node.section) {
+      const sec = document.createElement('div');
+      sec.className = 'nav-section';
+      const title = document.createElement('div');
+      title.className = 'nav-section-title';
+      title.innerHTML = `<span>${node.icon}</span>${node.section}`;
+      sec.appendChild(title);
+      for (const item of node.items) {
+        sec.appendChild(makeItem(item, false));
+        if (item.children) {
+          const sub = document.createElement('div');
+          sub.className = 'nav-sub';
+          item.children.forEach(ch => sub.appendChild(makeItem(ch, true)));
+          sec.appendChild(sub);
+        }
+      }
+      el.appendChild(sec);
+    } else {
+      el.appendChild(makeItem(node, false));
+    }
+  }
+}
+
+function setActive(id) {
+  document.querySelectorAll('.nav-item').forEach(b =>
+    b.classList.toggle('active', b.dataset.id === id));
+}
+
+// ─── HELPERS ──────────────────────────────────────────────────────────────────
+const h2  = t => `<h2 class="doc-h2">${t}</h2>`;
+const h3  = t => `<h3 class="doc-h3">${t}</h3>`;
+const p   = t => `<p class="doc-p">${t}</p>`;
+const ul  = items => `<ul class="doc-ul">${items.map(i=>`<li>${i}</li>`).join('')}</ul>`;
+const ol  = items => `<ol class="doc-ol">${items.map(i=>`<li>${i}</li>`).join('')}</ol>`;
+const div = () => `<div class="doc-divider"></div>`;
+const ic  = t => `<span class="ic">${t}</span>`;
+const hint = (type, icon, html) => `<div class="hint ${type}"><div class="hint-icon">${icon}</div><div class="hint-body">${html}</div></div>`;
+const table = (heads, rows) =>
+  `<div class="doc-table-wrap"><table class="doc-table">
+    <thead><tr>${heads.map(h=>`<th>${h}</th>`).join('')}</tr></thead>
+    <tbody>${rows.map(r=>`<tr>${r.map(c=>`<td>${c}</td>`).join('')}</tr>`).join('')}</tbody>
+  </table></div>`;
+const ghLink = path => `<a class="gh-link" href="${GH_BLOB}${path}" target="_blank">
+  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/></svg>
+  Ver fonte no GitHub
+</a>`;
+
+function page(id, icon, title, subtitle, ghPath, body) {
+  const bc = allPages.find(p=>p.id===id);
+  const section = bc?.section;
+  return `<div class="doc-wrap">
+    <div class="breadcrumb">
+      <a href="#" onclick="showPage('welcome')">Docs</a>
+      ${section ? `<span class="breadcrumb-sep">›</span><span>${section}</span>` : ''}
+      <span class="breadcrumb-sep">›</span><span>${title}</span>
+    </div>
+    ${ghPath ? ghLink(ghPath) : ''}
+    <div class="doc-title"><span class="doc-title-icon">${icon}</span>${title}</div>
+    ${subtitle ? `<p class="doc-lead">${subtitle}</p>` : ''}
+    ${body}
+  </div>`;
+}
+
+// ─── PAGE CONTENT ─────────────────────────────────────────────────────────────
+const pages = {
+
+welcome: () => page('welcome','🚀','Bem-vindo ao Amigo Flow','O Amigo Flow é o coração da comunicação entre pacientes e equipe — onde cada conversa se transforma em relacionamento e cada fluxo em resultado.','README.md',
+  `${h2('Comece por aqui')}
+  <div class="doc-cards">
+    ${[
+      ['prereq','📱','O que preciso para conectar?','Pré-requisitos para usar a API Oficial'],
+      ['func-agente','🤖','Guia do Agente Flow','Como a IA funciona e o que ela faz'],
+      ['func-chats','💬','Chats','Central de atendimentos em tempo real'],
+      ['faq','❓','FAQ','Dúvidas mais frequentes'],
+      ['func-envios-auto','📨','Envios Automáticos','Automatize mensagens na jornada'],
+      ['func-consumo','📈','Consumo','Entenda como a franquia é consumida'],
+    ].map(([id,ic,t,d])=>`<button class="doc-card" onclick="showPage('${id}')"><div class="doc-card-icon">${ic}</div><div class="doc-card-title">${t}</div><div class="doc-card-desc">${d}</div></button>`).join('')}
+  </div>
+  ${hint('info','💙','Use a aba <strong>Release Notes</strong> para acompanhar o histórico de versões do produto com contexto e impacto de cada entrega.')}`
+),
+
+prereq: () => page('prereq','📱','O que é preciso para conectar ao Amigo Flow?','Este documento orienta o que é necessário para usar a API Oficial do WhatsApp na sua clínica.','o-que-e-preciso-para-ter-um-numero-conectado-ao-amigo-flow.md',
+  `${hint('info','💡','As regras abaixo <strong>não são uma escolha da Amigo</strong>. Fazem parte do modelo oficial do WhatsApp Business Platform, aplicado igualmente para todas as empresas no mundo.')}
+  ${h2('1. Conta no Facebook Business Manager')}
+  ${p('Você precisa de uma conta comercial ativa no Facebook (Business Manager), com mais de 30 dias e você sendo administrador.')}
+  ${h2('2. Portfólio Empresarial no Meta')}
+  ${p(`Acesse <strong>business.facebook.com</strong> e crie seu portfólio empresarial. <button onclick="showPage('faq-portfolio')" style="background:none;border:none;color:var(--brand);cursor:pointer;font-size:14px;font-weight:600;padding:0">Ver guia completo →</button>`)}
+  ${h2('3. Empresa verificada pela Meta')}
+  ${p('A Meta exige empresa real, ativa e identificável. Você precisará de:')}
+  ${ul(['Razão social e CNPJ válidos','Site institucional ativo','Domínio do site verificado no Business Manager','Documento oficial da empresa (ex: contrato social)'])}
+  ${h2('4. Número de telefone elegível')}
+  ${p('O número precisa estar livre para uso em API e conseguir receber SMS ou ligação para verificação. Números fixos também funcionam!')}
+  ${hint('warning','⚠️','Números usados em ferramentas não oficiais têm maior risco de bloqueio após migração.')}
+  ${h2('Resumo')}
+  ${ul(['✔ Conta comercial no Facebook ativa','✔ Portfólio empresarial criado','✔ Empresa verificada','✔ Número de telefone elegível'])}`
+),
+
+// ── NOVIDADES ──────────────────────────────────────────────────────────────────
+novidades: () => page('novidades','✨','Novidades do Flow','Últimas funcionalidades e melhorias lançadas no Amigo Flow.','atalhos/novidades-do-flow/README.md',
+  `<div class="doc-cards">
+    ${[
+      ['novidades-qrcode','📱','Conectar via QR Code (Coexistência)','Método de coexistência com o WhatsApp Business App'],
+      ['novidades-banimento','🤖','Agente pode ser banido pela Meta?','O que mudou nas regras da Meta e como o Flow está adequado'],
+      ['novidades-lgpd','🔒','Consentimento LGPD (Opt-in)','Fluxo de consentimento explícito no cadastro de leads'],
+      ['novidades-link','🔗','Agendamento via link','Novo modo: agente envia link do Agende.ai'],
+      ['novidades-agente','⚙️','Configuração do Agente','Base de conhecimento e habilidades configuráveis'],
+      ['novidades-avaliacao','⭐','Avaliação de Atendimento','Envio automático de pesquisa e dashboard de performance'],
+      ['novidades-kanban','📋','Chat no Kanban do Agende+','Abertura do chat direto pelo botão WhatsApp'],
+      ['novidades-templates','📝','Templates com variáveis','Variáveis personalizadas nos modelos de mensagem'],
+    ].map(([id,ic,t,d])=>`<button class="doc-card" onclick="showPage('${id}')"><div class="doc-card-icon">${ic}</div><div class="doc-card-title">${t}</div><div class="doc-card-desc">${d}</div></button>`).join('')}
+  </div>`
+),
+
+'novidades-qrcode': () => page('novidades-qrcode','📱','Conectar via QR Code (Coexistência)','Conecte seu número ao Amigo Flow mantendo o app do celular ativo ao mesmo tempo.','atalhos/novidades-do-flow/atualizacoes-meta/conecte-seu-whatsapp-ao-amigo-flow-metodo-qr-code-coexistencia.md',
+  `${p('Com essa conexão, seu WhatsApp Business passa a funcionar <strong>tanto no celular quanto na plataforma ao mesmo tempo</strong>. O Amigo Flow centraliza e automatiza os atendimentos enquanto você continua usando o app normalmente.')}
+  ${h2('Pré-requisitos')}
+  ${ul(['Número ativo no app WhatsApp Business (celular)','Acesso ao Meta Business Manager com portfólio empresarial criado','Página no Facebook vinculada à conta do WhatsApp Business','Perfil de administrador no Amigo Flow','App do WhatsApp Business em mãos — você vai precisar dele para escanear o QR Code'])}
+  ${h2('Como fazer a conexão')}
+  ${h3('Etapa 1 — Adicionar número ao Meta Business Manager')}
+  ${ol(['Acesse business.facebook.com → <strong>Configurações de Negócio</strong>','No menu lateral → <strong>Contas do WhatsApp → Gerenciador de WhatsApp</strong>','Clique em <strong>+ Adicionar</strong>','Digite o número e clique em <strong>Continuar</strong>','Receba o código no app do WhatsApp Business e insira na tela','Clique em <strong>Concluir</strong> ✅'])}
+  ${h3('Etapa 2 — Conectar no Amigo Flow')}
+  ${ol(['Acesse <strong>Ajustes → Conta → Canais de Atendimento</strong>','Clique em <strong>+</strong> para adicionar novo canal','Selecione <strong>WhatsApp QR Code → Cloud Meta (QRCode)</strong>','Clique em <strong>Entrar com Facebook</strong>','Selecione o portfólio, confirme os dados e clique em <strong>Avançar</strong>','Marque <strong>"Conecte seu app WhatsApp Business existente"</strong>','Informe o número com DDI (+55 para Brasil)','Receba o código no app e insira','Confirme nome de exibição e fuso horário','Escaneie o QR Code que chegará no WhatsApp Business','Adicione forma de pagamento (exigido pela Meta) e finalize ✅'])}
+  ${h2('O que muda no app após a conexão')}
+  ${table(['Funcionalidade','O que acontece'],[
+    ['Usar o WhatsApp no celular','✅ Continua normalmente'],
+    ['WhatsApp Web / Desktop Windows','Pode ser reconectado (Desktop não compatível)'],
+    ['Criar novas Listas de Transmissão','⚠️ Não disponível após a conexão'],
+    ['Editar ou excluir mensagens','⚠️ Não disponível após o vínculo'],
+    ['Mensagens que desaparecem','⚠️ Não disponível após o vínculo'],
+  ])}
+  ${hint('warning','⚠️','Para manter a conexão ativa, abra o app do WhatsApp Business <strong>pelo menos uma vez a cada 15 dias</strong>.')}`
+),
+
+'novidades-banimento': () => page('novidades-banimento','🤖','Agente Flow pode ser banido pela Meta?','O que mudou nas regras da Meta e por que o Flow não é afetado.','atalhos/novidades-do-flow/atualizacoes-meta/agente-flow-pode-ser-banido-pela-meta.md',
+  `${p('A Meta anunciou que, a partir de 15 de janeiro de 2026, chatbots de uso geral como os da OpenAI, Perplexity e Luzia não poderão mais operar no WhatsApp.')}
+  ${hint('success','✅','Essa mudança <strong>não afeta quem usa o Amigo Flow</strong>. A restrição é direcionada apenas a assistentes de IA de uso amplo, não a empresas que usam o WhatsApp de forma legítima para atendimento, vendas e automações comerciais.')}
+  ${p('O Flow foi desenvolvido dentro das diretrizes da Meta, garantindo que ele continue sendo uma plataforma de mensageria programável, estável e segura. Nosso foco é integrar sistemas médicos ao WhatsApp, e não distribuímos agentes de uso geral.')}`
+),
+
+'novidades-lgpd': () => page('novidades-lgpd','🔒','Consentimento LGPD no Cadastro de Leads (Opt-in)','Implementação de consentimento explícito antes da coleta de dados pessoais.','atalhos/novidades-do-flow/consentimento-lgpd-no-cadastro-de-leads-opt-in.md',
+  `${p('Implementada etapa obrigatória de consentimento explícito antes da coleta de dados no fluxo de cadastro de leads via WhatsApp. Nenhum dado pessoal é coletado antes da autorização formal do usuário.')}
+  ${h2('Como funciona')}
+  ${h3('1. Solicitação de Consentimento')}
+  ${p('Antes de qualquer coleta, o agente envia: <em>"Antes de prosseguir, você autoriza o uso dos seus dados pessoais para realizar seu cadastro, agendamentos e comunicações com nossa clínica?"</em>')}
+  ${p('Botões disponíveis: ✅ Sim, autorizo / ❌ Não autorizo')}
+  ${h3('2. Regras de decisão')}
+  ${ul(['<strong>Se autorizar:</strong> fluxo segue normalmente e consentimento é registrado','<strong>Se não autorizar:</strong> fluxo é encerrado, evento é logado e nenhum dado é armazenado'])}
+  ${h2('Dados registrados no consentimento')}
+  ${ul([ic('lead_id'), ic('consent_status = true'), ic('timestamp'), ic('channel = WhatsApp'), ic('conversation_id')])}
+  ${h2('Impacto estratégico')}
+  ${ul(['CRM mais robusto juridicamente','Base legal clara para campanhas','Redução de risco regulatório','Preparação para integrações futuras'])}`
+),
+
+'novidades-link': () => page('novidades-link','🔗','Novo modo de agendamento via link','O agente agora pode enviar o link do Agende.ai quando detecta intenção de agendamento.','atalhos/novidades-do-flow/novo-modo-de-agendamento-via-link.md',
+  `${p('A habilidade de agendamento do Amigo Flow passa a suportar três modos de operação distintos.')}
+  ${h2('Os três modos')}
+  ${ul([
+    '<strong>Conversa com o Agente Flow:</strong> comportamento padrão — o agente conduz o fluxo completo dentro da conversa',
+    '<strong>Envio de link de agendamento:</strong> o agente detecta a intenção e encaminha o link oficial de autoagendamento da clínica (Agende.ai)',
+    '<strong>Agendamento desligado:</strong> sem link configurado e habilidade inativa, o agente transfere para humano automaticamente',
+  ])}
+  ${h2('Lógica de fallback')}
+  ${table(['Cenário','Comportamento'],[
+    ['Modo "link" ativo + link configurado','Envia o link ao detectar intenção de agendamento'],
+    ['Modo "link" ativo + sem link','Transfere para atendente humano'],
+    ['Habilidade inativa + sem link','Transfere para atendente humano'],
+    ['Modo "agente" ativo','Fluxo nativo padrão'],
+  ])}
+  ${h2('Como configurar')}
+  ${ol(['Acesse Configurações Gerais do Amigo Flow','Insira o link de agendamento em <strong>Configurações → Agendamento Online</strong>','Acesse <strong>Habilidades → Agendamento</strong>','Selecione o modo desejado'])}
+  ${hint('info','💡','Clínicas que já usam o fluxo nativo <strong>não são afetadas</strong> — nenhuma mudança sem configuração ativa.')}`
+),
+
+'novidades-agente': () => page('novidades-agente','⚙️','Configuração de Conhecimento e Agendamento do Agente','Defina exatamente o que o agente sabe e o que ele pode agendar.','atalhos/novidades-do-flow/nova-funcionalidade-configuracao-de-conhecimento-e-agendamento-do-agente.md',
+  `${hint('warning','⚠️','<strong>O que muda:</strong> Base de conhecimento define o que o agente <em>sabe</em>. Habilidade de agendamento define o que ele <em>pode agendar</em>.')}
+  ${h2('Base de conhecimento')}
+  ${p('No menu lateral do Agente, clique em <strong>Base de conhecimento</strong>. Você verá blocos para configurar:')}
+  ${ul(['Unidades','Profissionais','Tipos de atendimento','Formas de pagamento e convênios'])}
+  ${p('Clique no ícone ⚙️ de cada bloco para habilitar/desabilitar itens. Use o campo de busca ou o toggle para cada item.')}
+  ${h2('Habilidades → Agendamento')}
+  ${p('Aqui você define o que o agente pode efetivamente agendar. Selecione:')}
+  ${ul(['Tipos de atendimento agendáveis','Profissionais disponíveis','Unidades com agendamento ativo','Convênios aceitos'])}
+  ${hint('info','💡','<strong>Exemplo prático:</strong> Se você cadastrou 10 tipos de atendimento na base de conhecimento, mas habilitou apenas 5 na habilidade — o agente saberá informar sobre os 10, mas só agendará os 5 habilitados.')}`
+),
+
+'novidades-avaliacao': () => page('novidades-avaliacao','⭐','Avaliação de Atendimento','Configure envio automático de pesquisa de satisfação e acompanhe a performance no dashboard.','atalhos/novidades-do-flow/avaliacao-de-atendimento.md',
+  `${p('Agora você pode enviar pesquisas de avaliação automaticamente após cada conversa finalizada, personalizar mensagens e acompanhar a performance em um dashboard dedicado.')}
+  ${p(`Para configurar, acesse <button onclick="showPage('func-avaliacao')" style="background:none;border:none;color:var(--brand);cursor:pointer;font-size:14px;font-weight:600;padding:0">Configurações → Avaliação de Atendimento →</button>`)}
+  `
+),
+
+'novidades-kanban': () => page('novidades-kanban','📋','Chat do Flow no Kanban do Agende+','Abra o chat do paciente diretamente pelo botão WhatsApp no Kanban, sem sair da tela.','atalhos/novidades-do-flow/abertura-do-chat-do-amigo-flow-diretamente-pelo-botao-whatsapp-no-kanban-do-agende+.md',
+  `${p('Ao clicar no botão WhatsApp nos cards do Kanban, o sistema abre um <strong>chat flutuante integrado ao Amigo Flow</strong> — sem redirecionar para outra página.')}
+  ${h2('O que o chat flutuante exibe')}
+  ${ul(['Histórico completo da conversa','Campo de mensagem','Envio de texto, anexos e templates','Respostas em tempo real'])}
+  ${h2('Seleção de canal')}
+  ${p('Para clínicas com múltiplos números, um modal de seleção é exibido antes da abertura. O envio ocorrerá pelo canal escolhido, com registro automático no histórico.')}
+  ${hint('info','ℹ️','A funcionalidade só está disponível para quem é atendente do Amigo Flow. Para quem não usa o Flow, o redirecionamento para o WhatsApp Web continua funcionando normalmente.')}`
+),
+
+'novidades-templates': () => page('novidades-templates','📝','Templates com Variáveis Personalizadas','Crie modelos de mensagem com variáveis customizadas e preview em tempo real.','atalhos/novidades-do-flow/criacao-de-templates-com-variaveis-personalizadas-no-amigo-flow-whatsapp-api.md',
+  `${p('Sua clínica agora tem autonomia para criar templates aprovados pela Meta com <strong>variáveis personalizadas</strong> — adicionando, visualizando e substituindo variáveis diretamente no construtor do Amigo Flow.')}
+  ${h2('Como criar')}
+  ${ol([
+    'Em <strong>Mensagens / Modelos</strong>, selecione <strong>"Criar modelo"</strong>',
+    'No corpo da mensagem, clique em <strong>➕ Adicionar Variável</strong>',
+    'Defina o nome da variável no modal e clique em <strong>Adicionar</strong>',
+    'Insira a variável no corpo clicando sobre ela na lista — ela aparece destacada em roxo',
+    'Adicione exemplos das variáveis para aprovação da Meta',
+    'O preview atualiza em tempo real à direita',
+  ])}
+  ${hint('warning','⚠️','Regras: não é permitido repetir nomes de variáveis no mesmo template. A validação impede duplicações automaticamente.')}`
+),
+
+// ── FAQ ────────────────────────────────────────────────────────────────────────
+faq: () => page('faq','❓','FAQ','Respostas para as dúvidas mais frequentes sobre o Amigo Flow.','atalhos/faq/README.md',
+  `<div class="doc-cards">
+    ${[
+      ['faq-atendimento','💬','O que conta como 1 Atendimento','Como é feita a contagem de atendimentos'],
+      ['faq-janela','🕐','Janela de conversa da Meta','Como funcionam as janelas de 24h'],
+      ['faq-portfolio','🏢','Criar portfólio empresarial','Passo a passo no Meta Business Suite'],
+      ['faq-verificar','✅','Verificar empresa na Meta','Como verificar sua empresa para usar a API'],
+      ['faq-2fa','🔐','Desativar 2FA','Como desativar a autenticação em duas etapas'],
+      ['faq-associar','📱','Associar número no Flow','Como conectar seu número ao Amigo Flow'],
+      ['faq-portabilidade','📲','Portabilidade de número','Migrar da API de outro provedor para o Flow'],
+      ['faq-banimento','🔍','Solicitar revisão de banimento','O que fazer quando a conta é bloqueada'],
+      ['faq-remover','🗑️','Remover número do portfólio','Como excluir um número da WABA'],
+      ['faq-erros','⚠️','Códigos de erro de envio','Referência dos erros da API do WhatsApp'],
+    ].map(([id,ic,t,d])=>`<button class="doc-card" onclick="showPage('${id}')"><div class="doc-card-icon">${ic}</div><div class="doc-card-title">${t}</div><div class="doc-card-desc">${d}</div></button>`).join('')}
+  </div>`
+),
+
+'faq-atendimento': () => page('faq-atendimento','💬','O que conta como 1 Atendimento','Entenda como a contagem de atendimentos funciona no Amigo Flow.','atalhos/faq/o-que-conta-como-1-atendimento-no-amigo-flow.md',
+  `${p('Um atendimento é <strong>uma conversa iniciada</strong> pela clínica ou pelo paciente. Cada nova conversa aberta é contabilizada como 1 atendimento.')}
+  ${h2('Disparos Automáticos')}
+  ${hint('info','ℹ️','<strong>Cada envio conta como 1 atendimento.</strong> Se o paciente responder, a conversa continua na mesma janela sem custo adicional.')}
+  ${h2('Envios em Massa')}
+  ${hint('info','ℹ️','<strong>Cada paciente alcançado conta como 1 atendimento.</strong> Exemplo: envio para 3 pessoas → 3 atendimentos, mesmo que só 2 respondam.')}
+  ${h2('Início pela Clínica')}
+  ${hint('info','ℹ️','Cada conversa iniciada pela clínica conta como 1 atendimento.')}
+  ${hint('warning','⚠️','É possível enviar <strong>apenas um modelo de marketing</strong> por atendimento. Para enviar outro, finalize o atendimento e abra um novo.')}
+  ${h2('Início pelo Paciente')}
+  ${hint('info','ℹ️','Cada nova conversa iniciada pelo paciente conta como 1 atendimento.')}
+  ${h2('Como é finalizado')}
+  ${ul(['Automaticamente pelo agente (IA)','Manualmente pelo atendente'])}`
+),
+
+'faq-janela': () => page('faq-janela','🕐','Como funciona a janela de conversa da Meta','As janelas de 24h determinam quando você pode enviar mensagens e quando um novo atendimento é contabilizado.','atalhos/faq/como-funciona-a-janela-de-conversa-da-meta.md',
+  `${h2('Conversa reativa (paciente envia primeiro)')}
+  ${p('Quando o paciente envia mensagem, abre-se uma janela de 24h. Dentro dela, o atendente ou agente pode responder livremente sem precisar de template. Após 24h, é necessário um modelo aprovado pela Meta.')}
+  ${h2('Conversa proativa (clínica envia primeiro)')}
+  ${p('A clínica inicia com um modelo de mensagem aprovado (template) — isso conta como novo atendimento. Se o paciente responder, abre nova janela de 24h.')}
+  ${h2('Categorias de modelos')}
+  ${ul([
+    '<strong>Utilidade:</strong> informações sobre transações anteriores (confirmações, status de pedidos)',
+    '<strong>Marketing:</strong> promoções, ofertas, novidades da marca',
+  ])}
+  ${h2('Resumo')}
+  ${table(['Situação','O que acontece','Novo atendimento?'],[
+    ['Paciente envia mensagem','Abre janela de 24h','✅ Sim'],
+    ['Clínica responde dentro de 24h','Continua o mesmo atendimento','❌ Não'],
+    ['Clínica responde após 24h','Precisa de template Meta','✅ Sim'],
+    ['Clínica inicia (proativa)','Abre nova janela de 24h','✅ Sim'],
+    ['Disparo automático ou em massa','Cada envio = 1 atendimento','✅ Sim'],
+  ])}`
+),
+
+'faq-portfolio': () => page('faq-portfolio','🏢','Como criar um portfólio empresarial','O portfólio empresarial é obrigatório para integrar ao Amigo Flow via API Oficial.','atalhos/faq/como-criar-um-portfolio-empresarial-meta-business-suite.md',
+  `${hint('info','💡','O Amigo Flow usa a infraestrutura oficial da Meta. Ter um portfólio ativo é essencial para habilitar a integração e garantir conformidade com as políticas oficiais.')}
+  ${h2('Pré-requisitos')}
+  ${ul(['Conta pessoal ativa no Facebook','Acesso ao business.facebook.com','E-mail profissional para administrar o portfólio'])}
+  ${h2('Passo a passo')}
+  ${h3('1. Acesse o Meta Business Suite')}
+  ${p('Acesse <strong>business.facebook.com</strong> e clique em <strong>"Criar portfólio empresarial"</strong>.')}
+  ${h3('2. Preencha as informações')}
+  ${table(['Campo','O que preencher'],[
+    ['Nome da empresa','Nome oficial da clínica ou marca'],
+    ['Seu nome','Nome do responsável pela conta'],
+    ['E-mail de trabalho','E-mail profissional de administração'],
+  ])}
+  ${h3('3. Configure seus ativos')}
+  ${p('Após criação, adicione páginas do Facebook, contas de anúncios e vincule a conta de WhatsApp Business usada no Amigo Flow.')}`
+),
+
+'faq-verificar': () => page('faq-verificar','✅','Como verificar sua empresa na Meta','A verificação confirma que sua empresa é legítima e libera a API Oficial.','atalhos/faq/como-verificar-sua-empresa-na-meta.md',
+  `${h2('Pré-requisitos')}
+  ${ul(['Conta Comercial (Business Manager) configurada','Site ativo e público','Documento legal oficial (contrato social, CNPJ)','Domínio de e-mail corporativo'])}
+  ${h2('Passo a passo')}
+  ${ol([
+    'Acesse <strong>business.facebook.com/settings</strong>',
+    'Clique em <strong>Centro de Segurança → Verificação da empresa</strong>',
+    'Clique em <strong>Iniciar verificação</strong>',
+    'Preencha nome legal, endereço, telefone e site',
+    'Faça upload de documentos que comprovem existência legal',
+    'Verifique seu domínio (código DNS, arquivo HTML ou e-mail corporativo)',
+    'Aguarde análise: geralmente 1 a 5 dias úteis',
+  ])}
+  ${hint('warning','⚠️','Use o nome exato do registro legal. Prefira e-mails corporativos — não Gmail ou Hotmail.')}`
+),
+
+'faq-2fa': () => page('faq-2fa','🔐','Como desativar a autenticação em dois fatores (2FA)','Em alguns casos é necessário desativar temporariamente a 2FA durante a integração.','atalhos/faq/como-desativar-a-autenticacao-em-dois-fatores-2fa-no-portfolio-empresarial.md',
+  `${hint('warning','⚠️','Desativar a 2FA afeta <strong>todas as pessoas</strong> com acesso ao portfólio. Reative assim que o processo for concluído.')}
+  ${h2('Passo a passo')}
+  ${ol([
+    'Acesse <strong>business.facebook.com</strong> → ícone de engrenagem (⚙️)',
+    'No menu lateral → <strong>"Contas do WhatsApp" → "Gerenciador do WhatsApp"</strong>',
+    'Clique em <strong>"Número de telefone"</strong> → ícone de engrenagem (⚙️)',
+    'Localize <strong>"Confirmação em duas etapas"</strong>',
+    'Clique em <strong>"Desativar confirmação em duas etapas"</strong> → confirme com <strong>OK</strong>',
+    'Aguarde o código de confirmação e finalize',
+  ])}`
+),
+
+'faq-associar': () => page('faq-associar','📱','Como associar meu número do WhatsApp no Flow','Passo a passo do Embedded Signup da Meta.','atalhos/faq/como-associar-meu-numero-do-whatsapp-no-flow.md',
+  `${h2('Fluxo de associação')}
+  ${ol([
+    'Na configuração do agente → clique em <strong>Associar número</strong> → selecione <strong>WhatsApp Business API</strong>',
+    'Faça login na conta do Facebook com acesso ao Gerenciador de Negócios',
+    'Conceda permissões à Amigo Tech clicando em <strong>Confirmar</strong>',
+    'Crie ou selecione um Portfólio empresarial existente',
+    'Crie ou selecione uma WABA existente',
+    'Adicione o número de telefone a ser conectado',
+    'Realize a verificação via SMS ou ligação',
+    'A tela atualiza e o número fica ativo no painel ✅',
+  ])}
+  ${h2('⚠️ Cuidados importantes')}
+  ${ul([
+    'Você precisa ser <strong>administrador</strong> do Gerenciador de Negócios',
+    'O número <strong>não pode estar ativo em outra WABA</strong> — deve ser excluído primeiro',
+    '<strong>Verificação em duas etapas deve estar desativada</strong> no número',
+  ])}
+  ${h2('Acompanhamento da verificação')}
+  ${p('Após a associação, acompanhe o status em 3 fases:')}
+  ${ul(['Verificação da empresa','Verificação da Conta WhatsApp Business (WABA)','Verificação do nome do número'])}`
+),
+
+'faq-portabilidade': () => page('faq-portabilidade','📲','Portabilidade de número com API Oficial','Como migrar seu número de outro provedor para o Amigo Flow.','atalhos/faq/como-fazer-a-portabilidade-de-um-numero-com-api-oficial-para-o-amigo-flow.md',
+  `${hint('warning','⚠️','<strong>Pré-requisitos:</strong> WABA própria, acesso de administrador, moedas de crédito iguais entre os provedores, 2FA desativada, número apto a receber ligação. Não fazer nos primeiros 4 nem nos últimos 3 dias do mês.')}
+  ${h2('Passo a passo')}
+  ${h3('Etapa 1 — Remover parceiro atual')}
+  ${ol([
+    'Acesse business.facebook.com/settings',
+    'Configurações → Contas → Contas do WhatsApp → Aba <strong>"Parceiros"</strong>',
+    'Localize o parceiro atual e clique no ícone 🗑️',
+    'Após remoção, <strong>envio de mensagens fica bloqueado</strong> até nova linha de crédito',
+  ])}
+  ${h3('Etapa 2 — Cadastro no Amigo Flow')}
+  ${ol([
+    'Cliente acessa o fluxo de associação de número no Amigo Flow',
+    'Seleciona a WABA existente quando aparecer "Esta Conta foi compartilhada anteriormente"',
+    'Não precisa escolher o número — apenas confirmar a WABA',
+  ])}
+  ${h2('Cronograma exemplo')}
+  ${table(['Data','Ação','Situação'],[
+    ['20 de abril','Remove parceiro antigo','Envio bloqueado'],
+    ['21 de abril','Cadastro + compartilha crédito','Ainda bloqueado'],
+    ['1º de maio','Nova linha de crédito entra em vigor','Envio liberado'],
+  ])}
+  ${hint('info','🧠','A migração <strong>não apaga</strong> números nem modelos. Faça com antecedência e evite início/fim do mês.')}`
+),
+
+'faq-banimento': () => page('faq-banimento','🔍','Solicitar revisão de banimento/bloqueio','O que fazer quando sua conta WhatsApp é banida ou bloqueada pela Meta.','atalhos/faq/como-solicitar-revisao-de-banimento-bloqueio-da-conta-no-whatsapp-api-oficial-da-meta.md',
+  `${h2('Causas comuns')}
+  ${ul(['Quebra das Políticas de Comércio ou Diretrizes da Comunidade da Meta','Volume elevado de bloqueios por parte de contatos','Campanhas em massa sem opt-in dos contatos'])}
+  ${h2('Passo a passo para solicitar revisão')}
+  ${ol([
+    'Acesse <strong>business.facebook.com</strong> → <strong>Conta do WhatsApp</strong>',
+    'Selecione a conta afetada → <strong>Gerenciador do WhatsApp</strong>',
+    'Localize a seção <strong>Status da Conta</strong>',
+    'Se bloqueada, acesse <strong>"Página inicial de suporte"</strong>',
+    'Clique no status da conta para ver detalhes do bloqueio',
+    'Clique em <strong>"Pedir Análise"</strong> e siga as instruções',
+    'Aguarde o posicionamento da Meta (geralmente até 48h úteis)',
+  ])}
+  ${h2('Prevenção')}
+  ${ul([
+    'Nunca use listas de transmissão em massa sem consentimento (opt-in)',
+    'Mantenha linguagem neutra e profissional',
+    'Evite envio repetitivo de mensagens automáticas com conteúdo promocional',
+  ])}`
+),
+
+'faq-remover': () => page('faq-remover','🗑️','Removendo um número do Portfólio Empresarial','Como excluir um número de telefone da WABA dentro do Business Manager.','atalhos/faq/removendo-um-numero-do-portfolio-empresarial.md',
+  `${hint('success','✅','<strong>Pré-requisitos:</strong> acesso de administrador ao portfólio, número com WABA ativa, sem pendências financeiras.')}
+  ${hint('danger','⚠️','Ao remover o número, <strong>todas as mensagens, sessões e templates relacionados serão perdidos</strong>.')}
+  ${h2('Passo a passo')}
+  ${ol([
+    'Acesse o Gerenciador de Negócios da Meta → ícone de engrenagem',
+    'Menu lateral → <strong>"Contas do WhatsApp" → "Gerenciador de WhatsApp"</strong>',
+    'Clique no ícone de <strong>lixeira</strong> ao lado do número',
+    'Confirme no pop-up clicando em <strong>"Avançar"</strong>',
+    'Para excluir a WABA: Contas do WhatsApp → selecione a WABA → três pontinhos → <strong>"Remover do Portfólio Empresarial"</strong>',
+    'Confirme clicando em <strong>"Excluir conta"</strong>',
+  ])}
+  ${hint('info','ℹ️','Após remoção, o número pode ser reconectado respeitando as diretrizes da Meta. Em casos de migração, pode haver período de retenção de até 30 dias.')}`
+),
+
+'faq-erros': () => page('faq-erros','⚠️','Códigos de erros de envio','Referência dos principais erros retornados pela API do WhatsApp Business.','atalhos/faq/codigo-de-erros-de-envio.md',
+  `${h2('Erros de autorização')}
+  ${table(['Código','Detalhes','Solução'],[
+    ['0 – AuthException','Token expirou ou foi invalidado','Gere um novo token de acesso'],
+    ['190 – Token expirado','O token de acesso expirou','Gere um novo token de acesso'],
+    ['10 – Permissão negada','Permissão não concedida ou removida','Verifique permissões no depurador de token'],
+    ['200-299 – Permissão da API','Permissão não concedida ou removida','Verifique permissões no depurador'],
+  ])}
+  ${h2('Erros de integridade')}
+  ${table(['Código','Detalhes','Solução'],[
+    ['368','Bloqueado por violação de política','Veja Monitoramento da Política Meta'],
+    ['131031','Conta bloqueada','Verifique status + API de Status de Integridade'],
+    ['130497','Bloqueado para enviar para este país','Consulte Política de Mensagens WhatsApp'],
+  ])}
+  ${h2('Erros de template')}
+  ${table(['Código','Detalhes','Solução'],[
+    ['132001','Modelo não existe ou não aprovado','Verifique nome/idioma e aprovação do modelo'],
+    ['132015','Modelo pausado por baixa qualidade','Edite o modelo para melhorar qualidade'],
+    ['132016','Modelo desabilitado permanentemente','Crie novo modelo com conteúdo diferente'],
+    ['132000','Incompatibilidade de parâmetros','Garanta que todos os parâmetros estejam corretos'],
+  ])}
+  ${h2('Erros de limitação')}
+  ${table(['Código','Detalhes','Solução'],[
+    ['4','Muitas chamadas de API','Reduza frequência de consultas'],
+    ['130429','Limite de taxa atingido','Reduza frequência de envios'],
+    ['131048','Limite de spam atingido','Revise qualidade da conta no Gerenciador'],
+    ['131047','Janela de 24h expirada','Envie um template para reabrir a conversa'],
+  ])}`
+),
+
+'faq-suporte': () => page('faq-suporte','🆘','Como acessar a página de suporte da Meta','Como acessar a Central de Suporte da Meta para verificar restrições e solicitar análises.','atalhos/faq/como-acessar-a-pagina-inicial-de-suporte-da-meta.md',
+  `${h2('Passo a passo')}
+  ${ol([
+    'Faça login em <strong>business.facebook.com</strong>',
+    'No painel lateral esquerdo, clique no ícone de ajuda',
+    'Acesse <strong>Gerenciamento → "Página Inicial do Suporte para Empresas"</strong>',
+    'Você verá o status do portfólio empresarial, da página de anúncios e da conta do WhatsApp',
+    'Clique na conta correspondente para ver restrições e opções de revisão',
+  ])}`
+),
+
+// ── FUNCIONALIDADES ────────────────────────────────────────────────────────────
+'func-agente': () => page('func-agente','🤖','Guia prático do Agente Flow','Como ele funciona, por que funciona assim e como isso protege sua clínica e seus pacientes.','funcionalidades/guia-pratico-do-agente-flow.md',
+  `${h2('O que o Agente Flow faz')}
+  ${ul([
+    '<strong>Agenda consultas com precisão:</strong> cruza médico, convênio, procedimento, unidade e disponibilidade em tempo real',
+    '<strong>Responde dúvidas administrativas:</strong> horários, unidades, serviços, médicos, convênios aceitos',
+    '<strong>Garante segurança em todos os passos:</strong> nunca expõe dados privados, nunca inventa informações',
+    '<strong>Reduz erros de agendamento:</strong> valida automaticamente todas as combinações antes de confirmar',
+  ])}
+  ${h2('O que ele NÃO faz')}
+  ${hint('danger','🚫','O Agente Flow <strong>não pode</strong>: explicar procedimentos, passar preparos, falar sobre pós-operatório, interpretar exames, informar doses de remédios ou dar diagnósticos. Isso é proteção da sua clínica — não limitação técnica.')}
+  ${h2('Fluxo de agendamento')}
+  ${ol(['Forma de pagamento (convênio ou particular)','Unidade','Tipo de consulta/procedimento','Médico','Datas e horários disponíveis','Confirmação do paciente','Criação do agendamento'])}
+  ${h2('Quando o Agente transfere para humano')}
+  ${ul([
+    '<strong>Conteúdo médico restrito:</strong> preparos, remédios, sintomas, pós-operatório',
+    '<strong>Ações fora do escopo:</strong> avaliação de valor, documentação, questões financeiras',
+    '<strong>Quando o paciente quer:</strong> cancelar para terceiros, reagendar para outra pessoa, alterar médico de agendamento existente',
+    '<strong>Em caso de erro:</strong> transfere diretamente sem expor o erro ao paciente',
+  ])}
+  ${h2('LGPD e segurança')}
+  ${ul([
+    'Nunca informa dados sensíveis (CPF, endereço, RG)',
+    'Não revela informações de outros pacientes',
+    'Não inventa informações — tudo vem da configuração oficial da clínica',
+    'Sempre confirma antes de executar ações sensíveis',
+  ])}`
+),
+
+'func-dashboard': () => page('func-dashboard','📊','Dashboard de Atendimentos','Painel de análise do Amigo Flow com indicadores operacionais em tempo real.','funcionalidades/dashboard-de-atendimentos.md',
+  `${h2('Seções do Dashboard')}
+  ${h3('1. Em Tempo Real')}
+  ${table(['Categoria','Descrição'],[
+    ['Em aguardando','Conversas transbordadas para humano ainda não assumidas'],
+    ['Com o Agente (IA)','Conversas sendo conduzidas pelo Agente Flow'],
+    ['Com atendentes humanos','Conversas em andamento com a equipe'],
+  ])}
+  ${h3('2. Atendimentos Concluídos')}
+  ${table(['Indicador','Descrição'],[
+    ['Total de conversas','Número total de atendimentos no período'],
+    ['Tempo médio de resolução','Do início ao encerramento'],
+    ['Taxa de transferência','% que precisaram ser transferidas'],
+    ['Resolvidas pelo Agente','% concluídas pela IA sem intervenção humana'],
+    ['Agendadas pelo Agente','Consultas marcadas automaticamente'],
+  ])}
+  ${h3('3. Avaliação de Atendimento')}
+  ${p('Índice de satisfação com base nas avaliações pós-atendimento. O Agente Flow também é avaliado.')}
+  ${h3('4. Disparos Automáticos')}
+  ${p('Progresso de confirmações e reagendamentos com gráfico e lista detalhada.')}
+  ${h2('Boas práticas')}
+  ${ul([
+    'Verifique diariamente o status <strong>"Em aguardando"</strong>',
+    'Use filtros de <strong>período personalizado</strong> para comparar semanas',
+    'Observe a <strong>taxa de transferência</strong> — índices altos indicam necessidade de ajuste na IA',
+  ])}`
+),
+
+'func-chats': () => page('func-chats','💬','Chats','Central de Atendimentos — painel onde os atendentes gerenciam todas as conversas em tempo real.','funcionalidades/chats.md',
+  `${h2('Navegação Principal')}
+  ${h3('1. Menu Lateral (Atendentes e Filtros)')}
+  ${ul([
+    '<strong>Meus Chats:</strong> atendimentos atribuídos ao usuário logado',
+    '<strong>Em Aguardando:</strong> conversas transbordadas para humano ainda não assumidas',
+    '<strong>Todos:</strong> todos os atendimentos ativos na clínica',
+  ])}
+  ${h3('2. Lista de Conversas')}
+  ${p('Prévia de cada conversa: foto, nome, trecho da última mensagem, horário e indicador azul para mensagens não lidas. Busca em tempo real por nome ou número.')}
+  ${h3('3. Janela de Conversa')}
+  ${p('O atendente pode digitar mensagens, enviar áudio, emojis, anexar arquivos, usar atalhos rápidos e templates Meta (API oficial).')}
+  ${hint('info','ℹ️','O usuário pode editar ou excluir mensagens em até <strong>10 min após o envio</strong>. Só pode excluir mensagens enviadas por ele ou pelo agente.')}
+  ${h2('Funções Principais')}
+  ${h3('Transferir Atendimento')}
+  ${p('Envia a conversa para outro atendente ou setor mantendo o histórico. O paciente não percebe a troca de operador.')}
+  ${h3('Finalizar Atendimento')}
+  ${p('Remove da lista ativa, arquiva o histórico e libera o atendente para novos atendimentos. Pode disparar avaliação de atendimento se configurado.')}
+  ${h3('Nova Conversa')}
+  ${p('A clínica pode buscar contatos por nome ou número e iniciar uma nova conversa. Para API oficial com paciente fora da janela, é necessário selecionar um template.')}
+  ${h2('Boas práticas')}
+  ${ul([
+    'Sempre <strong>finalize chats</strong> concluídos para manter a central organizada',
+    'Use <strong>atalhos</strong> para respostas frequentes',
+    'Transfira apenas quando necessário',
+  ])}`
+),
+
+'func-paineis': () => page('func-paineis','📋','Painéis','Kanban para acompanhar confirmações de consultas e reengajamento pós-falta.','funcionalidades/paineis.md',
+  `${h2('Fluxos disponíveis')}
+  ${h3('Confirmações')}
+  ${ul(['<strong>Não confirmados:</strong> não contatados ou sem resposta','<strong>Confirmados:</strong> confirmaram presença','<strong>Reagendados:</strong> solicitaram novo horário','<strong>Cancelados:</strong> desistiram'])}
+  ${h3('Faltas')}
+  ${ul(['<strong>Mensagens enviadas:</strong> sendo contatado para reagendar','<strong>Reagendados:</strong> já remarcaram','<strong>Cancelados:</strong> ainda não optaram por reagendar'])}
+  ${h2('Cada card exibe')}
+  ${ul(['Nome e telefone do paciente','Procedimento, data/horário e unidade','Profissional responsável','Logs da ação e tempo desde o contato','Ícone WhatsApp para abertura rápida'])}
+  ${h2('Ações disponíveis')}
+  ${ul([
+    '<strong>Busca:</strong> filtra por nome ou telefone em todas as colunas',
+    '<strong>Filtros:</strong> por profissional, unidade, data, tipo de atendimento',
+    '<strong>Menu do card (⋮):</strong> abrir conversa, adiantar/reenviar mensagem, reagendar',
+  ])}`
+),
+
+'func-envios': () => page('func-envios','📨','Envios','Visão geral dos módulos de envio do Amigo Flow.','funcionalidades/envios/README.md',
+  `<div class="doc-cards">
+    <button class="doc-card" onclick="showPage('func-envios-auto')"><div class="doc-card-icon">🔄</div><div class="doc-card-title">Envios Automáticos</div><div class="doc-card-desc">Configure uma vez e o sistema dispara no momento certo</div></button>
+    <button class="doc-card" onclick="showPage('func-envios-massa')"><div class="doc-card-icon">📢</div><div class="doc-card-title">Envios em Massa</div><div class="doc-card-desc">Crie campanhas para segmentos de pacientes com métricas detalhadas</div></button>
+  </div>`
+),
+
+'func-envios-auto': () => page('func-envios-auto','🔄','Envios Automáticos','Configure uma vez, defina as regras, e o sistema cuida do resto.','funcionalidades/envios/envios-automaticos.md',
+  `${h2('O que você pode automatizar')}
+  ${table(['Tipo','Para que serve','Disponível'],[
+    ['Confirmação','Reduzir faltas pedindo confirmação com antecedência','✅'],
+    ['Pré-atendimento','Enviar orientações antes da consulta','✅'],
+    ['Pós-atendimento','Manter contato após a consulta','✅'],
+    ['Falta','Contatar quando o paciente não comparece','✅'],
+    ['Aniversário','Fortalecer relacionamento no aniversário','✅'],
+    ['Orçamento em aberto','Lembrar de orçamento pendente','✅'],
+    ['Cobrança','Lembretes financeiros automáticos','🔜'],
+  ])}
+  ${h2('Como criar um Envio Automático')}
+  ${ol([
+    'Acesse <strong>Envios → Envios Automáticos</strong> → clique em <strong>+ Criar envio automático</strong>',
+    'Escolha o tipo de automação no catálogo',
+    'Configure nas 3 abas: <strong>Mensagem e objetivo</strong>, <strong>Quando enviar</strong> e <strong>Filtros</strong>',
+    'Clique em <strong>"Salvar e ativar"</strong>',
+  ])}
+  ${h2('Aba 1 — Mensagem e objetivo')}
+  ${ul([
+    '<strong>Canal:</strong> número de WhatsApp pelo qual a mensagem sai',
+    '<strong>Modelo:</strong> template aprovado (preview aparece automaticamente)',
+    '<strong>Objetivo:</strong> campo opcional para identificar o envio na listagem',
+  ])}
+  ${h2('Aba 2 — Quando enviar')}
+  ${p('Define o momento do disparo (horas, dias ou semanas antes/depois do evento). Adicione múltiplos períodos — ex: 48h antes e 2h antes.')}
+  ${hint('warning','⚠️','Períodos com a mesma regra de envio não são permitidos.')}
+  ${h2('Aba 3 — Filtros')}
+  ${p('Segmente o público por tipo de atendimento, profissional, unidade, procedimento, forma de pagamento, etc. Sem filtros, a automação vale para toda a base.')}
+  ${h2('Como funciona internamente')}
+  ${ul([
+    '<strong>Sem duplicatas:</strong> mesma mensagem nunca enviada duas vezes no mesmo horário',
+    '<strong>Reagendamentos:</strong> disparos recalculados automaticamente para o novo horário',
+    '<strong>Desativação:</strong> disparos futuros cancelados imediatamente',
+    '<strong>Log:</strong> cada envio registrado no histórico do chat do paciente',
+  ])}`
+),
+
+'func-envios-massa': () => page('func-envios-massa','📢','Envios em Massa','Crie e dispare campanhas para segmentos de pacientes com métricas detalhadas.','funcionalidades/envios/envios-em-massa.md',
+  `${h2('Criando um Envio em Massa')}
+  ${ol([
+    'Acesse <strong>Envios em Massa</strong> → <strong>Criar Envio em Massa</strong>',
+    '<strong>Informações Gerais:</strong> nome do envio e setor responsável',
+    '<strong>Conteúdo:</strong> selecione um template aprovado (preview aparece ao lado)',
+    '<strong>Público-Alvo:</strong> aplique filtros avançados. O total de contatos atualiza em tempo real',
+  ])}
+  ${hint('warning','⚠️','Sem segmentação, o público é toda a base de pacientes da clínica.')}
+  ${h2('Estimativa de custo')}
+  ${table(['Categoria','Custo unitário','Quando usar'],[
+    ['Marketing','R$ 0,45 / contato','Promoções, campanhas de relacionamento'],
+    ['Utilidade','R$ 0,10 / contato','Lembretes, confirmações, avisos transacionais'],
+  ])}
+  ${hint('info','💡','Prefira templates de Utilidade para comunicações transacionais: custam 78% menos e têm taxas de entrega mais altas.')}
+  ${h2('Métricas de resultado')}
+  ${p('Clique na campanha enviada para ver: público-alvo, enviadas, entregues, lidas e respondidas. Lista individual com nome, telefone, datas e ícone para abrir chat.')}
+  ${h2('Reagendamento de campanhas')}
+  ${p('Se o envio ficou abaixo de 80%, um alerta amarelo aparece. Clique em <strong>"Reagendar"</strong> — somente quem não recebeu é impactado no reenvio.')}`
+),
+
+'func-leads': () => page('func-leads','👥','Leads','Centralize e gerencie todos os contatos potenciais da clínica em um único lugar.','funcionalidades/leads.md',
+  `${h2('Visualizando os Leads')}
+  ${table(['Campo','Descrição'],[
+    ['Nome do contato','Nome informado no cadastro ou importação'],
+    ['Telefone','Número do lead (DDD + número)'],
+    ['Responsável','Usuário que criou ou importou o lead'],
+    ['Data de criação','Quando o lead foi adicionado'],
+    ['Origem','Instagram, importação, evento, etc.'],
+    ['Etiquetas','Palavras-chave associadas'],
+    ['WhatsApp','Botão para abrir conversa direta'],
+  ])}
+  ${h2('Adicionando Leads')}
+  ${p('Clique em <strong>+ Adicionar Leads</strong>. Campos obrigatórios: Nome, Telefone (com DDD) e Origem. Opcionais: E-mail e Etiquetas.')}
+  ${h2('Etiquetas')}
+  ${p('Marcadores de interesse ou status — cada lead pode ter uma ou várias. Exemplos: "Pré-consulta", "Campanha julho", "Indicação".')}
+  ${h2('Canais de origem disponíveis')}
+  ${ul(['Instagram, Facebook, WhatsApp','Google Meu Negócio, Anúncios pagos (Meta / Google Ads)','Site da clínica, Indicação, Formulários','Importação de planilha'])}
+  ${hint('info','ℹ️','Ao importar CSV, o sistema cria automaticamente uma origem "Importação #N", renomeável na hora da importação.')}`
+),
+
+'func-config': () => page('func-config','⚙️','Configurações','Visão geral das configurações do Amigo Flow.','funcionalidades/configuracoes/README.md',
+  `<div class="doc-cards">
+    ${[
+      ['func-canais','📡','Canais','Configure números, agente e regras de atendimento'],
+      ['func-modelos','📝','Modelos de mensagens','Crie e gerencie templates aprovados pela Meta'],
+      ['func-atalhos','⚡','Atalhos de mensagens','Respostas rápidas para atendentes'],
+      ['func-permissoes','🔐','Permissões e Setores','Controle de acesso e organização da equipe'],
+      ['func-avaliacao','⭐','Avaliação de Atendimento','Configure pesquisas de satisfação'],
+    ].map(([id,ic,t,d])=>`<button class="doc-card" onclick="showPage('${id}')"><div class="doc-card-icon">${ic}</div><div class="doc-card-title">${t}</div><div class="doc-card-desc">${d}</div></button>`).join('')}
+  </div>`
+),
+
+'func-canais': () => page('func-canais','📡','Canais','Configure os diferentes meios de comunicação da clínica.','funcionalidades/configuracoes/canais.md',
+  `${p('Os canais representam os diferentes números da clínica. Cada canal concentra: número e conta, regras de atendimento, envios automáticos, modelos e agente (opcional).')}
+  ${h2('Aba: Número e Conta')}
+  ${p('Associe um número via fluxo oficial da Meta. Após a associação, o canal permite: visualização do perfil, Envios Automáticos e Modelos de Mensagem.')}
+  ${h2('Aba: Agente Flow (opcional)')}
+  ${p('Habilite o agente para o canal e configure:')}
+  ${ul(['Base de conhecimento (o que ele sabe)','Habilidades: agendamento, reagendamento, confirmação, atendimento de leads','Regras de inatividade e reengajamento'])}
+  ${h2('Aba: Regras de Atendimento')}
+  ${ul([
+    '<strong>Setores associados:</strong> defina quais setores acessam o canal',
+    '<strong>Horário de atendimento:</strong> intervalo contínuo por dia (sem suporte a múltiplos períodos)',
+    '<strong>Mensagem de saudação:</strong> enviada ao iniciar contato',
+    '<strong>Avaliação de atendimento:</strong> ative e configure para o canal',
+  ])}
+  ${hint('warning','⚠️','O sistema aceita <strong>apenas um intervalo contínuo por dia</strong>. Conversas fora do horário ficam em "Em aguardo".')}`
+),
+
+'func-modelos': () => page('func-modelos','📝','Como criar modelos de mensagens','Crie templates aprovados pela Meta para confirmações, lembretes e campanhas.','funcionalidades/configuracoes/como-criar-modelos-de-mensagens.md',
+  `${h2('Acessar o criador')}
+  ${p('Em <strong>Número e conta → Modelos da conta → Criar Modelo</strong>. Escolha a categoria:')}
+  ${ul([
+    '<strong>Marketing:</strong> promoções, campanhas, divulgação de serviços',
+    '<strong>Atendimento (Utilidade):</strong> confirmações, lembretes, notificações operacionais',
+  ])}
+  ${h2('Preencher o modelo')}
+  ${h3('Cabeçalho (opcional)')}
+  ${p('Pode conter mídia (vídeo, imagem, documento, áudio) ou ser apenas texto.')}
+  ${h3('Corpo da mensagem')}
+  ${p('Use variáveis do Amigo Clinic ou variáveis dinâmicas:')}
+  <pre class="doc-code">Olá @@@nome, sua consulta com @@@medico está confirmada para @@data às @@horario.</pre>
+  ${h3('Botões (opcional)')}
+  ${ul([
+    '<strong>Resposta Rápida:</strong> Confirmar, Reagendar, Falar com atendente',
+    '<strong>Abrir Página:</strong> link para mapa, documento, etc.',
+  ])}
+  ${h2('Aprovação')}
+  ${p('Clique em <strong>Validar modelo</strong>. A Meta analisa e retorna em até alguns dias.')}
+  ${table(['Status','Significado'],[
+    ['🟡 Em Análise','Meta ainda está revisando'],
+    ['🟢 Aprovado (Ativo)','Pronto para uso'],
+    ['🔴 Reprovado','Motivo exibido — ajuste e reenvie'],
+  ])}
+  ${hint('warning','⚠️','Boas práticas: sem linguagem sensível, sem promessas médicas, sem excesso de emojis. Modelo mal configurado pode gerar bloqueio do número.')}`
+),
+
+'func-atalhos': () => page('func-atalhos','⚡','Atalhos de mensagens','Respostas rápidas pré-definidas para agilizar o atendimento manual.','funcionalidades/configuracoes/atalhos-de-mensagens.md',
+  `${hint('info','ℹ️','Os atalhos de mensagens permitem que atendentes enviem respostas frequentes com poucos toques, reduzindo o tempo de digitação e padronizando a comunicação.')}`
+),
+
+'func-permissoes': () => page('func-permissoes','🔐','Permissões e Setores','Configure quem pode acessar o quê e organize sua equipe em setores.','funcionalidades/configuracoes/permissoes-e-setores.md',
+  `${h2('Parte 1 — Permissões')}
+  ${hint('warning','⚠️','Pré-requisito: usuário precisa ser <strong>Administrador da clínica</strong>.')}
+  ${ol([
+    'Vá em <strong>Configurações → Permissões de Acesso</strong>',
+    'Selecione o usuário a configurar',
+    'Localize a seção <strong>"Módulo Amigo Flow"</strong>',
+    'Ative as permissões necessárias e salve',
+  ])}
+  ${h3('Permissões disponíveis')}
+  ${ul([
+    '<strong>Chats:</strong> acesso, nova conversa, histórico, ver todos os setores',
+    '<strong>Dashboard:</strong> acesso a dados analíticos',
+    '<strong>Leads:</strong> acesso + exportação',
+    '<strong>Painéis:</strong> acesso aos painéis de disparos',
+  ])}
+  ${h2('Parte 2 — Setores')}
+  ${ol([
+    'Vá em <strong>Configurações → Amigo Flow → Setores</strong>',
+    'Clique em <strong>+ Criar setor</strong>',
+    'Preencha: Nome (obrigatório) + Atendentes',
+    'Clique em <strong>Criar</strong>',
+  ])}
+  ${hint('warning','⚠️','Um atendente só pode pertencer a <strong>um setor</strong>, mas pode atuar em vários canais.')}
+  ${h2('Parte 3 — Associar Setores ao canal')}
+  ${ol([
+    'Dentro do canal → <strong>Regras de Atendimento</strong>',
+    'Clique em <strong>Associar</strong> na seção de Setores',
+    'Adicione os setores e descreva para o agente triar corretamente',
+  ])}`
+),
+
+'func-avaliacao': () => page('func-avaliacao','⭐','Avaliação de Atendimento','Configure, envie e monitore a satisfação dos pacientes.','funcionalidades/configuracoes/avaliacao-de-atendimento.md',
+  `${h2('Configurando')}
+  ${p('Acesse <strong>Habilidades → Avaliação de Atendimento</strong> no painel do agente.')}
+  ${ul([
+    '<strong>Ativar/desativar</strong> a funcionalidade',
+    '<strong>Envio automático:</strong> dispara sempre que uma conversa mudar para "finalizada"',
+    '<strong>Envio manual:</strong> só enviado quando o atendente optar por disparar',
+    '<strong>Mensagem de agradecimento:</strong> personalize o texto enviado após a avaliação',
+  ])}
+  ${hint('warning','⚠️','No envio manual, atendimentos finalizados pelo agente <strong>não</strong> recebem o disparo automaticamente.')}
+  ${h2('Dashboard de Avaliações')}
+  ${ul([
+    'Média geral das avaliações',
+    'Quantidade de respostas no período',
+    'Ranking dos 5 primeiros atendentes (incluindo o Agente Flow)',
+  ])}
+  ${h3('Faixas de classificação')}
+  ${table(['Faixa','Classificação'],[
+    ['4,0 a 5,0','Excelente'],
+    ['3,0 a 3,9','Bom'],
+    ['2,0 a 2,9','Regular'],
+    ['1,0 a 1,9','Ruim'],
+    ['0,0 a 0,9','Crítico'],
+  ])}
+  ${h3('Filtros disponíveis')}
+  ${ul(['Últimos 7 dias','Últimos 15 dias','Período personalizado','Canal específico'])}`
+),
+
+'func-consumo': () => page('func-consumo','📈','Consumo','Acompanhe o consumo da franquia do Amigo Flow.','funcionalidades/consumo.md',
+  `${h2('Acessando')}
+  ${p('No Amigo Clinic: <strong>Amigo Store → Consumo do Amigo Flow</strong>.')}
+  ${h2('Como o consumo é calculado')}
+  ${h3('✅ Conta como atendimento')}
+  ${ul([
+    'Nova conversa iniciada pela clínica (agentes, atendentes ou disparos manuais)',
+    'Nova conversa iniciada pelo paciente <strong>quando a IA está ativa</strong>',
+    'Disparos automáticos e envios em massa (cada envio = 1 atendimento)',
+  ])}
+  ${h3('❌ Não conta como atendimento')}
+  ${ul(['Conversas iniciadas pelo paciente com <strong>IA desligada</strong> (puramente receptivas)'])}
+  ${h2('Tabela de atendimentos')}
+  ${table(['Coluna','Descrição'],[
+    ['Contato','Nome do paciente ou lead'],
+    ['Iniciado por','Paciente, atendente, disparo automático ou campanha'],
+    ['Canal','Número de WhatsApp + nome da conta'],
+    ['Data','Data de início da conversa'],
+    ['Cobrança','Plano vinculado ao atendimento'],
+  ])}
+  ${h2('Filtros e exportação')}
+  ${ul([
+    'Filtros: período personalizado, iniciado por, canal',
+    'Exportação em <strong>XLSX</strong> respeitando filtros aplicados',
+    'Somente <strong>Administradores</strong> podem visualizar e exportar o consumo',
+  ])}`
+),
+
+};
+
+// ─── SHOW PAGE ────────────────────────────────────────────────────────────────
+function showPage(id) {
+  currentId = id;
+  setActive(id);
+  const render = pages[id];
+  const main = document.getElementById('mainContent');
+  if (!render) {
+    main.innerHTML = `<div class="empty-state"><div class="ei">🚧</div><h3>Em breve</h3><p>Esta página está sendo elaborada.</p></div>`;
+    return;
+  }
+  main.innerHTML = render();
+  main.scrollTop = 0;
+}
+
+// ─── SEARCH ──────────────────────────────────────────────────────────────────
+function doSearch(q) {
+  const box = document.getElementById('searchResults');
+  if (!q.trim()) { box.classList.remove('open'); return; }
+  const ql = q.toLowerCase();
+  const matches = allPages.filter(p =>
+    p.label.toLowerCase().includes(ql) ||
+    (p.section && p.section.toLowerCase().includes(ql))
+  ).slice(0, 8);
+  if (!matches.length) {
+    box.innerHTML = `<div class="search-empty">Nenhum resultado para "${q}"</div>`;
+  } else {
+    box.innerHTML = matches.map(m => `
+      <div class="search-result-item" onclick="showPage('${m.id}');closeSearch()">
+        <div class="sri-title">${m.label}</div>
+        ${m.section ? `<div class="sri-section">${m.section}</div>` : ''}
+      </div>`).join('');
+  }
+  box.classList.add('open');
+}
+
+function closeSearch() {
+  document.getElementById('searchResults').classList.remove('open');
+  document.getElementById('searchBox').value = '';
+}
+
+// ─── INIT ─────────────────────────────────────────────────────────────────────
+buildSidebar();
+
+// check ?doc= url param
+const urlDoc = new URLSearchParams(location.search).get('doc');
+if (urlDoc && pages[urlDoc]) showPage(urlDoc);
+else showPage('welcome');
+</script>
+</body>
+</html>
