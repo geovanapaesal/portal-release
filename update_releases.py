@@ -42,7 +42,7 @@ def jira_get(path, params=None):
 def fetch_all_issues(jql, fields):
     issues, start, page = [], 0, 50
     while True:
-        data = jira_get("/search", {
+        data = jira_get("/search/jql", {
             "jql": jql, "fields": ",".join(fields),
             "maxResults": page, "startAt": start,
         })
