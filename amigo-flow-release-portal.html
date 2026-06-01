@@ -328,7 +328,7 @@ const releases = [
     features:[
       {
         title:'Sugestão de Resposta com IA no Chat', jiraKey:'GREEN-3180', status:'Em andamento',
-        contexto:'Estamos lançando a funcionalidade Sugestão de Resposta com IA no módulo de chat, que permite ao atendente gerar rapidamente uma sugestão de resposta contextualizada durante o atendimento.',
+        contexto:'Atendentes elaboravam cada resposta manualmente, tornando o atendimento mais lento e inconsistente, especialmente em horários de pico.',
         feito:'A IA analisa o contexto completo da conversa e sugere respostas prontas que o atendente pode aceitar, editar ou ignorar com um clique — sem sair do campo de digitação.',
         impacto:'Reduz o tempo médio de resposta, padroniza a qualidade das mensagens e diminui o esforço cognitivo do atendente em momentos de alta demanda.',
         diagram: 'ia-chat',
@@ -966,12 +966,12 @@ const DIAGRAMS = {
       <defs><marker id="ar1" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><polygon points="0 0,8 3,0 6" fill="#94a3b8"/></marker></defs>
       <!-- Nodes -->
       <rect x="10"  y="60" width="120" height="40" rx="8" fill="#EFF6FF" stroke="#BFDBFE" stroke-width="1.5"/>
-      <text x="70"  y="76" text-anchor="middle" font-size="11" font-weight="600" fill="#1e40af">Atendente</text>
-      <text x="70"  y="90" text-anchor="middle" font-size="10" fill="#3b82f6">escreve a mensagem</text>
+      <text x="70"  y="76" text-anchor="middle" font-size="11" font-weight="600" fill="#1e40af">Paciente</text>
+      <text x="70"  y="90" text-anchor="middle" font-size="10" fill="#3b82f6">envia mensagem</text>
 
       <rect x="170" y="60" width="120" height="40" rx="8" fill="#F0FDF4" stroke="#BBF7D0" stroke-width="1.5"/>
       <text x="230" y="76" text-anchor="middle" font-size="11" font-weight="600" fill="#15803d">IA analisa</text>
-      <text x="230" y="90" text-anchor="middle" font-size="10" fill="#16a34a">mensagem</text>
+      <text x="230" y="90" text-anchor="middle" font-size="10" fill="#16a34a">contexto do chat</text>
 
       <rect x="330" y="60" width="120" height="40" rx="8" fill="#FFF7ED" stroke="#FED7AA" stroke-width="1.5"/>
       <text x="390" y="76" text-anchor="middle" font-size="11" font-weight="600" fill="#c2410c">Sugere resposta</text>
@@ -1191,6 +1191,33 @@ const DIAGRAMS = {
 };
 
 // ─── RENDER RICH FEATURE ─────────────────────────────────────────────────────
+function buildImageCard(img, idx) {
+  const cardId = `imgcard-${idx}-${Math.random().toString(36).slice(2,7)}`;
+  return `
+    <div class="rich-img-card" id="${cardId}">
+      <div class="rich-img-bar">
+        <div class="rich-img-dot" style="background:#FF6B6B"></div>
+        <div class="rich-img-dot" style="background:#F5C542"></div>
+        <div class="rich-img-dot" style="background:#40C057"></div>
+      </div>
+      <div class="rich-img-label">${img.label}</div>
+      <div id="${cardId}-body">
+        <img
+          src="${img.src}"
+          alt="${img.label}"
+          class="rich-img-real"
+          onclick="openLb('${img.src}','${img.label}')"
+          onerror="showImgPlaceholder('${cardId}-body','${img.src}')"
+          loading="lazy"
+        />
+      </div>
+      ${img.figma ? `<a class="rich-figma-btn" href="${img.figma}" target="_blank">
+        <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 5.5A3.5 3.5 0 0 1 8.5 2H12v7H8.5A3.5 3.5 0 0 1 5 5.5z"/><path d="M12 2h3.5a3.5 3.5 0 1 1 0 7H12V2z"/><path d="M12 12.5a3.5 3.5 0 1 1 7 0 3.5 3.5 0 1 1-7 0z"/><path d="M5 19.5A3.5 3.5 0 0 1 8.5 16H12v3.5a3.5 3.5 0 1 1-7 0z"/><path d="M5 12.5A3.5 3.5 0 0 1 8.5 9H12v7H8.5A3.5 3.5 0 0 1 5 12.5z"/></svg>
+        Ver no Figma
+      </a>` : ''}
+    </div>`;
+}
+
 function showImgPlaceholder(bodyId, src) {
   const el = document.getElementById(bodyId);
   if (!el) return;
