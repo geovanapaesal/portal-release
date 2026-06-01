@@ -1191,29 +1191,16 @@ const DIAGRAMS = {
 };
 
 // ─── RENDER RICH FEATURE ─────────────────────────────────────────────────────
-function buildImageCard(img, idx) {
-  // Check if image exists by trying to load it
-  const hasSrc = img.src && !img.src.includes('images/d20-') ;
-  // All images are placeholders for now — user will upload
-  return `
-    <div class="rich-img-card">
-      <div class="rich-img-bar">
-        <div class="rich-img-dot" style="background:#FF6B6B"></div>
-        <div class="rich-img-dot" style="background:#F5C542"></div>
-        <div class="rich-img-dot" style="background:#40C057"></div>
+function showImgPlaceholder(bodyId, src) {
+  const el = document.getElementById(bodyId);
+  if (!el) return;
+  el.innerHTML = `
+    <div class="rich-img-placeholder" onclick="triggerImgUploadHint('${src}')">
+      <div class="rich-img-placeholder-icon">🖼️</div>
+      <div class="rich-img-placeholder-text">
+        Imagem não encontrada
+        <span class="rich-img-placeholder-sub">${src}</span>
       </div>
-      <div class="rich-img-label">${img.label}</div>
-      <div class="rich-img-placeholder" onclick="triggerImgUploadHint('${img.src}')">
-        <div class="rich-img-placeholder-icon">🖼️</div>
-        <div class="rich-img-placeholder-text">
-          Imagem não carregada
-          <span class="rich-img-placeholder-sub">Fazer upload: ${img.src}</span>
-        </div>
-      </div>
-      ${img.figma ? `<a class="rich-figma-btn" href="${img.figma}" target="_blank">
-        <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 5.5A3.5 3.5 0 0 1 8.5 2H12v7H8.5A3.5 3.5 0 0 1 5 5.5z"/><path d="M12 2h3.5a3.5 3.5 0 1 1 0 7H12V2z"/><path d="M12 12.5a3.5 3.5 0 1 1 7 0 3.5 3.5 0 1 1-7 0z"/><path d="M5 19.5A3.5 3.5 0 0 1 8.5 16H12v3.5a3.5 3.5 0 1 1-7 0z"/><path d="M5 12.5A3.5 3.5 0 0 1 8.5 9H12v7H8.5A3.5 3.5 0 0 1 5 12.5z"/></svg>
-        Ver no Figma
-      </a>` : ''}
     </div>`;
 }
 
