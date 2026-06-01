@@ -339,7 +339,7 @@ const releases = [
       },
       {
         title:'Notas internas de atendimento', jiraKey:'GREEN-3023', status:'Released',
-        contexto:'Não havia forma de registrar informações internas sobre um atendimento sem que o paciente visse — times usavam Slack ou WhatsApp paralelo para trocar contexto.',
+        contexto:'Não havia forma de registrar informações internas sobre um atendimento sem que o paciente visse — atendentes usavam WhatsApp paralelo ou outros meios para trocar contexto.',
         feito:'Notas visíveis somente para a equipe interna, criadas durante e após o atendimento. Ficam registradas no histórico do chat e são acessíveis em transferências futuras.',
         impacto:'Elimina uso de ferramentas externas para comunicação interna, melhora radicalmente o contexto em transferências e cria um log auditável por atendimento.',
         diagram: 'notas',
@@ -349,7 +349,7 @@ const releases = [
       },
       {
         title:'Menções em notas internas', jiraKey:'GREEN-3025', status:'Ready to Test',
-        contexto:'Notas internas não tinham como notificar um colega específico — o atendente não sabia que havia uma nota dirigida a ele.',
+        contexto:'Notas internas criadas nos chats não tinham como notificar um colega específico, o atendente não sabia que havia uma nota dirigida a ele.',
         feito:'Suporte a menções (@) em notas internas. O colega mencionado recebe notificação e a nota aparece em uma seção centralizada de menções recebidas.',
         impacto:'Comunicação interna assíncrona e rastreável dentro do próprio Flow, sem precisar abrir Slack ou WhatsApp.',
         diagram: 'mencoes',
@@ -359,7 +359,7 @@ const releases = [
       },
       {
         title:'Agente registra motivo da transferência', jiraKey:'GREEN-3013', status:'Released',
-        contexto:'Quando o agente transferia um atendimento para humano, o atendente que recebia o chat precisava reler toda a conversa para entender o contexto.',
+        contexto:'Quando o agente transferia um atendimento para humano, o atendente que recebia o chat precisava reler toda a conversa para entender o contexto. Isso atrapalha o suporte muitas vezes também, pela falta de visão do motivo de transferência do agente',
         feito:'O agente registra automaticamente uma nota interna com o motivo da transferência no exato momento em que ela ocorre — visível imediatamente para quem recebe.',
         impacto:'Reduz em segundos o tempo de onboarding do handoff, elimina retrabalho de leitura e melhora a experiência do paciente que não precisa repetir informações.',
         diagram: 'transferencia',
@@ -380,7 +380,7 @@ const releases = [
       },
       {
         title:'Importação de orientações em massa', jiraKey:'GREEN-2757', status:'Ready to Test',
-        contexto:'Clínicas com muitas orientações precisavam cadastrá-las uma a uma, tornando o setup inicial da base de conhecimento lento e sujeito a erros.',
+        contexto:'Clínicas com muitas orientações precisariam cadastrá-las uma a uma, tornando o setup inicial da base de conhecimento lento e sujeito a erros.',
         feito:'Importação em massa via planilha XLS/CSV: upload do arquivo, validação automática de formato e prevenção de duplicidades antes de salvar.',
         impacto:'Setup da base de conhecimento que antes levava horas agora leva minutos — especialmente relevante no onboarding de novas clínicas.',
         diagram: null,
