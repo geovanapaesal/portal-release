@@ -36,7 +36,7 @@ def fetch_versions():
     print("🔍 Buscando versões do projeto GREEN...")
     data = jira_get(f"/project/{PROJECT}/versions")
     versions = {v["name"]: v for v in data if re.search(r'delivery', v["name"], re.IGNORECASE)}
-    print(f"   {len(versions)} deliveries encontrados: {sorted(versions.keys(), key=lambda x: int(re.search(r'\\d+', x).group()))}")
+    print(f"   {len(versions)} deliveries encontrados: {sorted(versions.keys(), key=lambda x: int(re.search(r'\\d+', x).group()) if re.search(r'\\d+', x) else 0)}")
     return versions
 
 def fetch_issues(versions_meta):
