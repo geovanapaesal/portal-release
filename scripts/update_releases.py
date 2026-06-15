@@ -1,186 +1,228 @@
 #!/usr/bin/env python3
 """
 update_releases.py — Amigo Flow Portal
-Atualiza o bloco const releases no HTML com dados do Jira projeto GREEN.
+Atualiza status de features existentes e adiciona novos deliveries do Jira.
+Preserva contexto/feito/impacto/rich/images já escritos manualmente.
 """
-
-import os, re, sys, json, requests
+import os, re, sys, requests
 from requests.auth import HTTPBasicAuth
 from datetime import datetime, timezone
 
-# ── Config ────────────────────────────────────────────────────────────────────
 BASE_URL  = os.environ["JIRA_BASE_URL"].rstrip("/")
 EMAIL     = os.environ["JIRA_EMAIL"]
 TOKEN     = os.environ["JIRA_API_TOKEN"]
 PROJECT   = os.environ.get("JIRA_PROJECT", "GREEN")
 HTML_FILE = os.environ.get("HTML_FILE", "amigo-flow-release-portal.html")
+AUTH      = HTTPBasicAuth(EMAIL, TOKEN)
+HEADERS   = {"Accept": "application/json"}
 
-AUTH    = HTTPBasicAuth(EMAIL, TOKEN)
-HEADERS = {"Accept": "application/json"}
-
-IGNORED_TYPES = {"bug", "subtarefa", "sub-task", "testing", "impedibug", "product issue", "atividade"}
-
-ACTIVE_STATUSES = {
-    "released", "ready to deploy", "ready to test",
-    "em andamento", "revisar", "done", "backlog downstream"
-}
+IGNORED_TYPES = {"bug","subtarefa","sub-task","testing","impedibug","product issue","atividade"}
 
 # ── Jira ──────────────────────────────────────────────────────────────────────
-def jira_get(path, params=None):
-    url = f"{BASE_URL}/rest/api/3{path}"
-    r = requests.get(url, headers=HEADERS, auth=AUTH, params=params, timeout=60)
+def jira_get_versions():
+    r = requests.get(f"{BASE_URL}/rest/api/3/project/{PROJECT}/versions",
+                     headers=HEADERS, auth=AUTH, timeout=60)
     r.raise_for_status()
-    return r.json()
+    return {v["name"]: v for v in r.json()
+            if re.search(r'delivery', v["name"], re.IGNORECASE)}
 
-def fetch_versions():
-    print("🔍 Buscando versões do projeto GREEN...")
-    data = jira_get(f"/project/{PROJECT}/versions")
-    versions = {v["name"]: v for v in data if re.search(r'delivery', v["name"], re.IGNORECASE)}
-    print(f"   {len(versions)} deliveries encontrados: {sorted(versions.keys(), key=lambda x: int(re.search(r'\\d+', x).group()) if re.search(r'\\d+', x) else 0)}")
-    return versions
+def jira_search(jql, fields):
+    url = f"{BASE_URL}/rest/api/3/search/jql"
+    issues, start = [], 0
+    while True:
+        r = requests.get(url, headers=HEADERS, auth=AUTH, timeout=60, params={
+            "jql": jql, "fields": ",".join(fields),
+            "maxResults": 100, "startAt": start
+        })
+        r.raise_for_status()
+        data   = r.json()
+        batch  = data.get("issues", [])
+        issues.extend(batch)
+        total  = data.get("total", 0)
+        if start + 100 >= total:
+            break
+        start += 100
+    return issues
 
-def fetch_issues(versions_meta):
-    """Busca issues de cada delivery individualmente via GET simples."""
-    print("🔍 Buscando issues por delivery...")
-    by_version = {}
-
-    for vname in versions_meta:
-        vnum = re.search(r'\d+', vname)
-        if not vnum:
-            continue
-        # Usa a API de issues por version (não usa /search)
-        try:
-            params = {
-                "jql": f'project = {PROJECT} AND fixVersion = "{vname}"',
-                "fields": "summary,status,fixVersions,issuetype",
-                "maxResults": 100,
-                "startAt": 0,
-            }
-            url = f"{BASE_URL}/rest/api/3/search/jql"
-            r = requests.get(url, headers=HEADERS, auth=AUTH, params=params, timeout=60)
-            if r.status_code == 410:
-                # fallback para endpoint legado correto
-                url = f"{BASE_URL}/rest/api/2/search"
-                r = requests.get(url, headers=HEADERS, auth=AUTH, params=params, timeout=60)
-            r.raise_for_status()
-            data = r.json()
-        except Exception as e:
-            print(f"   ⚠️  Erro ao buscar {vname}: {e}")
-            by_version[vname] = []
-            continue
-
-        issues = data.get("issues", [])
-        features = []
-        for issue in issues:
-            f = issue["fields"]
-            itype  = f.get("issuetype", {}).get("name", "").lower().strip()
-            status = f.get("status",    {}).get("name", "").lower().strip()
-            if itype in IGNORED_TYPES:
-                continue
-            if status not in ACTIVE_STATUSES:
-                continue
-            title = re.sub(r'^\[.*?\]\s*', '', f.get("summary", "")).strip()
-            features.append({
-                "title": title,
-                "key":   issue["key"],
-                "status": f.get("status", {}).get("name", ""),
-            })
-        by_version[vname] = features
-        print(f"   {vname}: {len(features)} features")
-
-    return by_version
-
-# ── Serialização JS ───────────────────────────────────────────────────────────
-def js(s):
-    s = str(s).replace("\\","\\\\").replace("'","\\'")
-    s = s.replace("\n"," ").replace("\r","")
-    return f"'{s}'"
-
-def delivery_num(name):
+def dnum(name):
     m = re.search(r'\d+', name)
     return int(m.group()) if m else 0
 
-def build_js(versions_meta, by_version):
-    lines = ["const releases = ["]
-    for vname in sorted(by_version.keys(), key=delivery_num, reverse=True):
-        vm    = versions_meta.get(vname, {})
-        rel   = vm.get("released", False)
-        rdate = vm.get("releaseDate", "")
-        vdesc = vm.get("description", "") or ""
-        year  = 2025
-        if rdate:
-            try: year = int(rdate.split("-")[0])
-            except: pass
-        vid = re.sub(r'[^a-z0-9]', '-', vname.lower())
-        feats = by_version[vname]
-        if not vdesc and feats:
-            vdesc = ", ".join(f["title"] for f in feats[:4])
+def js(s):
+    if s is None: return 'null'
+    s = str(s).replace("\\","\\\\").replace("'","\\'").replace("\n"," ").replace("\r","")
+    return f"'{s}'"
 
-        feats_js = ",\n".join(
-            f"      {{title:{js(f['title'])},jiraKey:{js(f['key'])},"
-            f"status:{js(f['status'])},"
-            f"contexto:'',feito:'',impacto:''}}"
-            for f in feats
-        ) if feats else ""
+# ── Lê HTML ───────────────────────────────────────────────────────────────────
+def read_html():
+    with open(HTML_FILE, encoding="utf-8") as f:
+        return f.read()
 
-        lines.append(
-            f"  {{\n"
-            f"    year:{year}, id:{js(vid)}, name:{js(vname)}, "
-            f"releaseDate:{js(rdate)}, released:{'true' if rel else 'false'},\n"
-            f"    desc:{js(vdesc)},\n"
-            f"    features:[{feats_js}]\n"
-            f"  }},"
-        )
-    lines.append("];")
-    return "\n".join(lines)
-
-# ── Atualiza HTML ─────────────────────────────────────────────────────────────
-def update_html(new_js):
-    with open(HTML_FILE, "r", encoding="utf-8") as f:
-        content = f.read()
-
-    now = datetime.now(timezone.utc).strftime("%d/%m/%Y %H:%M UTC")
-    timestamp = f"// Atualizado automaticamente em {now}\n"
-
-    new_content = re.sub(
-        r'(?:// Atualizado automaticamente[^\n]*\n)?const releases = \[.*?\];',
-        timestamp + new_js,
-        content, count=1, flags=re.DOTALL
-    )
-
-    if new_content == content:
-        print("⚠️  Padrão 'const releases' não encontrado no HTML.")
-        return False
-
+def write_html(content):
     with open(HTML_FILE, "w", encoding="utf-8") as f:
-        f.write(new_content)
-    print(f"✅ {HTML_FILE} atualizado.")
-    return True
+        f.write(content)
+
+# ── Extrai features existentes do HTML ───────────────────────────────────────
+def extract_existing(content):
+    """
+    Retorna dict keyed by jiraKey com todo o bloco da feature (string raw).
+    """
+    existing = {}
+    # Encontra blocos { ... jiraKey:'GREEN-XXXX' ... }
+    for m in re.finditer(r"\{[^{}]*jiraKey:'(GREEN-\d+)'[^{}]*\}", content, re.DOTALL):
+        key   = m.group(1)
+        block = m.group(0)
+        existing[key] = block
+    return existing
+
+def get_field(block, field):
+    """Extrai valor de campo JS simples: field:'valor'"""
+    m = re.search(rf"{field}:'((?:[^'\\]|\\.)*)'", block)
+    return m.group(1) if m else ''
+
+def get_images(block):
+    """Extrai images:[...] se existir."""
+    m = re.search(r'images:\[.*?\]', block, re.DOTALL)
+    return m.group(0) if m else None
+
+def get_diagram(block):
+    m = re.search(r"diagram:\s*(?:'([^']*)'|null)", block)
+    if not m: return '__missing__'
+    return m.group(1) if m.group(1) is not None else None
+
+# ── Monta feature JS ──────────────────────────────────────────────────────────
+def build_feature(jira_key, jira_title, jira_status, existing_block=None):
+    if existing_block:
+        contexto = get_field(existing_block, 'contexto')
+        feito    = get_field(existing_block, 'feito')
+        impacto  = get_field(existing_block, 'impacto')
+        diag     = get_diagram(existing_block)
+        imgs     = get_images(existing_block)
+    else:
+        contexto = feito = impacto = ''
+        diag = '__missing__'
+        imgs = None
+
+    f = (f"      {{title:{js(jira_title)},jiraKey:{js(jira_key)},"
+         f"status:{js(jira_status)},"
+         f"contexto:{js(contexto)},feito:{js(feito)},impacto:{js(impacto)}")
+
+    if diag != '__missing__':
+        f += f",diagram:{js(diag)}"
+    if imgs:
+        f += f",{imgs}"
+    f += "}"
+    return f
 
 # ── Main ──────────────────────────────────────────────────────────────────────
 def main():
-    versions_meta = fetch_versions()
-    if not versions_meta:
-        print("⚠️  Nenhum delivery encontrado. Abortando.")
+    # 1. Versões do Jira
+    print("🔍 Buscando versões do projeto GREEN...")
+    versions = jira_get_versions()
+    sorted_names = sorted(versions.keys(), key=dnum)
+    print(f"   {len(versions)} deliveries: {sorted_names}")
+
+    # 2. Issues por delivery
+    print("🔍 Buscando issues por delivery...")
+    by_version = {}
+    for vname in sorted_names:
+        issues = jira_search(
+            jql=f'project = {PROJECT} AND fixVersion = "{vname}" ORDER BY created ASC',
+            fields=["summary","status","issuetype"]
+        )
+        feats = []
+        for iss in issues:
+            f      = iss["fields"]
+            itype  = f.get("issuetype",{}).get("name","").lower().strip()
+            status = f.get("status",{}).get("name","")
+            if itype in IGNORED_TYPES:
+                continue
+            title = re.sub(r'^\[.*?\]\s*', '', f.get("summary","")).strip()
+            feats.append({"key": iss["key"], "title": title, "status": status})
+        by_version[vname] = feats
+        print(f"   {vname}: {len(feats)} features")
+
+    # 3. Lê HTML e extrai bloco de releases atual
+    print(f"📄 Lendo {HTML_FILE}...")
+    content = read_html()
+
+    if "const releases = [" not in content:
+        print(f"❌ Padrão 'const releases = [' não encontrado em {HTML_FILE}")
         sys.exit(1)
 
-    by_version = fetch_issues(versions_meta)
+    # 4. Extrai features existentes para preservar conteúdo rico
+    existing = extract_existing(content)
+    print(f"   {len(existing)} features existentes com conteúdo preservado")
 
-    if not any(by_version.values()):
-        print("⚠️  Nenhuma feature encontrada. Abortando.")
-        sys.exit(1)
+    # 5. Extrai metadados de deliveries existentes (rich, desc, id)
+    existing_metas = {}
+    for m in re.finditer(
+        r"year:\d+,\s*id:'(d[\w-]+)',\s*name:'(Delivery \d+)',\s*releaseDate:'([^']*)',\s*released:(true|false)",
+        content
+    ):
+        did, dname, rdate, rel = m.group(1), m.group(2), m.group(3), m.group(4)
+        # Pega rich e desc do bloco seguinte
+        snippet = content[m.start():m.start()+300]
+        rich    = bool(re.search(r'rich:\s*true', snippet))
+        desc_m  = re.search(r"desc:'((?:[^'\\]|\\.)*)'", content[m.start():m.start()+500])
+        existing_metas[dname] = {
+            "id": did, "rich": rich,
+            "desc": desc_m.group(1) if desc_m else "",
+        }
 
-    print("🔨 Gerando bloco JS...")
-    releases_js = build_js(versions_meta, by_version)
+    # 6. Constrói novo bloco JS
+    print("🔨 Construindo novo bloco releases...")
+    lines = ["const releases = ["]
+    for vname in sorted(by_version.keys(), key=dnum, reverse=True):
+        vm    = versions[vname]
+        rel   = vm.get("released", False)
+        rdate = vm.get("releaseDate", "")
+        year  = int(rdate.split("-")[0]) if rdate else 2025
+        ex    = existing_metas.get(vname, {})
+        did   = ex.get("id") or f"d{dnum(vname)}"
+        rich  = ex.get("rich", False)
+        desc  = ex.get("desc", "")
+        feats = by_version[vname]
+        if not desc and feats:
+            desc = ", ".join(f["title"] for f in feats[:4])
 
-    print(f"💾 Atualizando {HTML_FILE}...")
-    ok = update_html(releases_js)
+        feats_js = ",\n".join(
+            build_feature(f["key"], f["title"], f["status"], existing.get(f["key"]))
+            for f in feats
+        )
 
-    if ok:
-        total = sum(len(v) for v in by_version.values())
-        print(f"\n📊 Resumo:")
-        print(f"   Deliveries: {len(by_version)}")
-        print(f"   Features:   {total}")
+        entry  = f"  {{\n    year:{year}, id:{js(did)}, name:{js(vname)}, "
+        entry += f"releaseDate:{js(rdate)}, released:{'true' if rel else 'false'},\n"
+        if rich:
+            entry += "    rich: true,\n"
+        entry += f"    desc:{js(desc)},\n    features:[\n{feats_js}\n    ]\n  }},"
+        lines.append(entry)
+    lines.append("];")
+    new_js = "\n".join(lines)
+
+    # 7. Substitui no HTML
+    now = datetime.now(timezone.utc).strftime("%d/%m/%Y %H:%M UTC")
+    replacement = f"// Atualizado automaticamente em {now}\n{new_js}"
+
+    new_content = re.sub(
+        r'(?:// Atualizado automaticamente[^\n]*\n)?const releases = \[.*?\];',
+        replacement,
+        content,
+        count=1,
+        flags=re.DOTALL
+    )
+
+    if new_content == content:
+        print("⚠️  HTML não alterado — padrão não encontrado ou sem mudanças.")
+        sys.exit(0)
+
+    write_html(new_content)
+    total = sum(len(v) for v in by_version.values())
+    print(f"\n✅ Portal atualizado!")
+    print(f"   {len(by_version)} deliveries | {total} features")
+    for vname in sorted(by_version.keys(), key=dnum, reverse=True):
+        rel = versions[vname].get("released", False)
+        print(f"   {'✅' if rel else '🔜'} {vname}: {len(by_version[vname])} features")
 
 if __name__ == "__main__":
     main()
