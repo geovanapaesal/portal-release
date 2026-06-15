@@ -279,487 +279,245 @@ function statusBadge(s) {
 }
 
 // ─── DATA ────────────────────────────────────────────────────────────────────
+// Atualizado automaticamente em 15/06/2026 13:18 UTC
 const releases = [
   {
-    year:2026, id:'d21', name:'Delivery 21', releaseDate:'2026-06-19', released:false,
-    desc:'Finalização automática de conversas inativas, importação de planilha como público-alvo e preparação para novas funcionalidades do agente.',
-    features:[
-      { title:'Finalização automática para conversas "Em aguardo"', jiraKey:'GREEN-3015', status:'Ready to Test',
-        contexto:'Conversas em "Em aguardo" ficavam abertas indefinidamente, acumulando chats parados e poluindo a fila de atendimento.',
-        feito:'Regra de finalização automática: conversas que permaneçam em "Em aguardo" por um período configurável são encerradas automaticamente.',
-        impacto:'Reduz acúmulo de conversas abandonadas, mantém a fila limpa e permite à equipe focar nos atendimentos realmente ativos.'
-      },
-      { title:'Finalização automática para conversas "Em atendimento"', jiraKey:'GREEN-3019', status:'Ready to Test',
-        contexto:'Conversas abertas com atendentes esqueciam de ser finalizadas, impedindo que o paciente recebesse disparos automáticos de confirmação.',
-        feito:'Parâmetro configurável de tempo de inatividade para conversas em atendimento humano. Após o período, o Flow finaliza automaticamente e o agente retoma se o paciente voltar.',
-        impacto:'Evita pacientes presos em conversas esquecidas e garante que confirmações automáticas funcionem corretamente.'
-      },
-      { title:'Importação de planilha como público-alvo em Envios em Massa', jiraKey:'GREEN-2710', status:'Ready to Test',
-        contexto:'Envio em massa exigia público via filtros fixos, limitando campanhas com listas externas ou segmentações manuais.',
-        feito:'Nova opção "Importar planilha" (.xlsx/.csv) no público-alvo com preview de contatos, validação de erros e estimativa de custo antes de confirmar.',
-        impacto:'Campanhas para públicos personalizados sem depender dos filtros fixos do sistema.'
-      },
-      { title:'Agente Flow considera feriados na disponibilidade', jiraKey:'GREEN-2721', status:'Revisar',
-        contexto:'O agente exibia horários de atendimento mesmo em feriados nacionais, gerando agendamentos incorretos.',
-        feito:'Integração do calendário de feriados nacionais na lógica de disponibilidade do agente.',
-        impacto:'Pacientes não conseguem agendar em feriados, reduzindo falhas operacionais e frustração.'
-      },
-      { title:'Mensagem de Saudação fixa ou dinâmica', jiraKey:'GREEN-3239', status:'Revisar',
-        contexto:'A mensagem de saudação era sempre a mesma, sem personalização por horário do dia.',
-        feito:'Configuração de saudação fixa (texto único) ou dinâmica (bom dia/boa tarde/boa noite) por canal.',
-        impacto:'Atendimento com comunicação mais natural e personalizada para o paciente.'
-      },
-      { title:'Cancelar conexão durante onboarding (Embedded Signup)', jiraKey:'GREEN-3183', status:'Ready to Test',
-        contexto:'Durante o Embedded Signup da Meta, não havia como cancelar o processo no meio sem deixar o canal em estado inconsistente.',
-        feito:'Botão de cancelamento implementado no fluxo de onboarding com limpeza correta do estado do canal.',
-        impacto:'Clínicas podem abortar o setup sem criar canais fantasmas ou precisar de intervenção do suporte.'
-      },
-      { title:'Preparação para identificador @username da Meta', jiraKey:'GREEN-3053', status:'Ready to Test',
-        contexto:'A Meta anunciou suporte a @username como identificador de conta. Sem preparação, a plataforma não conseguiria suportar o novo formato.',
-        feito:'Adequação das estruturas internas para aceitar e processar o identificador @username da Meta.',
-        impacto:'Flow pronto para o novo formato de identificação, sem impacto para clínicas quando a Meta liberar o recurso.'
-      },
-    ]
+    year:2026, id:'delivery-23', name:'Delivery 23', releaseDate:'2026-07-17', released:false,
+    desc:'',
+    features:[]
   },
   {
-    year:2026, id:'d20', name:'Delivery 20', releaseDate:'2026-06-05', released:false,
-    desc:'IA no chat, notas internas com menções, envios automáticos completos, base de orientações e melhorias operacionais.',
-    rich: true,
-    features:[
-      {
-        title:'Sugestão de Resposta com IA no Chat', jiraKey:'GREEN-3180', status:'Em andamento',
-        contexto:'Atendentes elaboravam cada resposta manualmente, tornando o atendimento mais lento e inconsistente, especialmente em horários de pico.',
-        feito:'A IA analisa o contexto completo da conversa e sugere respostas prontas que o atendente pode aceitar, editar ou ignorar com um clique — sem sair do campo de digitação.',
-        impacto:'Reduz o tempo médio de resposta, padroniza a qualidade das mensagens e diminui o esforço cognitivo do atendente em momentos de alta demanda.',
-        diagram: 'ia-chat',
-        images:[
-          { src:'images/d20-ia-chat-antes.png', label:'Atendente escreve a mensagem', figma:'' },
-          { src:'images/d20-ia-chat-depois.png', label:'IA sugere resposta melhorada', figma:'' },
-        ]
-      },
-      {
-        title:'Notas internas de atendimento', jiraKey:'GREEN-3023', status:'Released',
-        contexto:'Não havia forma de registrar informações internas sobre um atendimento sem que o paciente visse — atendentes usavam WhatsApp paralelo ou outros meios para trocar contexto.',
-        feito:'Notas visíveis somente para a equipe interna, criadas durante e após o atendimento. Ficam registradas no histórico do chat e são acessíveis em transferências futuras.',
-        impacto:'Elimina uso de ferramentas externas para comunicação interna, melhora radicalmente o contexto em transferências e cria um log auditável por atendimento.',
-        diagram: 'notas',
-        images:[
-          { src:'images/d20-notas-internas.png', label:'Notas internas no flow', figma:'' },
-        ]
-      },
-      {
-        title:'Menções em notas internas', jiraKey:'GREEN-3025', status:'Ready to Test',
-        contexto:'Notas internas criadas nos chats não tinham como notificar um colega específico, o atendente não sabia que havia uma nota dirigida a ele.',
-        feito:'Suporte a menções (@) em notas internas. O colega mencionado recebe notificação e a nota aparece em uma seção centralizada de menções recebidas.',
-        impacto:'Comunicação interna assíncrona e rastreável dentro do próprio Flow, sem precisar abrir Slack ou WhatsApp.',
-        diagram: 'mencoes',
-        images:[
-          { src:'images/d20-mencoes.png', label:'Menções em notas', figma:'' },
-        ]
-      },
-      {
-        title:'Agente registra motivo da transferência', jiraKey:'GREEN-3013', status:'Released',
-        contexto:'Quando o agente transferia um atendimento para humano, o atendente que recebia o chat precisava reler toda a conversa para entender o contexto. Isso atrapalha o suporte muitas vezes também, pela falta de visão do motivo de transferência do agente',
-        feito:'O agente registra automaticamente uma nota interna com o motivo da transferência no exato momento em que ela ocorre — visível imediatamente para quem recebe.',
-        impacto:'Reduz em segundos o tempo de onboarding do handoff, elimina retrabalho de leitura e melhora a experiência do paciente que não precisa repetir informações.',
-        diagram: 'transferencia',
-        images:[
-          { src:'images/d20-nota-transferencia.png', label:'Nota gerada automaticamente', figma:'' },
-        ]
-      },
-      {
-        title:'Base de orientações para o Agente', jiraKey:'GREEN-1968', status:'Ready to Test',
-        contexto:'O agente respondia perguntas frequentes de forma genérica, sem conhecimento específico de cada clínica — preços, convênios, preparos e políticas ficavam sem resposta adequada.',
-        feito:'Área dedicada onde a clínica cadastra perguntas, respostas e instruções específicas. O agente consulta essa base em tempo real durante os atendimentos e responde com precisão.',
-        impacto:'O agente passa a ser um especialista da clínica — responde com as informações certas, no tom certo, reduzindo transferências desnecessárias para humanos.',
-        diagram: 'orientacoes',
-        images:[
-          { src:'images/d20-base-orientacoes.png', label:'Tela de cadastro de orientações', figma:'' },
-        ]
-      },
-      {
-        title:'Importação de orientações em massa', jiraKey:'GREEN-2757', status:'Ready to Test',
-        contexto:'Clínicas com muitas orientações precisariam cadastrá-las uma a uma, tornando o setup inicial da base de conhecimento lento e sujeito a erros.',
-        feito:'Importação em massa via planilha XLS/CSV: upload do arquivo, validação automática de formato e prevenção de duplicidades antes de salvar.',
-        impacto:'Setup da base de conhecimento que antes levava horas agora leva minutos — especialmente relevante no onboarding de novas clínicas.',
-        diagram: null,
-        
-      },
-      {
-        title:'Envios automáticos completos', jiraKey:'GREEN-2503', status:'Released',
-        contexto:'A clínica dependia de disparos manuais para comunicações recorrentes como aniversários, pós-consulta, pré-consulta e follow-up de orçamentos — gerando esforço operacional diário.',
-        feito:'Lançamento simultâneo de 4 novos tipos de envio automático: Aniversário, Pós-Atendimento, Pré-Atendimento e Orçamento em aberto. Cada um com template, filtros e múltiplos períodos configuráveis.',
-        impacto:'A jornada do paciente passa a ser coberta do início ao fim por automações — menos esforço operacional, mais consistência e maior taxa de conversão e fidelização.',
-        diagram: 'envios',
-        images:[
-          { src:'images/d20-envios-automaticos.png', label:'Catálogo de envios automáticos', figma:'' },
-          { src:'images/d20-envios-config.png', label:'Configuração de um envio', figma:'' },
-        ]
-      },
-      {
-        title:'Alerta de consumo nos Painéis', jiraKey:'GREEN-3185', status:'Ready to Test',
-        contexto:'Ao enviar ou reenviar mensagens nos Painéis de confirmação e falta, o usuário não sabia quantos atendimentos da franquia seriam consumidos antes de confirmar.',
-        feito:'Modal de confirmação exibe o número exato de atendimentos que serão consumidos antes de qualquer disparo — envio e reenvio. Pode ser dispensado pelo usuário.',
-        impacto:'Clínicas tomam decisões conscientes sobre disparos nos painéis, evitando consumo não planejado da franquia e surpresas no faturamento.',
-        diagram: null,
-        images:[
-          { src:'images/d20-alerta-consumo.png', label:'Alerta de consumo no Painel', figma:'' },
-        ]
-      },
-      {
-        title:'Criar contato sem vinculá-lo como Lead', jiraKey:'GREEN-3017', status:'Released',
-        contexto:'Ao iniciar conversa com número desconhecido, o sistema obrigava a criação de um lead — mesmo para fornecedores, parceiros ou números internos.',
-        feito:'Nova opção no fluxo de "Nova conversa" para criar o contato sem vinculá-lo como lead, mantendo-o apenas como contato na base.',
-        impacto:'Base de leads limpa e representativa do funil real, sem misturar contatos operacionais com potenciais pacientes.',
-        diagram: null,
-        images:[
-          { src:'images/d20-criar-contato.png', label:'Novo fluxo de criação de contato', figma:'' },
-        ]
-      },
-      {
-        title:'Agente acessa informações profissionais', jiraKey:'GREEN-2783', status:'Released',
-        contexto:'O agente não tinha acesso às informações profissionais (especialidade, CRM, tratamento Dr./Dra.) dos profissionais cadastrados, gerando respostas incompletas ou incorretas.',
-        feito:'O agente passa a consultar as "Informações Profissionais" do cadastro de usuários com perfil de profissional de saúde durante os atendimentos.',
-        impacto:'Respostas mais precisas e com tratamento correto sobre os profissionais da clínica — menos transferências para humanos.',
-        diagram: null,
-        images:[
-          { src:'images/d20-info-profissional.png', label:'Dados do profissional acessados pelo agente', figma:'' },
-        ]
-      },
-      {
-        title:'Fallback: link externo quando agendamento está desabilitado', jiraKey:'GREEN-2023', status:'Released',
-        contexto:'Quando o agendamento estava desabilitado, o agente não tinha caminho para direcionar o paciente, gerando atendimentos sem conclusão (dead-end).',
-        feito:'Quando o agendamento está desabilitado, o agente detecta a intenção e oferece automaticamente o link externo de agendamento configurado pela clínica (ex: Agende.ai).',
-        impacto:'Elimina dead-ends no atendimento — o paciente sempre tem um próximo passo, independente do modo de agendamento configurado.',
-        diagram: 'fallback',
-        images:[
-          { src:'images/d20-fallback-link.png', label:'Fluxo de fallback com link externo', figma:'' },
-        ]
-      },
-    ]
+    year:2026, id:'delivery-22', name:'Delivery 22', releaseDate:'2026-07-03', released:false,
+    desc:'Contexto de IA sobre o lead, No modal do Kanban de Envios, oferecer tanto envios ativos quanto inativos pra o usuario escolher qual deseja enviar, Gestão de leads, Perfil do lead (Informações, interesses, etiquetas e origem)',
+    features:[      {title:'Contexto de IA sobre o lead',jiraKey:'GREEN-3357',status:'Revisar',contexto:'',feito:'',impacto:''},
+      {title:'No modal do Kanban de Envios, oferecer tanto envios ativos quanto inativos pra o usuario escolher qual deseja enviar',jiraKey:'GREEN-3337',status:'Released',contexto:'',feito:'',impacto:''},
+      {title:'Gestão de leads',jiraKey:'GREEN-3153',status:'Em andamento',contexto:'',feito:'',impacto:''},
+      {title:'Perfil do lead (Informações, interesses, etiquetas e origem)',jiraKey:'GREEN-2961',status:'Em andamento',contexto:'',feito:'',impacto:''}]
   },
   {
-    year:2026, id:'d19', name:'Delivery 19', releaseDate:'2026-05-22', released:true,
-    desc:'Dashboard interno, envio automático de Falta, listagem de envios, classificação de contatos e estimativa de custo em campanhas.',
-    features:[
-      { title:'Dashboard interno Amigo Flow', jiraKey:'GREEN-2532', status:'Released',
-        contexto:'Sem visibilidade centralizada sobre adoção das funcionalidades pelas clínicas.',
-        feito:'Dashboard com métricas de adoção: % de clínicas com agente ativo, uso de canais e envios configurados por período.',
-        impacto:'Times de produto e CS tomam decisões baseadas em dados reais.'
-      },
-      { title:'Listagem de Envios Automáticos', jiraKey:'GREEN-2464', status:'Released',
-        contexto:'Sem tela dedicada para visualizar todos os envios automáticos de uma clínica.',
-        feito:'Tela com tipo, nome, descrição, status, canal e tags de cada envio.',
-        impacto:'Visão completa de todas as automações ativas para gestão e auditoria.'
-      },
-      { title:'Envio automático de Falta', jiraKey:'GREEN-2484', status:'Released',
-        contexto:'Pacientes faltosos não recebiam comunicação automática.',
-        feito:'Sistema detecta consultas não realizadas e dispara mensagem automática; recalcula se houver reagendamento.',
-        impacto:'Aumenta taxa de reagendamento de faltas sem esforço manual.'
-      },
-      { title:'Assinatura de termo de execução', jiraKey:'GREEN-2588', status:'Released',
-        contexto:'Clínicas precisavam de comprovação digital de procedimentos realizados.',
-        feito:'Fluxo de assinatura de termo ao final do atendimento com envio via link para médico e paciente.',
-        impacto:'Segurança jurídica com documentação digital.'
-      },
-      { title:'Classificar número como contato', jiraKey:'GREEN-2755', status:'Released',
-        contexto:'Todo número era paciente ou lead, gerando base de leads suja.',
-        feito:'Novo estado "contato" para números que não são pacientes nem leads.',
-        impacto:'Base mais limpa e funil de conversão mais preciso.'
-      },
-      { title:'Estimativa de custo em campanhas', jiraKey:'GREEN-2849', status:'Released',
-        contexto:'Usuário não sabia o custo da campanha antes de disparar.',
-        feito:'Estimativa dinâmica (Marketing R$0,45 / Utilidade R$0,10) exibida com base no template e público.',
-        impacto:'Decisões conscientes antes do envio, sem surpresas no faturamento.'
-      },
-      { title:'Reagendamento via IA por ordem de chegada', jiraKey:'GREEN-3038', status:'Released',
-        contexto:'Reagendamento pela IA exigia horário exato, diferente do agendamento que suportava ordem de chegada.',
-        feito:'Reagendamento via IA agora suporta ordem de chegada: paciente informa o turno e o sistema reagenda.',
-        impacto:'Experiência consistente com o fluxo de agendamento.'
-      },
-      { title:'Melhorias no Amigo-Bot', jiraKey:'GREEN-3112', status:'Released',
-        contexto:'O bot apresentava gaps de tracking e segurança em fluxos específicos.',
-        feito:'Rastreamento mais preciso, validações adicionais e correção de comportamentos inesperados.',
-        impacto:'Maior confiabilidade do agendamento automatizado.'
-      },
-    ]
+    year:2026, id:'delivery-21', name:'Delivery 21', releaseDate:'2026-06-19', released:false,
+    desc:'Mensagem de Saudação ter a opção de ser Fixa ou não, Sugestão de Resposta com IA no Chat de Atendimento, Finalização automática para conversas “Em aguardo”, Possibilidade de reverter/desfazer a sincronização de um contato',
+    features:[      {title:'Mensagem de Saudação ter a opção de ser Fixa ou não',jiraKey:'GREEN-3239',status:'Released',contexto:'',feito:'',impacto:''},
+      {title:'Sugestão de Resposta com IA no Chat de Atendimento',jiraKey:'GREEN-3180',status:'Released',contexto:'',feito:'',impacto:''},
+      {title:'Finalização automática para conversas “Em aguardo”',jiraKey:'GREEN-3015',status:'Released',contexto:'',feito:'',impacto:''},
+      {title:'Possibilidade de reverter/desfazer a sincronização de um contato',jiraKey:'GREEN-2731',status:'Released',contexto:'',feito:'',impacto:''},
+      {title:'Permitir importação de planilha como público-alvo',jiraKey:'GREEN-2710',status:'Ready to Test',contexto:'',feito:'',impacto:''}]
   },
   {
-    year:2026, id:'d18', name:'Delivery 18', releaseDate:'2026-05-08', released:true,
-    desc:'Bloqueio de contatos, busca por etiqueta no histórico, API de integrações e reenvio de campanhas.',
-    features:[
-      { title:'Bloquear número a partir do contact info', jiraKey:'GREEN-2774', status:'Released',
-        contexto:'Sem ação direta para bloquear números problemáticos na interface do Flow.',
-        feito:'Opção de bloqueio pelo menu do contact-info com confirmação antes de executar.',
-        impacto:'Ação rápida e segura sem sair da tela de atendimento.'
-      },
-      { title:'Estado visual de número bloqueado', jiraKey:'GREEN-2776', status:'Released',
-        contexto:'Após bloqueio, a interface não refletia o novo estado.',
-        feito:'Chat e contact-info exibem estado de bloqueio com opção de desfazer.',
-        impacto:'Clareza imediata sobre o status do contato.'
-      },
-      { title:'Pesquisar contato por Etiqueta no Histórico', jiraKey:'GREEN-2900', status:'Released',
-        contexto:'Filtro de etiquetas funcionava só nos chats ativos, não no histórico.',
-        feito:'Filtro de etiquetas estendido para o Histórico de conversas.',
-        impacto:'Recuperação ágil de conversas antigas por segmentação.'
-      },
-      { title:'API de integrações externas (SEMAVY)', jiraKey:'GREEN-2856', status:'Released',
-        contexto:'Sem API padronizada para sistemas externos se integrarem ao Flow.',
-        feito:'API com endpoints documentados para parceiros e integrações terceiras.',
-        impacto:'Abre o ecossistema para integrações estratégicas.'
-      },
-      { title:'Habilitar reenvio de campanhas', jiraKey:'GREEN-2851', status:'Released',
-        contexto:'Campanhas não podiam ser reenviadas sem recriação completa.',
-        feito:'Opção de reenvio para o mesmo público ou com ajustes.',
-        impacto:'Reduz esforço operacional para campanhas recorrentes.'
-      },
-    ]
+    year:2026, id:'delivery-20', name:'Delivery 20', releaseDate:'2026-06-05', released:true,
+    desc:'Upload de anexos no fluxo do Agende.ai, Alerta de Consumo de atendimento nos Painéis de Confirmação e Falta, Cancelar conexão de número durante onboarding via Embedded Signup, Menções em notas internas',
+    features:[      {title:'Upload de anexos no fluxo do Agende.ai',jiraKey:'GREEN-3241',status:'Released',contexto:'',feito:'',impacto:''},
+      {title:'Alerta de Consumo de atendimento nos Painéis de Confirmação e Falta',jiraKey:'GREEN-3185',status:'Released',contexto:'',feito:'',impacto:''},
+      {title:'Cancelar conexão de número durante onboarding via Embedded Signup',jiraKey:'GREEN-3183',status:'Released',contexto:'',feito:'',impacto:''},
+      {title:'Menções em notas internas',jiraKey:'GREEN-3025',status:'Released',contexto:'',feito:'',impacto:''},
+      {title:'Notas internas de atendimento',jiraKey:'GREEN-3023',status:'Released',contexto:'',feito:'',impacto:''},
+      {title:'Finalização automática para conversas "Em atendimento"',jiraKey:'GREEN-3019',status:'Released',contexto:'',feito:'',impacto:''},
+      {title:'Criar um contato  sem vincular ele como Lead → pelo "Nova conversa”',jiraKey:'GREEN-3017',status:'Released',contexto:'',feito:'',impacto:''},
+      {title:'Agente flow criar notas com motivos da transferencia',jiraKey:'GREEN-3013',status:'Released',contexto:'',feito:'',impacto:''},
+      {title:'Permitir parametrizar regra de inatividade nos Envios em massa',jiraKey:'GREEN-2853',status:'Released',contexto:'',feito:'',impacto:''},
+      {title:'Agente acessar as "Informações Profissionais" no cadastro de profissionais de saúde',jiraKey:'GREEN-2783',status:'Released',contexto:'',feito:'',impacto:''},
+      {title:'Amigo Flow se basear na grade de feriados dentro da configuração de agenda para aviso de disponibilidade de atendimento',jiraKey:'GREEN-2721',status:'Released',contexto:'',feito:'',impacto:''},
+      {title:'Impacto dos novos Disparos Automáticos em Billing',jiraKey:'GREEN-2687',status:'Released',contexto:'',feito:'',impacto:''},
+      {title:'Envio automático de Aniversario',jiraKey:'GREEN-2503',status:'Released',contexto:'',feito:'',impacto:''},
+      {title:'Envio automáticos de PÓS Atendimento',jiraKey:'GREEN-2501',status:'Released',contexto:'',feito:'',impacto:''},
+      {title:'Envios automáticos de orçamento em aberto.',jiraKey:'GREEN-2449',status:'Released',contexto:'',feito:'',impacto:''},
+      {title:'Envio automáticos de PRÉ-Atendimento',jiraKey:'GREEN-2447',status:'Released',contexto:'',feito:'',impacto:''},
+      {title:'Fluxo de agendamento desabilitado e agente de link (código)',jiraKey:'GREEN-2023',status:'Released',contexto:'',feito:'',impacto:''}]
   },
   {
-    year:2026, id:'d17', name:'Delivery 17', releaseDate:'2026-04-24', released:true,
-    desc:'Integração com Amigo One, leads vinculados à clínica, desassociação de número e acesso facilitado do suporte.',
-    features:[
-      { title:'Integração Amigo One com o Flow (SEMAVY)', jiraKey:'GREEN-2858', status:'Released',
-        contexto:'Amigo One e Flow operavam de forma isolada.',
-        feito:'Funcionalidades core do Flow no One: iniciar/finalizar atendimento, listar chats, transferir.',
-        impacto:'Usuários do One têm acesso unificado ao atendimento via Flow.'
-      },
-      { title:'Vincular leads à clínica (não ao canal)', jiraKey:'GREEN-2492', status:'Released',
-        contexto:'Leads vinculados ao canal impediam visão unificada.',
-        feito:'Migração do vínculo de leads do canal para a clínica.',
-        impacto:'Visão unificada de leads independente do canal de entrada.'
-      },
-      { title:'Desassociar número do canal via Meta API', jiraKey:'GREEN-2511', status:'Released',
-        contexto:'Sem como remover associação entre número e canal dentro do Flow.',
-        feito:'Fluxo de desassociação via endpoint deregister da Meta.',
-        impacto:'Limpeza e reorganização da infraestrutura de canais.'
-      },
-      { title:'Filtro no log de ações especiais', jiraKey:'GREEN-2872', status:'Released',
-        contexto:'Log sem filtros dificultava auditorias específicas.',
-        feito:'Filtros de período, usuário e tipo de ação no log de ações especiais.',
-        impacto:'Rastreabilidade e auditoria de ações críticas facilitadas.'
-      },
-      { title:'Acesso facilitado do Suporte ao Flow', jiraKey:'GREEN-2416', status:'Released',
-        contexto:'Analistas de suporte tinham múltiplos passos para acessar o Flow de clientes.',
-        feito:'Link de convite que coloca o analista no setor Suporte com permissões pré-configuradas.',
-        impacto:'Reduz tempo de resposta em incidentes.'
-      },
-    ]
+    year:2026, id:'delivery-19', name:'Delivery 19', releaseDate:'2026-05-22', released:true,
+    desc:'- Melhorias fluxos de agendamento, Calcular estimativa de custo no público de envio da campanha/envio em massa, Classificar um número como contato, Assinatura de termo de execução',
+    features:[      {title:'- Melhorias fluxos de agendamento',jiraKey:'GREEN-3112',status:'Released',contexto:'',feito:'',impacto:''},
+      {title:'Calcular estimativa de custo no público de envio da campanha/envio em massa',jiraKey:'GREEN-2849',status:'Released',contexto:'',feito:'',impacto:''},
+      {title:'Classificar um número como contato',jiraKey:'GREEN-2755',status:'Released',contexto:'',feito:'',impacto:''},
+      {title:'Assinatura de termo de execução',jiraKey:'GREEN-2588',status:'Released',contexto:'',feito:'',impacto:''},
+      {title:'Dashboard interno Amigo Flow',jiraKey:'GREEN-2532',status:'Released',contexto:'',feito:'',impacto:''},
+      {title:'Envio automático de Falta',jiraKey:'GREEN-2484',status:'Released',contexto:'',feito:'',impacto:''},
+      {title:'Listagem de Envios Automáticos',jiraKey:'GREEN-2464',status:'Released',contexto:'',feito:'',impacto:''}]
   },
   {
-    year:2026, id:'d16', name:'Delivery 16', releaseDate:'2026-04-10', released:true,
-    desc:'Correção no funil: leads só se tornam pacientes após atendimento efetivo.',
-    features:[
-      { title:'Lead vira paciente só após atendimento', jiraKey:'GREEN-2698', status:'Released',
-        contexto:'Leads eram convertidos em pacientes antes de serem atendidos.',
-        feito:'Conversão ocorre somente após ao menos um atendimento concluído registrado.',
-        impacto:'Funil mais preciso e dados clínicos mais confiáveis.'
-      },
-    ]
+    year:2026, id:'delivery-18', name:'Delivery 18', releaseDate:'2026-05-08', released:true,
+    desc:'Pesquisar um contato pela Etiqueta no Histórico de conversas, : API de integrações externas, Estado visual de número bloqueado no chat e contact-info, Bloquear número a partir do contact info',
+    features:[      {title:'Pesquisar um contato pela Etiqueta no Histórico de conversas',jiraKey:'GREEN-2900',status:'Released',contexto:'',feito:'',impacto:''},
+      {title:': API de integrações externas',jiraKey:'GREEN-2856',status:'Released',contexto:'',feito:'',impacto:''},
+      {title:'Estado visual de número bloqueado no chat e contact-info',jiraKey:'GREEN-2776',status:'Released',contexto:'',feito:'',impacto:''},
+      {title:'Bloquear número a partir do contact info',jiraKey:'GREEN-2774',status:'Released',contexto:'',feito:'',impacto:''}]
   },
   {
-    year:2026, id:'d15', name:'Delivery 15', releaseDate:'2026-03-27', released:true,
-    desc:'Onboarding por coexistência do WhatsApp Business: integra ao Flow sem desativar o app.',
-    features:[
-      { title:'Onboarding por Coexistência do WhatsApp Business', jiraKey:'GREEN-2286', status:'Released',
-        contexto:'Migração completa para Cloud API interrompia o uso normal do número.',
-        feito:'Embedded Signup da Meta com coexistência: o app continua funcionando durante e após a integração.',
-        impacto:'Remove a principal barreira de adoção para clínicas em operação ativa.'
-      },
-    ]
+    year:2026, id:'delivery-17', name:'Delivery 17', releaseDate:'2026-04-24', released:true,
+    desc:'Filtro no log de ações especiais, : Integração do Amigo One com o Flow, - Refactor na listagem de público, Fluxo de desassociar numero do canal via Meta API',
+    features:[      {title:'Filtro no log de ações especiais',jiraKey:'GREEN-2872',status:'Released',contexto:'',feito:'',impacto:''},
+      {title:': Integração do Amigo One com o Flow',jiraKey:'GREEN-2858',status:'Released',contexto:'',feito:'',impacto:''},
+      {title:'- Refactor na listagem de público',jiraKey:'GREEN-2833',status:'Released',contexto:'',feito:'',impacto:''},
+      {title:'Fluxo de desassociar numero do canal via Meta API',jiraKey:'GREEN-2511',status:'Released',contexto:'',feito:'',impacto:''},
+      {title:'Vincular leads a clínica',jiraKey:'GREEN-2492',status:'Released',contexto:'',feito:'',impacto:''},
+      {title:'Facilitar acesso do Suporte ao Flow de clientes',jiraKey:'GREEN-2416',status:'Released',contexto:'',feito:'',impacto:''}]
   },
   {
-    year:2026, id:'d14', name:'Delivery 14', releaseDate:'2026-03-13', released:true,
-    desc:'Redesign completo do módulo de Receituário.',
-    features:[
-      { title:'Redesign do Receituário', jiraKey:'GREEN-1974', status:'Released',
-        contexto:'Interface desatualizada não seguia o padrão atual do produto.',
-        feito:'Redesign completo alinhado ao design system atual com melhorias de usabilidade.',
-        impacto:'Emissão de receitas mais fluida e moderna.'
-      },
-    ]
+    year:2026, id:'delivery-16', name:'Delivery 16', releaseDate:'2026-04-10', released:true,
+    desc:'Lead só se torna paciente após ser atendido ao menos uma vez',
+    features:[      {title:'Lead só se torna paciente após ser atendido ao menos uma vez',jiraKey:'GREEN-2698',status:'Released',contexto:'',feito:'',impacto:''}]
   },
   {
-    year:2026, id:'d13', name:'Delivery 13', releaseDate:'2026-02-27', released:true,
-    desc:'Sincronização de etiquetas, emails de consumo de franquia e opt-in LGPD para leads.',
-    features:[
-      { title:'Replicação de etiquetas entre Flow e Prontuário', jiraKey:'GREEN-2310', status:'Released',
-        contexto:'Etiquetas do Flow não apareciam na Página do Paciente.',
-        feito:'Sincronização bidirecional de etiquetas entre os módulos.',
-        impacto:'Elimina retrabalho e garante consistência de segmentação.'
-      },
-      { title:'Emails de consumo de franquia', jiraKey:'GREEN-1913', status:'Released',
-        contexto:'Clínicas não eram notificadas ao se aproximar do limite da franquia.',
-        feito:'Email automático ao atingir 80% (alerta) e 100% (cobrança unitária), uma vez por ciclo.',
-        impacto:'Reduz surpresas no faturamento e aumenta conversões de upgrade.'
-      },
-      { title:'Opt-in LGPD no cadastro de leads', jiraKey:'GREEN-1769', status:'Released',
-        contexto:'Cadastro de leads sem consentimento explícito — risco LGPD.',
-        feito:'Fluxo de opt-in antes do cadastro; recusa encerra o fluxo com log auditável.',
-        impacto:'Adequação à LGPD e transparência com o paciente.'
-      },
-    ]
+    year:2026, id:'delivery-15', name:'Delivery 15', releaseDate:'2026-03-27', released:true,
+    desc:'Onboarding por Coexistência do WhatsApp Business no Amigo Flow',
+    features:[      {title:'Onboarding por Coexistência do WhatsApp Business no Amigo Flow',jiraKey:'GREEN-2286',status:'Released',contexto:'',feito:'',impacto:''}]
   },
   {
-    year:2026, id:'d12', name:'Delivery 12', releaseDate:'2026-02-13', released:true,
-    desc:'Redesign do agendamento, duplicar canal, atendimento de leads, reengajamento e ordenação no Kanban.',
-    features:[
-      { title:'Redesign da Habilidade de Agendamento', jiraKey:'GREEN-2182', status:'Released',
-        contexto:'Configuração complexa e pouco intuitiva.',
-        feito:'Interface simplificada e visual atualizado.',
-        impacto:'Reduz tempo de configuração e chamados de suporte.'
-      },
-      { title:'Duplicar canal', jiraKey:'GREEN-2226', status:'Released',
-        contexto:'Canais semelhantes precisavam ser reconfigurados do zero.',
-        feito:'Função de duplicar canal copiando todas as configurações.',
-        impacto:'Setup de novos canais muito mais rápido.'
-      },
-      { title:'Habilidade de atendimento de leads', jiraKey:'GREEN-2228', status:'Released',
-        contexto:'Sem configuração específica para lidar com leads.',
-        feito:'Habilidade configurável: ativa atende; inativa transfere para setor principal.',
-        impacto:'Estratégias diferenciadas por tipo de público.'
-      },
-      { title:'Reengajamento automático do agente', jiraKey:'GREEN-2230', status:'Released',
-        contexto:'Paciente inativo tinha atendimento finalizado sem tentativa de retomada.',
-        feito:'Mensagem de reengajamento opcional antes de finalizar, com tempo configurável.',
-        impacto:'Recupera conversas que seriam finalizadas sem resolução.'
-      },
-      { title:'Agente agenda leads cadastrados', jiraKey:'GREEN-2233', status:'Released',
-        contexto:'Agente só transferia leads-pacientes em vez de agendar.',
-        feito:'Agente identifica paciente via CPF e realiza agendamento diretamente.',
-        impacto:'Menos transferências desnecessárias para humanos.'
-      },
-      { title:'Ordenação de cards no Kanban', jiraKey:'GREEN-2312', status:'Released',
-        contexto:'Cards sem ordenação dificultavam priorização.',
-        feito:'Ordenação por data ou ordem alfabética dentro das colunas.',
-        impacto:'Localização mais rápida de pacientes na fila.'
-      },
-      { title:'Centralizar configuração de canais', jiraKey:'GREEN-2129', status:'Released',
-        contexto:'Configuração de canais fragmentada em diferentes áreas.',
-        feito:'Área centralizada com interface reorganizada.',
-        impacto:'Gestão e manutenção de múltiplos canais mais simples.'
-      },
-    ]
+    year:2026, id:'delivery-14', name:'Delivery 14', releaseDate:'2026-03-13', released:true,
+    desc:'Kanban de leads e criação de envios automaticos',
+    features:[      {title:'Redesign - Receituário',jiraKey:'GREEN-1974',status:'Released',contexto:'',feito:'',impacto:''}]
   },
   {
-    year:2026, id:'d11', name:'Delivery 11', releaseDate:'2026-01-31', released:true,
-    desc:'Propagação das novas configurações de setores e permissões para contas de clientes.',
-    features:[
-      { title:'Aplicar configurações de setores e permissões', jiraKey:'GREEN-2091', status:'Released',
-        contexto:'Novas configurações do D10 precisavam ser propagadas para os clientes.',
-        feito:'Lógica de propagação automática das regras de acesso após setup.',
-        impacto:'Novas regras entram em vigor sem reconfiguração manual.'
-      },
-    ]
+    year:2026, id:'delivery-13', name:'Delivery 13', releaseDate:'2026-02-27', released:true,
+    desc:'Replicação e sincronização de etiquetas do paciente entre Flow e Página do Paciente - Regra Fixa, Enviar emails informativos de consumo de franquia, Opt-in de uso de dados para agendamento e compartilhamento de informações para Cadastro de Leads',
+    features:[      {title:'Replicação e sincronização de etiquetas do paciente entre Flow e Página do Paciente - Regra Fixa',jiraKey:'GREEN-2310',status:'Released',contexto:'',feito:'',impacto:''},
+      {title:'Enviar emails informativos de consumo de franquia',jiraKey:'GREEN-1913',status:'Released',contexto:'',feito:'',impacto:''},
+      {title:'Opt-in de uso de dados para agendamento e compartilhamento de informações para Cadastro de Leads',jiraKey:'GREEN-1769',status:'Released',contexto:'',feito:'',impacto:''}]
   },
   {
-    year:2026, id:'d10', name:'Delivery 10', releaseDate:'2026-01-16', released:true,
-    desc:'Grande entrega: Setores, Permissões, redesign do Configurador Clinic, edição de leads e horários nos logs.',
-    features:[
-      { title:'Setores', jiraKey:'GREEN-2054', status:'Released',
-        contexto:'Flow sem estrutura de setores para organizar equipes.',
-        feito:'Módulo de Setores: criar, configurar e gerenciar setores associando atendentes.',
-        impacto:'Organização estruturada para clínicas com múltiplas especialidades.'
-      },
-      { title:'Permissões', jiraKey:'GREEN-2026', status:'Released',
-        contexto:'Todos os usuários com acesso igual a todas as funcionalidades.',
-        feito:'Sistema de permissões granular por perfil de usuário.',
-        impacto:'Segurança operacional e controle adequado por função.'
-      },
-      { title:'Redesign do Configurador Clinic', jiraKey:'GREEN-2029', status:'Released',
-        contexto:'Interface desatualizada com fluxo pouco intuitivo.',
-        feito:'Redesign completo com nova estrutura visual e fluxo reorganizado.',
-        impacto:'Configuração mais rápida e com menor índice de erros.'
-      },
-      { title:'Editar e excluir leads', jiraKey:'GREEN-2077', status:'Released',
-        contexto:'Leads com dados incorretos não podiam ser editados.',
-        feito:'Ações de editar e excluir leads diretamente pela interface.',
-        impacto:'Controle total sobre a base de leads.'
-      },
-      { title:'Horários nos logs de Meu Chats', jiraKey:'GREEN-2115', status:'Released',
-        contexto:'Logs exibiam só a data, sem horário exato.',
-        feito:'Adicionado horário nos logs de ações.',
-        impacto:'Maior precisão em auditorias de atendimento.'
-      },
-    ]
+    year:2026, id:'delivery-12', name:'Delivery 12', releaseDate:'2026-02-13', released:true,
+    desc:'Exibir em tempo real o log de sincronizado pelo Agente, Ordenação de cards no kanban, Agente poder agendar "leads" que estão cadastrados, Reengajamento do agente - Configuração do canal',
+    features:[      {title:'Exibir em tempo real o log de sincronizado pelo Agente',jiraKey:'GREEN-2352',status:'Released',contexto:'',feito:'',impacto:''},
+      {title:'Ordenação de cards no kanban',jiraKey:'GREEN-2312',status:'Released',contexto:'',feito:'',impacto:''},
+      {title:'Agente poder agendar "leads" que estão cadastrados',jiraKey:'GREEN-2233',status:'Released',contexto:'',feito:'',impacto:''},
+      {title:'Reengajamento do agente - Configuração do canal',jiraKey:'GREEN-2230',status:'Released',contexto:'',feito:'',impacto:''},
+      {title:'Habilidade de atendimento de leads',jiraKey:'GREEN-2228',status:'Released',contexto:'',feito:'',impacto:''},
+      {title:'Duplicar canal',jiraKey:'GREEN-2226',status:'Released',contexto:'',feito:'',impacto:''},
+      {title:'Redesign Habilidade de Agendamento',jiraKey:'GREEN-2182',status:'Released',contexto:'',feito:'',impacto:''},
+      {title:'Iniciar novo atendimento (com a janela da Meta encerrada)',jiraKey:'GREEN-2161',status:'Released',contexto:'',feito:'',impacto:''},
+      {title:'Configurar canais no Amigo Flow',jiraKey:'GREEN-2129',status:'Released',contexto:'',feito:'',impacto:''}]
   },
   {
-    year:2025, id:'d9', name:'Delivery 9', releaseDate:'2025-12-18', released:true,
-    desc:'Avaliação de atendimento completa, convênio no cadastro, variáveis em templates e integração ZEISS.',
-    features:[
-      { title:'Avaliação de Atendimento – Envios', jiraKey:'GREEN-1732', status:'Released',
-        contexto:'Sem mecanismo automatizado para coletar avaliações dos pacientes.',
-        feito:'Envio automático de avaliação após finalização do atendimento.',
-        impacto:'NPS e feedbacks de forma automatizada e escalável.'
-      },
-      { title:'Avaliação de Atendimento – Dashboard', jiraKey:'GREEN-1730', status:'Released',
-        contexto:'Avaliações sem área centralizada de análise.',
-        feito:'Dashboard com métricas por período, canal e atendente.',
-        impacto:'Visibilidade sobre qualidade do atendimento.'
-      },
-      { title:'Avaliação de Atendimento – Filtro no histórico', jiraKey:'GREEN-1848', status:'Released',
-        contexto:'Histórico sem filtro por avaliação recebida.',
-        feito:'Filtro de avaliação no histórico de conversas.',
-        impacto:'Gestores localizam facilmente atendimentos com baixa nota.'
-      },
-      { title:'Convênio no cadastro de paciente', jiraKey:'GREEN-1748', status:'Released',
-        contexto:'Dados de convênio coletados separadamente.',
-        feito:'Campos de convênio e carteirinha no fluxo de cadastro.',
-        impacto:'Check-in de consultas por convênio mais ágil.'
-      },
-      { title:'Variáveis abertas em templates Meta', jiraKey:'GREEN-1695', status:'Released',
-        contexto:'Sem suporte a variáveis abertas em templates.',
-        feito:'Suporte a variáveis abertas com personalização dinâmica.',
-        impacto:'Maior flexibilidade em campanhas e mensagens automáticas.'
-      },
-      { title:'Integração ZEISS – Prescrição de óculos', jiraKey:'GREEN-2093', status:'Released',
-        contexto:'Clínicas oftalmológicas precisavam trocar de sistema para prescrever.',
-        feito:'Integração com sistema ZEISS dentro do fluxo de atendimento.',
-        impacto:'Elimina troca de sistemas para parceiros oftalmológicos.'
-      },
-    ]
+    year:2026, id:'delivery-11', name:'Delivery 11', releaseDate:'2026-01-31', released:true,
+    desc:'Aplicar as novas configurações de setores e permissões após configuração do cliente',
+    features:[      {title:'Aplicar as novas configurações de setores e permissões após configuração do cliente',jiraKey:'GREEN-2091',status:'Released',contexto:'',feito:'',impacto:''}]
   },
   {
-    year:2025, id:'d8', name:'Delivery 8', releaseDate:'2025-11-28', released:true,
-    desc:'Consumo de franquia, exportação XLS de atendimentos e endpoint de faturamento.',
-    features:[
-      { title:'Consumo de franquia do Flow', jiraKey:'GREEN-1863', status:'Released',
-        contexto:'Sem controle ou visibilidade sobre consumo de mensagens na franquia.',
-        feito:'Módulo de consumo com contagem e exibição do uso vs. limite contratado.',
-        impacto:'Clínicas e time financeiro têm visibilidade para o modelo de cobrança.'
-      },
-      { title:'Exportar XLS de atendimentos', jiraKey:'GREEN-1923', status:'Released',
-        contexto:'Sem exportação dos dados de atendimentos para análise externa.',
-        feito:'Relatório em XLS de atendimentos por período de faturamento.',
-        impacto:'Auditoria financeira e análises operacionais fora da plataforma.'
-      },
-      { title:'Endpoint de dados de faturamento', jiraKey:'GREEN-1925', status:'Released',
-        contexto:'Faturamento dependia de extração manual de dados.',
-        feito:'API dedicada com todas as informações para cálculo do faturamento.',
-        impacto:'Automatiza e padroniza o processo financeiro.'
-      },
-    ]
+    year:2026, id:'delivery-10', name:'Delivery 10', releaseDate:'2026-01-16', released:true,
+    desc:'Adicionar horários aos logs de Meu Chats, Editar e excluir leads, Setores, Redesign Configurador Clinic',
+    features:[      {title:'Adicionar horários aos logs de Meu Chats',jiraKey:'GREEN-2115',status:'Released',contexto:'',feito:'',impacto:''},
+      {title:'Editar e excluir leads',jiraKey:'GREEN-2077',status:'Released',contexto:'',feito:'',impacto:''},
+      {title:'Setores',jiraKey:'GREEN-2054',status:'Released',contexto:'',feito:'',impacto:''},
+      {title:'Redesign Configurador Clinic',jiraKey:'GREEN-2029',status:'Released',contexto:'',feito:'',impacto:''},
+      {title:'Permissões',jiraKey:'GREEN-2026',status:'Released',contexto:'',feito:'',impacto:''}]
   },
   {
-    year:2025, id:'d7', name:'Delivery 7', releaseDate:'2025-11-14', released:true,
-    desc:'Separação de envios automáticos, listagem de agendáveis para IA e Z-API desativada por padrão.',
-    features:[
-      { title:'Separar envios automáticos das habilidades', jiraKey:'GREEN-1825', status:'Released',
-        contexto:'Envios acoplados às habilidades tornavam a gestão confusa.',
-        feito:'Módulo independente para envios automáticos.',
-        impacto:'Clareza na configuração sem interferir nas habilidades do agente.'
-      },
-      { title:'Listagem de agendáveis configurados para IA', jiraKey:'GREEN-1835', status:'Released',
-        contexto:'Sem visibilidade sobre o escopo do agente de agendamento.',
-        feito:'Listagem de agendáveis configurados para a IA.',
-        impacto:'Auditoria e ajuste do escopo do agente com facilidade.'
-      },
-      { title:'Z-API desativada por padrão para novas clínicas', jiraKey:'GREEN-1800', status:'Released',
-        contexto:'Novas clínicas tinham Z-API habilitada por padrão (legado).',
-        feito:'Z-API desativada por padrão em novos cadastros.',
-        impacto:'Onboardings corretos desde o início com Meta Cloud API.'
-      },
-    ]
+    year:2025, id:'delivery-9', name:'Delivery 9', releaseDate:'2025-12-18', released:true,
+    desc:'Replicar comportamento de negativa de convenio em demais agentes, Migração - Bot skills -> Account Skills, Avaliação de atendimento - Filtro de historico, Pedir no cadastro do paciente informações de convenio e carteirinha',
+    features:[      {title:'Replicar comportamento de negativa de convenio em demais agentes',jiraKey:'GREEN-2075',status:'Released',contexto:'',feito:'',impacto:''},
+      {title:'Migração - Bot skills -> Account Skills',jiraKey:'GREEN-1894',status:'Released',contexto:'',feito:'',impacto:''},
+      {title:'Avaliação de atendimento - Filtro de historico',jiraKey:'GREEN-1848',status:'Released',contexto:'',feito:'',impacto:''},
+      {title:'Pedir no cadastro do paciente informações de convenio e carteirinha',jiraKey:'GREEN-1748',status:'Released',contexto:'',feito:'',impacto:''},
+      {title:'Avaliação de atendimento - Envios',jiraKey:'GREEN-1732',status:'Released',contexto:'',feito:'',impacto:''},
+      {title:'Avaliação de atendimento - Dash',jiraKey:'GREEN-1730',status:'Released',contexto:'',feito:'',impacto:''},
+      {title:'Variáveis abertas em modelos de mensagens na Meta',jiraKey:'GREEN-1695',status:'Released',contexto:'',feito:'',impacto:''}]
+  },
+  {
+    year:2025, id:'delivery-8', name:'Delivery 8', releaseDate:'2025-11-28', released:true,
+    desc:'Criar endpoint para fornecer informações necessárias para o faturamento, Exportar XLS de atendimentos do flow do período do faturamento, Consumo de franquia do Flow',
+    features:[      {title:'Criar endpoint para fornecer informações necessárias para o faturamento',jiraKey:'GREEN-1925',status:'Released',contexto:'',feito:'',impacto:''},
+      {title:'Exportar XLS de atendimentos do flow do período do faturamento',jiraKey:'GREEN-1923',status:'Released',contexto:'',feito:'',impacto:''},
+      {title:'Consumo de franquia do Flow',jiraKey:'GREEN-1863',status:'Released',contexto:'',feito:'',impacto:''}]
+  },
+  {
+    year:2025, id:'delivery-7', name:'Delivery 7', releaseDate:'2025-11-14', released:true,
+    desc:'Foco em trazer habilidade de avaliação de atendimento e fechar alguns fluxos menores',
+    features:[      {title:'Mostrar seleção de contas apenas quando houver mais de uma',jiraKey:'GREEN-1820',status:'Released',contexto:'',feito:'',impacto:''},
+      {title:'Melhorar consultas de atualização dos agendáveis por IA',jiraKey:'GREEN-1810',status:'Released',contexto:'',feito:'',impacto:''},
+      {title:'Adicionar cache para contagem de conhecimentos da IA',jiraKey:'GREEN-1808',status:'Released',contexto:'',feito:'',impacto:''},
+      {title:'Restringir envio de modelos de Marketing e Utilidade por atendimento',jiraKey:'GREEN-1773',status:'Released',contexto:'',feito:'',impacto:''},
+      {title:'Redirecionar cards do agende+ para o Chat flutuante do Flow',jiraKey:'GREEN-1754',status:'Released',contexto:'',feito:'',impacto:''},
+      {title:'Exportar relatório de Leads',jiraKey:'GREEN-1752',status:'Released',contexto:'',feito:'',impacto:''},
+      {title:'Avaliação de atendimento - Configuração',jiraKey:'GREEN-1697',status:'Released',contexto:'',feito:'',impacto:''}]
+  },
+  {
+    year:2025, id:'delivery-6', name:'Delivery 6', releaseDate:'2025-10-31', released:true,
+    desc:'Amigo Intelligence e ajustes essenciais no agente',
+    features:[      {title:'Redesign de meu chats',jiraKey:'GREEN-1689',status:'Released',contexto:'',feito:'',impacto:''},
+      {title:'Nova Navbar',jiraKey:'GREEN-1688',status:'Released',contexto:'',feito:'',impacto:''},
+      {title:'Agente entender mensagens irrelevantes e não iniciar um novo atendimento',jiraKey:'GREEN-1576',status:'Released',contexto:'',feito:'',impacto:''},
+      {title:'Configurar agendamento do agente',jiraKey:'GREEN-1559',status:'Released',contexto:'',feito:'',impacto:''},
+      {title:'Configuração dos Envios em massa',jiraKey:'GREEN-347',status:'Released',contexto:'',feito:'',impacto:''}]
+  },
+  {
+    year:2025, id:'delivery-5', name:'Delivery 5', releaseDate:'2025-10-03', released:true,
+    desc:'Ativar/desativar habilidade de agendamento para terceiros, - Agente agendar por ordem de chegada, Poder incluir mídias e arquivos nos atalhos de mensagens, Envio de Confirmação de mais de um atendimento numa mesma mensagem',
+    features:[      {title:'Ativar/desativar habilidade de agendamento para terceiros',jiraKey:'GREEN-1433',status:'Released',contexto:'',feito:'',impacto:''},
+      {title:'- Agente agendar por ordem de chegada',jiraKey:'GREEN-1401',status:'Released',contexto:'',feito:'',impacto:''},
+      {title:'Poder incluir mídias e arquivos nos atalhos de mensagens',jiraKey:'GREEN-1364',status:'Released',contexto:'',feito:'',impacto:''},
+      {title:'Envio de Confirmação de mais de um atendimento numa mesma mensagem',jiraKey:'GREEN-1348',status:'Released',contexto:'',feito:'',impacto:''},
+      {title:'Agendamento para terceiros',jiraKey:'GREEN-1318',status:'Released',contexto:'',feito:'',impacto:''},
+      {title:'Base de Leads (Importação)',jiraKey:'GREEN-1195',status:'Released',contexto:'',feito:'',impacto:''}]
+  },
+  {
+    year:2025, id:'delivery-4', name:'Delivery 4', releaseDate:'2025-09-19', released:true,
+    desc:'Resolver Fluxos básicos de agendamento',
+    features:[      {title:'Ativar/desativar habilidade de agendamento para terceiros',jiraKey:'GREEN-1433',status:'Released',contexto:'',feito:'',impacto:''},
+      {title:'- Agente agendar por ordem de chegada',jiraKey:'GREEN-1401',status:'Released',contexto:'',feito:'',impacto:''},
+      {title:'Poder incluir mídias e arquivos nos atalhos de mensagens',jiraKey:'GREEN-1364',status:'Released',contexto:'',feito:'',impacto:''},
+      {title:'Agendamento para terceiros',jiraKey:'GREEN-1318',status:'Released',contexto:'',feito:'',impacto:''},
+      {title:'- Agente agendar por ordem de chegada',jiraKey:'GREEN-1215',status:'Released',contexto:'',feito:'',impacto:''},
+      {title:'Base de Leads (Importação)',jiraKey:'GREEN-1195',status:'Released',contexto:'',feito:'',impacto:''},
+      {title:'Retirar o visualizar da conversa quando o atendente apenas olha a conversa e não assume o atendimento',jiraKey:'GREEN-1154',status:'Released',contexto:'',feito:'',impacto:''},
+      {title:'Tratamento de multiplas mensagens para uma única resposta.',jiraKey:'GREEN-917',status:'Released',contexto:'',feito:'',impacto:''},
+      {title:'Base de Leads (Listagem e criação)',jiraKey:'GREEN-633',status:'Released',contexto:'',feito:'',impacto:''}]
+  },
+  {
+    year:2025, id:'delivery-3', name:'Delivery 3', releaseDate:'2025-09-05', released:true,
+    desc:'Objetivo: Trazer experiências essenciais para as clínicas, com foco no agendamento, em cenários mais complexos como ordem de chegada e de dependentes',
+    features:[      {title:'Adicionar paginação na listagem em Meus Chats',jiraKey:'GREEN-1296',status:'Released',contexto:'',feito:'',impacto:''},
+      {title:'Fluxo de reconexão dos meus chats',jiraKey:'GREEN-1289',status:'Released',contexto:'',feito:'',impacto:''},
+      {title:'Definir setor padrão',jiraKey:'GREEN-1265',status:'Released',contexto:'',feito:'',impacto:''},
+      {title:'Utilizar a central de atendimento sem o agente estar ativo',jiraKey:'GREEN-1229',status:'Released',contexto:'',feito:'',impacto:''},
+      {title:'Informações de leads e conversões no dashboard',jiraKey:'GREEN-1223',status:'Released',contexto:'',feito:'',impacto:''},
+      {title:'- Agente agendar por ordem de chegada',jiraKey:'GREEN-1215',status:'Released',contexto:'',feito:'',impacto:''},
+      {title:'Persistir informações e dados do Flow mesmo com o agente desativado',jiraKey:'GREEN-1157',status:'Released',contexto:'',feito:'',impacto:''},
+      {title:'Retirar o visualizar da conversa quando o atendente apenas olha a conversa e não assume o atendimento',jiraKey:'GREEN-1154',status:'Released',contexto:'',feito:'',impacto:''},
+      {title:'Melhorar comportamento de busca no Amigo Care',jiraKey:'GREEN-1100',status:'Released',contexto:'',feito:'',impacto:''},
+      {title:'Visualizar contato compartilhado',jiraKey:'GREEN-1080',status:'Released',contexto:'',feito:'',impacto:''},
+      {title:'Tratamento de multiplas mensagens para uma única resposta.',jiraKey:'GREEN-917',status:'Released',contexto:'',feito:'',impacto:''},
+      {title:'Base de Leads (Listagem e criação)',jiraKey:'GREEN-633',status:'Released',contexto:'',feito:'',impacto:''}]
+  },
+  {
+    year:2025, id:'delivery-2', name:'Delivery 2', releaseDate:'2025-08-22', released:true,
+    desc:'Planning 2- Amigo Care Duração do sprint: 2 semanas Período: 11/08 a 23/08   1. Objetivo do Sprint Objetivo: Melhorar a experiência de gestão e monitoramento de atendimentos no Amigo Care, com foco em eficiência operacional para times de atendimento e acesso rápido a informações críticas na jornada do paciente.  Problema a resolver: Usuários (clínicas) relatam dificuldade em localizar conversas, monitorar ações em massa e manter continuidade no atendimento automático.    Visão do Produto  Status atual: MVP lançado com funcionalidades básicas de chat e disparos manuais. Primeiros clientes usando em operação piloto. Primeiros feedbacks indicando pontos de fricção em gestão e visualização.',
+    features:[      {title:'Base de Leads (Importação)',jiraKey:'GREEN-1195',status:'Released',contexto:'',feito:'',impacto:''},
+      {title:'Visualizar contato compartilhado',jiraKey:'GREEN-1080',status:'Released',contexto:'',feito:'',impacto:''},
+      {title:'Dar e melhorar feedback ao usuário para casos de conversas editadas',jiraKey:'GREEN-1078',status:'Released',contexto:'',feito:'',impacto:''},
+      {title:'Disparos Automáticos com Regras de Inatividade',jiraKey:'GREEN-1051',status:'Released',contexto:'',feito:'',impacto:''},
+      {title:'Administrador poder receber conversas por transferência e poder transferir.',jiraKey:'GREEN-1049',status:'Released',contexto:'',feito:'',impacto:''},
+      {title:'Remover credenciais de instâncias das listagens de conta',jiraKey:'GREEN-1047',status:'Released',contexto:'',feito:'',impacto:''},
+      {title:'Não permitir ativar agentes que possuem o mesmo número de telefone associado',jiraKey:'GREEN-1038',status:'Released',contexto:'',feito:'',impacto:''},
+      {title:'Tratamento de multiplas mensagens para uma única resposta.',jiraKey:'GREEN-917',status:'Released',contexto:'',feito:'',impacto:''},
+      {title:'Base de Leads (Listagem e criação)',jiraKey:'GREEN-633',status:'Released',contexto:'',feito:'',impacto:''},
+      {title:'Configuração dos Envios em massa',jiraKey:'GREEN-347',status:'Released',contexto:'',feito:'',impacto:''},
+      {title:'Sugestão de pagamento pelo Agente',jiraKey:'GREEN-16',status:'Backlog Downstream',contexto:'',feito:'',impacto:''}]
+  },
+  {
+    year:2025, id:'delivery-1', name:'Delivery 1', releaseDate:'2025-08-06', released:true,
+    desc:'Finalizar Embedded Signup, Entregar uma nova habilidade de cobrança, Automatizar o fluxo de criação de instância',
+    features:[      {title:'Tratamento de multiplas mensagens para uma única resposta.',jiraKey:'GREEN-917',status:'Released',contexto:'',feito:'',impacto:''},
+      {title:'Habilidades - Nova configuração',jiraKey:'GREEN-643',status:'Released',contexto:'',feito:'',impacto:''},
+      {title:'Permissões de Configuração no CRM',jiraKey:'GREEN-351',status:'Released',contexto:'',feito:'',impacto:''},
+      {title:'Adicionar etiquetas',jiraKey:'GREEN-348',status:'Released',contexto:'',feito:'',impacto:''},
+      {title:'Configuração dos Envios em massa',jiraKey:'GREEN-347',status:'Released',contexto:'',feito:'',impacto:''},
+      {title:'Criar etiquetas',jiraKey:'GREEN-339',status:'Released',contexto:'',feito:'',impacto:''},
+      {title:'Automatizar criação de instância Z-API',jiraKey:'GREEN-17',status:'Released',contexto:'',feito:'',impacto:''},
+      {title:'Sugestão de pagamento pelo Agente',jiraKey:'GREEN-16',status:'Backlog Downstream',contexto:'',feito:'',impacto:''}]
+  },
+  {
+    year:2025, id:'delivery-0', name:'Delivery 0', releaseDate:'2025-07-24', released:true,
+    desc:'Padronizar a ordenação das colunas de envio do disparo automático por data e hora de marcação, Modelos de mensagem, Feedback de “digitando” para o usuário - meta, Embedded Signup',
+    features:[      {title:'Padronizar a ordenação das colunas de envio do disparo automático por data e hora de marcação',jiraKey:'GREEN-891',status:'Released',contexto:'',feito:'',impacto:''},
+      {title:'Modelos de mensagem',jiraKey:'GREEN-649',status:'Released',contexto:'',feito:'',impacto:''},
+      {title:'Feedback de “digitando” para o usuário - meta',jiraKey:'GREEN-639',status:'Released',contexto:'',feito:'',impacto:''},
+      {title:'Embedded Signup',jiraKey:'GREEN-637',status:'Released',contexto:'',feito:'',impacto:''},
+      {title:'Mensageria de Meu chats (recepção de conversas)',jiraKey:'GREEN-632',status:'Released',contexto:'',feito:'',impacto:''},
+      {title:'Reduzir o nome do atendente no chat ao primeiro nome',jiraKey:'GREEN-595',status:'Released',contexto:'',feito:'',impacto:''},
+      {title:'Permissões de Configuração no CRM',jiraKey:'GREEN-351',status:'Released',contexto:'',feito:'',impacto:''},
+      {title:'Transferir por inatividade - Amigo Care',jiraKey:'GREEN-278',status:'Released',contexto:'',feito:'',impacto:''},
+      {title:'Nova conversa (com Template fixo)',jiraKey:'GREEN-5',status:'Released',contexto:'',feito:'',impacto:''}]
   },
 ];
 
